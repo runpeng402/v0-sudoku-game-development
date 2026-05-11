@@ -1,0 +1,233 @@
+{
+  "navigation": {
+    "home": "首页",
+    "play": "开始游戏",
+    "howToPlay": "游戏指南",
+    "strategies": "解题策略",
+    "articles": "相关文章",
+    "variants": "变体玩法",
+    "userCenter": "用户中心",
+    "leaderboard": "排行榜"
+  },
+  "home": {
+    "title": "数独挑战",
+    "subtitle": "通过世界上最受欢迎的数字谜题锻炼你的大脑",
+    "description": "玩数千个数独谜题，学习策略，并跟踪你的进度",
+    "playNow": "立即开始",
+    "learnMore": "了解更多"
+  },
+  "difficulty": {
+    "easy": "简单",
+    "medium": "中等",
+    "hard": "困难",
+    "expert": "专家"
+  },
+  "game": {
+    "check": "检查",
+    "hint": "提示",
+    "undo": "撤销",
+    "erase": "擦除",
+    "notes": "笔记",
+    "newGame": "新游戏",
+    "pause": "暂停",
+    "resume": "继续",
+    "restart": "重新开始",
+    "solved": "已解决！",
+    "congratulations": "恭喜！",
+    "timeElapsed": "用时",
+    "difficultyLevel": "难度等级",
+    "hintsUsed": "使用提示",
+    "mistakesMade": "错误次数",
+    "playAgain": "再玩一次",
+    "share": "分享"
+  },
+  "auth": {
+    "signIn": "登录",
+    "signUp": "注册",
+    "signOut": "退出",
+    "email": "电子邮箱",
+    "password": "密码",
+    "confirmPassword": "确认密码",
+    "forgotPassword": "忘记密码？",
+    "orContinueWith": "或继续使用",
+    "alreadyHaveAccount": "已有账户？",
+    "dontHaveAccount": "没有账户？",
+    "createAccount": "创建账户",
+    "welcomeBack": "欢迎回来",
+    "signInDescription": "登录您的账户以访问所有功能",
+    "joinDescription": "加入我们的数独爱好者社区",
+    "username": "用户名",
+    "enterEmail": "输入您的邮箱",
+    "enterPassword": "输入您的密码",
+    "chooseUsername": "选择用户名",
+    "createPassword": "创建密码",
+    "confirmPasswordPlaceholder": "确认您的密码",
+    "signingIn": "登录中...",
+    "creatingAccount": "创建账户中...",
+    "invalidCredentials": "邮箱或密码无效",
+    "passwordsNoMatch": "密码不匹配",
+    "passwordTooShort": "密码至少需要6个字符",
+    "registrationFailed": "注册失败，请重试",
+    "termsAgreement": "继续即表示您同意我们的服务条款和隐私政策",
+    "continueAsGuest": "以访客身份继续",
+    "welcomeToSudoku": "欢迎来到数独大师",
+    "signInToYourAccount": "登录您的账户以继续"
+  },
+  "user": {
+    "profile": "个人资料",
+    "settings": "设置",
+    "statistics": "统计数据",
+    "achievements": "成就",
+    "savedGames": "保存的游戏",
+    "history": "历史记录"
+  },
+  "leaderboard": {
+    "title": "数独排行榜",
+    "subtitle": "与全球玩家竞争，在我们的全球数独锦标赛中攀登排名",
+    "overall": "总体",
+    "speed": "速度",
+    "accuracy": "准确率",
+    "streak": "连胜",
+    "rankings": "排名",
+    "activePlayers": "活跃玩家",
+    "bestTimeToday": "今日最佳时间",
+    "topAccuracy": "最高准确率",
+    "longestStreak": "最长连胜",
+    "allTime": "历史",
+    "monthly": "月度",
+    "weekly": "周度",
+    "daily": "日度",
+    "noRankings": "暂无排名",
+    "beFirst": "成为第一个出现在此排行榜上的人！",
+    "startPlaying": "开始游戏",
+    "readyToCompete": "准备好竞争了吗？",
+    "joinCompetition": "加入竞争，看看您在全球玩家中的排名",
+    "startPlayingNow": "立即开始游戏"
+  },
+  "feedback": {
+    "title": "我们重视您的反馈",
+    "subtitle": "帮助我们改善您的数独体验。您的想法和建议对我们很重要！",
+    "shareExperience": "分享您的体验",
+    "shareDescription": "告诉我们您对我们数独游戏的看法",
+    "rateExperience": "您如何评价您的整体体验？",
+    "ratingMessage": {
+      "1": "很抱歉听到这个消息。请告诉我们如何改进。",
+      "2": "我们感谢您的反馈。我们如何做得更好？",
+      "3": "感谢您的反馈。什么会让它变得更好？",
+      "4": "太好了！什么会让它成为5星体验？",
+      "5": "太棒了！我们很高兴您喜欢我们的数独游戏！"
+    },
+    "improvementAreas": "您希望我们改进哪些方面？（选择所有适用的）",
+    "improvements": {
+      "ui": "用户界面",
+      "difficulty": "难度级别",
+      "hints": "提示系统",
+      "performance": "性能",
+      "mobile": "移动体验",
+      "features": "新功能"
+    },
+    "detailedFeedback": "告诉我们更多关于您的体验",
+    "feedbackPlaceholder": "您喜欢什么？什么可以更好？对新功能有什么建议吗？",
+    "emailOptional": "邮箱（可选）",
+    "emailPlaceholder": "your.email@example.com",
+    "emailNote": "如果需要，我们只会使用您的邮箱来跟进您的反馈。",
+    "submitFeedback": "提交反馈",
+    "submitting": "提交中...",
+    "thankYou": "谢谢您！",
+    "thankYouMessage": "您的反馈对我们非常宝贵。我们将用它来让我们的数独游戏变得更好！",
+    "submitAnother": "提交另一个反馈"
+  },
+  "howToPlay": {
+    "title": "如何玩数独",
+    "subtitle": "通过我们的综合指南掌握世界上最受欢迎的数字谜题",
+    "rules": {
+      "title": "数独规则",
+      "description": "学习支配每个数独谜题的基本规则"
+    },
+    "techniques": {
+      "title": "解题技巧",
+      "subtitle": "帮助您解决任何数独谜题的基本策略"
+    }
+  },
+  "strategies": {
+    "title": "数独策略",
+    "subtitle": "掌握高级技巧，解决最具挑战性的谜题",
+    "beginner": {
+      "title": "初学者策略",
+      "description": "用这些基本技巧开始您的数独之旅"
+    },
+    "intermediate": {
+      "title": "中级策略",
+      "description": "用这些经过验证的方法将您的技能提升到新水平"
+    },
+    "advanced": {
+      "title": "高级策略",
+      "description": "掌握最具挑战性谜题的专家级技巧"
+    }
+  },
+  "articles": {
+    "title": "数独文章和指南",
+    "subtitle": "全面的指南、技巧和见解，提高您的数独技能",
+    "categories": {
+      "beginners": "初学者",
+      "strategies": "策略",
+      "advanced": "高级",
+      "printable": "可打印",
+      "apps": "应用",
+      "variants": "变体"
+    },
+    "readMore": "阅读更多",
+    "backToArticles": "返回文章",
+    "shareArticle": "分享文章",
+    "printArticle": "打印文章",
+    "relatedArticles": "相关文章"
+  },
+  "seo": {
+    "collections": {
+      "title": "题库收藏",
+      "subtitle": "从各个难度级别的数千个精心制作的数独谜题中选择",
+      "puzzles": "题目",
+      "learnMore": "了解更多",
+      "print": "打印",
+      "easy": {
+        "title": "简单数独收藏",
+        "description": "适合初学者学习数独基础知识"
+      },
+      "medium": {
+        "title": "中等数独收藏",
+        "description": "中级谜题，用于培养技能"
+      },
+      "hard": {
+        "title": "困难数独收藏",
+        "description": "为有经验的玩家提供挑战性谜题"
+      },
+      "expert": {
+        "title": "专家数独收藏",
+        "description": "数独大师的终极挑战"
+      }
+    },
+    "features": {
+      "title": "游戏特色",
+      "subtitle": "完美数独体验所需的一切",
+      "hints": {
+        "title": "智能提示系统",
+        "description": "在遇到困难时获得有用的提示，而不会破坏乐趣"
+      },
+      "themes": {
+        "title": "季节主题",
+        "description": "享受随季节和节日变化的美丽主题"
+      },
+      "progress": {
+        "title": "进度跟踪",
+        "description": "跟踪您的解题时间、准确性和随时间的改进"
+      }
+    }
+  },
+  "footer": {
+    "about": "关于我们",
+    "contact": "联系我们",
+    "terms": "使用条款",
+    "privacy": "隐私政策",
+    "copyright": "© 2023 数独挑战。保留所有权利。"
+  }
+}

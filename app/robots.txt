@@ -1,0 +1,25 @@
+User-agent: *
+Allow: /
+
+# Main pages
+Allow: /play
+Allow: /how-to-play
+Allow: /strategies
+Allow: /variants
+Allow: /articles
+Allow: /leaderboard
+Allow: /user-center
+
+# Static assets
+Allow: /images/
+Allow: /icons/
+Allow: /_next/static/
+
+# Disallow admin and private areas
+Disallow: /admin/
+Disallow: /api/
+Disallow: /_next/
+Disallow: /private/
+
+# Sitemap
+Sitemap: https://www.sudokustudio.app/sitemap.xml

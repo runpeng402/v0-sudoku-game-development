@@ -1,0 +1,53 @@
+{
+  "name": "sudoku-studio",
+  "version": "1.0.0",
+  "description": "Free online sudoku game with multiple difficulty levels and educational content",
+  "keywords": [
+    "sudoku",
+    "puzzle",
+    "game",
+    "online",
+    "free",
+    "brain-training",
+    "logic",
+    "nextjs",
+    "react",
+    "typescript"
+  ],
+  "homepage": "https://sudokustudio.app",
+  "bugs": {
+    "url": "https://github.com/sudokustudio/sudoku-studio/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sudokustudio/sudoku-studio.git"
+  },
+  "license": "MIT",
+  "author": "Sudoku Studio Team",
+  "scripts": {
+    "build": "next build",
+    "dev": "next dev",
+    "lint": "next lint",
+    "start": "next start",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "latest",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "i18next": "latest",
+    "lucide-react": "^0.454.0",
+    "next": "14.2.35",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "react-i18next": "latest",
+    "tailwind-merge": "^2.5.5",
+    "tailwindcss-animate": "^1.0.7",
+    "typescript": "latest"
+  },
+  "devDependencies": {
+    "@types/node": "^22",
+    "postcss": "^8.5",
+    "typescript": "^5"
+  }
+}

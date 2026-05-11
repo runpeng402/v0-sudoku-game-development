@@ -1,0 +1,233 @@
+{
+  "navigation": {
+    "home": "Home",
+    "play": "Play",
+    "howToPlay": "How to Play",
+    "strategies": "Strategies",
+    "articles": "Articles",
+    "variants": "Variants",
+    "userCenter": "User Center",
+    "leaderboard": "Leaderboard"
+  },
+  "home": {
+    "title": "Sudoku Challenge",
+    "subtitle": "Exercise your brain with the world's most popular number puzzle",
+    "description": "Play thousands of Sudoku puzzles, learn strategies, and track your progress",
+    "playNow": "Play Now",
+    "learnMore": "Learn More"
+  },
+  "difficulty": {
+    "easy": "Easy",
+    "medium": "Medium",
+    "hard": "Hard",
+    "expert": "Expert"
+  },
+  "game": {
+    "check": "Check",
+    "hint": "Hint",
+    "undo": "Undo",
+    "erase": "Erase",
+    "notes": "Notes",
+    "newGame": "New Game",
+    "pause": "Pause",
+    "resume": "Resume",
+    "restart": "Restart",
+    "solved": "Solved!",
+    "congratulations": "Congratulations!",
+    "timeElapsed": "Time Elapsed",
+    "difficultyLevel": "Difficulty Level",
+    "hintsUsed": "Hints Used",
+    "mistakesMade": "Mistakes Made",
+    "playAgain": "Play Again",
+    "share": "Share"
+  },
+  "auth": {
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "signOut": "Sign Out",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "forgotPassword": "Forgot Password?",
+    "orContinueWith": "Or continue with",
+    "alreadyHaveAccount": "Already have an account?",
+    "dontHaveAccount": "Don't have an account?",
+    "createAccount": "Create Account",
+    "welcomeBack": "Welcome Back",
+    "signInDescription": "Sign in to your account to access all features",
+    "joinDescription": "Join our community of Sudoku enthusiasts",
+    "username": "Username",
+    "enterEmail": "Enter your email",
+    "enterPassword": "Enter your password",
+    "chooseUsername": "Choose a username",
+    "createPassword": "Create a password",
+    "confirmPasswordPlaceholder": "Confirm your password",
+    "signingIn": "Signing In...",
+    "creatingAccount": "Creating Account...",
+    "invalidCredentials": "Invalid email or password",
+    "passwordsNoMatch": "Passwords do not match",
+    "passwordTooShort": "Password must be at least 6 characters",
+    "registrationFailed": "Registration failed. Please try again.",
+    "termsAgreement": "By continuing, you agree to our Terms of Service and Privacy Policy",
+    "continueAsGuest": "Continue as Guest",
+    "welcomeToSudoku": "Welcome to Sudoku Master",
+    "signInToYourAccount": "Sign in to your account to continue"
+  },
+  "user": {
+    "profile": "Profile",
+    "settings": "Settings",
+    "statistics": "Statistics",
+    "achievements": "Achievements",
+    "savedGames": "Saved Games",
+    "history": "History"
+  },
+  "leaderboard": {
+    "title": "Sudoku Leaderboard",
+    "subtitle": "Compete with players worldwide and climb the rankings in our global sudoku championship",
+    "overall": "Overall",
+    "speed": "Speed",
+    "accuracy": "Accuracy",
+    "streak": "Streak",
+    "rankings": "Rankings",
+    "activePlayers": "Active Players",
+    "bestTimeToday": "Best Time Today",
+    "topAccuracy": "Top Accuracy",
+    "longestStreak": "Longest Streak",
+    "allTime": "All Time",
+    "monthly": "Monthly",
+    "weekly": "Weekly",
+    "daily": "Daily",
+    "noRankings": "No Rankings Yet",
+    "beFirst": "Be the first to appear on this leaderboard!",
+    "startPlaying": "Start Playing",
+    "readyToCompete": "Ready to Compete?",
+    "joinCompetition": "Join the competition and see how you rank against players worldwide",
+    "startPlayingNow": "Start Playing Now"
+  },
+  "feedback": {
+    "title": "We Value Your Feedback",
+    "subtitle": "Help us improve your Sudoku experience. Your thoughts and suggestions matter to us!",
+    "shareExperience": "Share Your Experience",
+    "shareDescription": "Tell us what you think about our Sudoku game",
+    "rateExperience": "How would you rate your overall experience?",
+    "ratingMessage": {
+      "1": "We're sorry to hear that. Please tell us how we can improve.",
+      "2": "We appreciate your feedback. How can we do better?",
+      "3": "Thank you for your feedback. What would make it better?",
+      "4": "Great! What would make it a 5-star experience?",
+      "5": "Wonderful! We're thrilled you love our Sudoku game!"
+    },
+    "improvementAreas": "What areas would you like us to improve? (Select all that apply)",
+    "improvements": {
+      "ui": "User Interface",
+      "difficulty": "Difficulty Levels",
+      "hints": "Hint System",
+      "performance": "Performance",
+      "mobile": "Mobile Experience",
+      "features": "New Features"
+    },
+    "detailedFeedback": "Tell us more about your experience",
+    "feedbackPlaceholder": "What did you like? What could be better? Any suggestions for new features?",
+    "emailOptional": "Email (Optional)",
+    "emailPlaceholder": "your.email@example.com",
+    "emailNote": "We'll only use your email to follow up on your feedback if needed.",
+    "submitFeedback": "Submit Feedback",
+    "submitting": "Submitting...",
+    "thankYou": "Thank You!",
+    "thankYouMessage": "Your feedback is incredibly valuable to us. We'll use it to make our Sudoku game even better!",
+    "submitAnother": "Submit Another Feedback"
+  },
+  "howToPlay": {
+    "title": "How to Play Sudoku",
+    "subtitle": "Master the art of sudoku with our comprehensive guide for beginners and experts alike.",
+    "rules": {
+      "title": "Sudoku Rules",
+      "description": "Understanding the basic rules is essential for solving any sudoku puzzle."
+    },
+    "techniques": {
+      "title": "Solving Techniques",
+      "subtitle": "Learn the fundamental techniques that will help you solve sudoku puzzles efficiently."
+    }
+  },
+  "strategies": {
+    "title": "Sudoku Strategies",
+    "subtitle": "Master advanced solving techniques from beginner to expert level.",
+    "beginner": {
+      "title": "Beginner Strategies",
+      "description": "Start your sudoku journey with these fundamental techniques."
+    },
+    "intermediate": {
+      "title": "Intermediate Strategies",
+      "description": "Take your skills to the next level with these proven techniques."
+    },
+    "advanced": {
+      "title": "Advanced Strategies",
+      "description": "Master expert-level techniques for the most challenging puzzles."
+    }
+  },
+  "articles": {
+    "title": "Sudoku Articles & Guides",
+    "subtitle": "Comprehensive guides, tips, and strategies to improve your sudoku skills.",
+    "categories": {
+      "beginners": "Beginners",
+      "strategies": "Strategies",
+      "advanced": "Advanced",
+      "printable": "Printable",
+      "apps": "Apps",
+      "variants": "Variants"
+    },
+    "readMore": "Read More",
+    "backToArticles": "Back to Articles",
+    "shareArticle": "Share",
+    "printArticle": "Print",
+    "relatedArticles": "Related Articles"
+  },
+  "seo": {
+    "collections": {
+      "title": "Sudoku Puzzle Collections",
+      "subtitle": "Choose from thousands of carefully crafted puzzles across all difficulty levels.",
+      "puzzles": "puzzles",
+      "learnMore": "Learn More",
+      "print": "Print",
+      "easy": {
+        "title": "Easy Sudoku Puzzles",
+        "description": "Perfect for beginners learning the basics of sudoku solving."
+      },
+      "medium": {
+        "title": "Medium Sudoku Puzzles",
+        "description": "Intermediate challenges that build your solving skills."
+      },
+      "hard": {
+        "title": "Hard Sudoku Puzzles",
+        "description": "Advanced puzzles for experienced solvers seeking a challenge."
+      },
+      "expert": {
+        "title": "Expert Sudoku Puzzles",
+        "description": "The ultimate test for sudoku masters and puzzle enthusiasts."
+      }
+    },
+    "features": {
+      "title": "Game Features",
+      "subtitle": "Everything you need for the perfect sudoku experience.",
+      "hints": {
+        "title": "Smart Hints",
+        "description": "Get helpful hints that teach you solving techniques."
+      },
+      "themes": {
+        "title": "Beautiful Themes",
+        "description": "Choose from multiple themes for comfortable playing."
+      },
+      "progress": {
+        "title": "Progress Tracking",
+        "description": "Track your solving times and improvement over time."
+      }
+    }
+  },
+  "footer": {
+    "about": "About",
+    "contact": "Contact",
+    "terms": "Terms",
+    "privacy": "Privacy",
+    "copyright": "© 2023 Sudoku Challenge. All rights reserved."
+  }
+}
