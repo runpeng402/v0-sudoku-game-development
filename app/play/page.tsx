@@ -34,5 +34,5 @@ export const metadata: Metadata = {
 }
 
 export default function PlayPage() {
-  return <SudokuGamePage />
+  return <SudokuGamePage locale="en" />
 }

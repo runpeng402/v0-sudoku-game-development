@@ -20,14 +20,14 @@ export function SEOContent() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          <Link href="/how-to-play">
+          <Link href="/how-to-play-sudoku">
             <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer h-full">
               <CardHeader>
                 <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
                   <BookOpen className="w-6 h-6 text-blue-600" />
                 </div>
-                <CardTitle className="text-xl">How to Play</CardTitle>
-                <CardDescription>Learn the fundamental rules and basic solving techniques</CardDescription>
+                <CardTitle className="text-xl">How to Play Sudoku</CardTitle>
+                <CardDescription>Learn the rules, first steps, examples, and beginner mistakes</CardDescription>
               </CardHeader>
               <CardContent>
                 <Button variant="outline" size="sm" className="w-full">
@@ -74,19 +74,19 @@ export function SEOContent() {
             </Card>
           </Link>
 
-          <Link href="/leaderboard">
+          <Link href="/sudoku-rules">
             <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer h-full">
               <CardHeader>
                 <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center mb-4">
                   <Users className="w-6 h-6 text-yellow-600" />
                 </div>
-                <CardTitle className="text-xl">Leaderboard</CardTitle>
-                <CardDescription>Compete with players worldwide and climb the rankings</CardDescription>
+                <CardTitle className="text-xl">Sudoku Rules</CardTitle>
+                <CardDescription>Understand rows, columns, boxes, and valid puzzle rules</CardDescription>
               </CardHeader>
               <CardContent>
                 <Button variant="outline" size="sm" className="w-full">
                   <ArrowRight className="w-4 h-4 mr-2" />
-                  View Rankings
+                  Read Rules
                 </Button>
               </CardContent>
             </Card>
@@ -132,9 +132,8 @@ export function SEOContent() {
           </p>
 
           <p className="text-gray-700">
-            Start your Sudoku journey today and discover why millions of players choose SudokuStudio for their daily
-            puzzle-solving needs. With new puzzles added regularly and a supportive community of fellow enthusiasts,
-            you'll never run out of challenges to tackle.
+            Start your Sudoku journey today with free puzzles, beginner-friendly guides, printable worksheets, and
+            strategy pages that help you keep improving without leaving SudokuStudio.
           </p>
         </div>
       </div>

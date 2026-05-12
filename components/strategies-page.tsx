@@ -170,7 +170,7 @@ function StrategiesContent() {
 
         {/* Quick Navigation */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
-          <Link href="/how-to-play">
+          <Link href="/how-to-play-sudoku">
             <Button variant="outline" className="w-full h-16 flex flex-col items-center gap-1">
               <BookOpen className="w-5 h-5" />
               <span className="text-sm">How to Play</span>
@@ -516,7 +516,7 @@ function StrategiesContent() {
               </Card>
             </Link>
 
-            <Link href="/how-to-play">
+            <Link href="/how-to-play-sudoku">
               <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow cursor-pointer">
                 <CardContent className="p-6 text-center">
                   <Users className="w-12 h-12 text-purple-600 mx-auto mb-4" />

@@ -18,8 +18,9 @@ import { UserProfile as UserProfileComponent } from "@/components/user-profile"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
 import { CelebrationModal } from "@/components/celebration-modal"
 import Link from "next/link"
+import { localizedPath, type SeoLocale } from "@/lib/seo-locales"
+import { generateSudokuPuzzle, type SudokuDifficulty, type SudokuGrid } from "@/lib/sudoku-generator"
 
-type SudokuGrid = (number | null)[][]
 type CellState = "correct" | "incorrect" | "empty" | "given"
 
 interface SudokuGameState {
@@ -31,110 +32,11 @@ interface SudokuGameState {
   errors: boolean[][]
 }
 
-type HintType = "answer" | "possible" | "technique"
-
-// Sudoku puzzle generator using backtracking
-class SudokuGenerator {
-  private grid: SudokuGrid = Array(9)
-    .fill(null)
-    .map(() => Array(9).fill(null))
-
-  private isValid(grid: SudokuGrid, row: number, col: number, num: number): boolean {
-    // Check row
-    for (let x = 0; x < 9; x++) {
-      if (grid[row][x] === num) return false
-    }
-
-    // Check column
-    for (let x = 0; x < 9; x++) {
-      if (grid[x][col] === num) return false
-    }
-
-    // Check 3x3 box
-    const startRow = row - (row % 3)
-    const startCol = col - (col % 3)
-    for (let i = 0; i < 3; i++) {
-      for (let j = 0; j < 3; j++) {
-        if (grid[i + startRow][j + startCol] === num) return false
-      }
-    }
-
-    return true
-  }
-
-  private solveSudoku(grid: SudokuGrid): boolean {
-    for (let row = 0; row < 9; row++) {
-      for (let col = 0; col < 9; col++) {
-        if (grid[row][col] === null) {
-          for (let num = 1; num <= 9; num++) {
-            if (this.isValid(grid, row, col, num)) {
-              grid[row][col] = num
-              if (this.solveSudoku(grid)) {
-                return true
-              }
-              grid[row][col] = null
-            }
-          }
-          return false
-        }
-      }
-    }
-    return true
-  }
-
-  private shuffleArray<T>(array: T[]): T[] {
-    const shuffled = [...array]
-    for (let i = shuffled.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1))
-      ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
-    }
-    return shuffled
-  }
-
-  generatePuzzle(difficulty: "easy" | "medium" | "hard" = "medium"): { puzzle: SudokuGrid; solution: SudokuGrid } {
-    // Reset grid
-    this.grid = Array(9)
-      .fill(null)
-      .map(() => Array(9).fill(null))
-
-    // Fill diagonal 3x3 boxes first (they don't affect each other)
-    for (let box = 0; box < 9; box += 3) {
-      const nums = this.shuffleArray([1, 2, 3, 4, 5, 6, 7, 8, 9])
-      let numIndex = 0
-      for (let i = 0; i < 3; i++) {
-        for (let j = 0; j < 3; j++) {
-          this.grid[box + i][box + j] = nums[numIndex++]
-        }
-      }
-    }
-
-    // Solve the rest
-    this.solveSudoku(this.grid)
-
-    // Create solution copy
-    const solution: SudokuGrid = this.grid.map((row) => [...row])
-
-    // Remove numbers to create puzzle
-    const cellsToRemove = difficulty === "easy" ? 40 : difficulty === "medium" ? 50 : 60
-    const positions = []
-    for (let i = 0; i < 9; i++) {
-      for (let j = 0; j < 9; j++) {
-        positions.push([i, j])
-      }
-    }
-
-    const shuffledPositions = this.shuffleArray(positions)
-    for (let i = 0; i < cellsToRemove && i < shuffledPositions.length; i++) {
-      const [row, col] = shuffledPositions[i]
-      this.grid[row][col] = null
-    }
-
-    return { puzzle: this.grid.map((row) => [...row]), solution }
-  }
-}
+type HintType = "answer" | "possible" | "error" | "technique"
 
 function SudokuGameContent() {
   const { t, i18n, ready } = useTranslation()
+  const activeLocale: SeoLocale = ready && i18n.language?.startsWith("zh") ? "zh" : ready && i18n.language?.startsWith("es") ? "es" : "en"
 
   const [gameState, setGameState] = useState<SudokuGameState>({
     puzzle: Array(9)
@@ -155,7 +57,7 @@ function SudokuGameContent() {
 
   const [timer, setTimer] = useState(0)
   const [isTimerRunning, setIsTimerRunning] = useState(false)
-  const [difficulty, setDifficulty] = useState<"easy" | "medium" | "hard">("easy")
+  const [difficulty, setDifficulty] = useState<SudokuDifficulty>("easy")
   const [currentTheme, setCurrentTheme] = useState<Theme>(() => getSeasonalTheme())
   const [hintsUsed, setHintsUsed] = useState(0)
   const [teachingMode, setTeachingMode] = useState(false)
@@ -177,7 +79,7 @@ function SudokuGameContent() {
     }
   }, [])
 
-  const checkAuthForDifficulty = (difficulty: "easy" | "medium" | "hard") => {
+  const checkAuthForDifficulty = (difficulty: SudokuDifficulty) => {
     if (difficulty === "easy") return true
 
     if (!authService.canPlayDifficulty(difficulty)) {
@@ -260,8 +162,7 @@ function SudokuGameContent() {
   const generateNewPuzzle = useCallback(() => {
     if (!checkAuthForDifficulty(difficulty)) return
 
-    const generator = new SudokuGenerator()
-    const { puzzle, solution } = generator.generatePuzzle(difficulty)
+    const { puzzle, solution } = generateSudokuPuzzle(difficulty)
     const puzzleId = `puzzle_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
 
     setGameState({
@@ -290,27 +191,7 @@ function SudokuGameContent() {
   // Validate user input
   const validateCell = (row: number, col: number, value: number | null): boolean => {
     if (value === null) return true
-
-    // Check row
-    for (let c = 0; c < 9; c++) {
-      if (c !== col && gameState.userGrid[row][c] === value) return false
-    }
-
-    // Check column
-    for (let r = 0; r < 9; r++) {
-      if (r !== col && gameState.userGrid[r][col] === value) return false
-    }
-
-    // Check 3x3 box
-    const boxRow = Math.floor(row / 3) * 3
-    const boxCol = Math.floor(col / 3) * 3
-    for (let r = boxRow; r < boxRow + 3; r++) {
-      for (let c = boxCol; c < boxCol + 3; c++) {
-        if ((r !== row || c !== col) && gameState.userGrid[r][c] === value) return false
-      }
-    }
-
-    return true
+    return value === gameState.solution[row][col]
   }
 
   // Handle cell input
@@ -325,7 +206,7 @@ function SudokuGameContent() {
     newErrors[row][col] = value !== null && !isCorrect
 
     // Record move if user is authenticated
-    if (currentUser) {
+    if (currentUser && value !== null) {
       authService.recordMove(row, col, value, isCorrect)
     }
 
@@ -420,7 +301,7 @@ function SudokuGameContent() {
 
     // If authentication was required for a specific difficulty, set that difficulty
     if (authRequiredFor === "medium" || authRequiredFor === "hard") {
-      setDifficulty(authRequiredFor as "medium" | "hard")
+      setDifficulty(authRequiredFor as SudokuDifficulty)
       // Generate a new puzzle with the selected difficulty
       setTimeout(() => {
         generateNewPuzzle()
@@ -452,7 +333,7 @@ function SudokuGameContent() {
       <div className="max-w-2xl mx-auto">
         {/* Back to Home Button and User Info */}
         <div className="mb-4 flex justify-between items-center">
-          <Link href="/">
+          <Link href={localizedPath(activeLocale, "/")}>
             <Button variant="outline" className="flex items-center gap-2">
               <ArrowLeft className="w-4 h-4" />
               <Home className="w-4 h-4" />
@@ -483,7 +364,9 @@ function SudokuGameContent() {
           <CardHeader className="text-center">
             <CardTitle className="text-3xl font-bold text-gray-800 flex items-center justify-center gap-2">
               Sudoku Game
-              {themeStyles.decoration && <span className="text-2xl">{themeStyles.decoration.split("").join(" ")}</span>}
+              {"decoration" in themeStyles && themeStyles.decoration && (
+                <span className="text-2xl">{themeStyles.decoration.split("").join(" ")}</span>
+              )}
             </CardTitle>
 
             <div className="flex items-center justify-center gap-4 mt-4">
@@ -732,9 +615,13 @@ function SudokuGameContent() {
   )
 }
 
-export function SudokuGamePage() {
+interface SudokuGamePageProps {
+  locale?: SeoLocale
+}
+
+export function SudokuGamePage({ locale = "en" }: SudokuGamePageProps) {
   return (
-    <I18nProvider>
+    <I18nProvider initialLanguage={locale}>
       <SudokuGameContent />
     </I18nProvider>
   )

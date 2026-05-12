@@ -26,6 +26,10 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://www.sudokustudio.app/leaderboard",
   },
+  robots: {
+    index: false,
+    follow: true,
+  },
 }
 
 export default function LeaderboardPage() {

@@ -26,8 +26,12 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://www.sudokustudio.app/user-center",
   },
+  robots: {
+    index: false,
+    follow: true,
+  },
 }
 
 export default function UserCenterPage() {
-  return <UserCenterPageContent />
+  return <UserCenterPageContent locale="en" />
 }

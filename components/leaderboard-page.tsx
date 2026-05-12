@@ -160,7 +160,7 @@ function LeaderboardContent() {
               <span className="text-sm">Play Now</span>
             </Button>
           </Link>
-          <Link href="/how-to-play">
+          <Link href="/how-to-play-sudoku">
             <Button variant="outline" className="w-full h-16 flex flex-col items-center gap-1">
               <BookOpen className="w-5 h-5" />
               <span className="text-sm">How to Play</span>

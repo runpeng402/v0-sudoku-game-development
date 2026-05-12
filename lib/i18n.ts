@@ -17,9 +17,9 @@ const resources = {
       hero: {
         title: "Start Your Sudoku Challenge Journey Now",
         subtitle:
-          "Join millions of players and experience the best online Sudoku game. Free to start, enjoy anytime, anywhere!",
+          "Play free online Sudoku with easy, medium, hard, and expert puzzles. No download required.",
         description:
-          "Enjoy unlimited free Sudoku puzzles with multiple difficulty levels, smart hint system, and detailed solving steps. Whether you're a beginner learning Sudoku rules or an expert seeking challenges, you'll find suitable puzzles here.",
+          "Enjoy free Sudoku puzzles with multiple difficulty levels, smart hints, printable puzzle options, and beginner-friendly guides for learning the rules.",
         playNow: "Play Now",
         learnHow: "Learn How to Play",
       },
@@ -54,10 +54,10 @@ const resources = {
         },
       },
       stats: {
-        activePlayers: "Active Players",
-        puzzlesSolved: "Puzzles Solved",
-        userRating: "User Rating",
-        available: "Available",
+        activePlayers: "No Download",
+        puzzlesSolved: "Difficulty Levels",
+        userRating: "Smart Hints",
+        available: "Printable Puzzles",
       },
       game: {
         title: "Sudoku Game",
@@ -186,7 +186,7 @@ const resources = {
       cta: {
         title: "Start Your Sudoku Challenge Journey Now",
         description:
-          "Join millions of players and experience the best online Sudoku game. Free to start, enjoy anytime, anywhere!",
+          "Play free online Sudoku, learn the rules, and practice with beginner-friendly hints and printable puzzle options.",
         playNow: "Play Now",
         learnMore: "Learn Strategies",
       },
@@ -207,7 +207,7 @@ const resources = {
         contact: "Contact",
         privacy: "Privacy",
         terms: "Terms",
-        copyright: "© 2024 Sudoku Master. All rights reserved.",
+        copyright: "© 2024 SudokuStudio. All rights reserved.",
       },
       common: {
         loading: "Loading...",
@@ -319,7 +319,7 @@ const resources = {
       },
       hero: {
         title: "立即开始您的数独挑战之旅",
-        subtitle: "加入数百万玩家的行列，体验最好玩的在线数独游戏。免费开始，随时随地享受乐趣！",
+        subtitle: "免费在线练习数独，从简单题到专家题，随时开始，无需下载。",
         description:
           "享受无限免费数独谜题，拥有多种难度级别、智能提示系统和详细解题步骤。无论您是学习数独规则的初学者还是寻求挑战的专家，都能在这里找到合适的谜题。",
         playNow: "立即开始游戏",
@@ -487,7 +487,7 @@ const resources = {
       },
       cta: {
         title: "立即开始您的数独挑战之旅",
-        description: "加入数百万玩家的行列，体验最好玩的在线数独游戏。免费开始，随时随地享受乐趣！",
+        description: "免费在线练习数独，学习规则，并使用提示和可打印题目逐步提升。",
         playNow: "立即开始游戏",
         learnMore: "学习策略",
       },
@@ -618,7 +618,7 @@ const resources = {
       hero: {
         title: "Comienza Tu Desafío de Sudoku Ahora",
         subtitle:
-          "Únete a millones de jugadores y experimenta el mejor juego de Sudoku en línea. ¡Gratis para empezar, disfruta en cualquier momento y lugar!",
+          "Juega Sudoku gratis en línea, desde puzzles fáciles hasta retos expertos, sin descargas.",
         description:
           "Disfruta de rompecabezas de Sudoku gratuitos ilimitados con múltiples niveles de dificultad, sistema de pistas inteligente y pasos de resolución detallados. Ya seas principiante aprendiendo las reglas del Sudoku o un experto buscando desafíos, encontrarás rompecabezas adecuados aquí.",
         playNow: "Jugar Ahora",
@@ -788,7 +788,7 @@ const resources = {
       cta: {
         title: "Comienza Tu Desafío de Sudoku Ahora",
         description:
-          "Únete a millones de jugadores y experimenta el mejor juego de Sudoku en línea. ¡Gratis para empezar, disfruta en cualquier momento y lugar!",
+          "Juega Sudoku gratis en línea, aprende las reglas y practica con pistas y puzzles imprimibles.",
         playNow: "Jugar Ahora",
         learnMore: "Aprender Estrategias",
       },
@@ -809,7 +809,7 @@ const resources = {
         contact: "Contacto",
         privacy: "Privacidad",
         terms: "Términos",
-        copyright: "© 2024 Sudoku Master. Todos los derechos reservados.",
+        copyright: "© 2024 SudokuStudio. Todos los derechos reservados.",
       },
       common: {
         loading: "Cargando...",

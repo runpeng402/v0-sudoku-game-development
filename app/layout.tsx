@@ -7,9 +7,10 @@ import Script from "next/script"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://www.sudokustudio.app"),
   title: "Sudoku Game",
   description: "Play Sudoku online with multiple difficulty levels and helpful features",
-    generator: 'v0.app'
+  generator: "v0.app",
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

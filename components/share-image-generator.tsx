@@ -145,7 +145,7 @@ export function ShareImageGenerator({ user, stats, onClose }: ShareImageGenerato
   }
 
   const shareImage = async () => {
-    if (navigator.share && navigator.canShare) {
+    if (navigator.share && typeof navigator.canShare === "function") {
       try {
         // Convert data URL to blob
         const response = await fetch(imageUrl)

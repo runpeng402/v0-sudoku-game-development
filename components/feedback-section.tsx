@@ -56,13 +56,47 @@ export function FeedbackSection() {
     setIsSubmitting(false)
   }
 
+  const fallbackCopy: Record<string, string> = {
+    "feedback.title": "Help Improve SudokuStudio",
+    "feedback.subtitle": "Tell us what would make the game, guides, and printable puzzles more useful.",
+    "feedback.shareExperience": "Share Your Experience",
+    "feedback.shareDescription": "Your feedback helps us prioritize better puzzles, clearer rules, and faster gameplay.",
+    "feedback.rateExperience": "Rate your experience",
+    "feedback.improvementAreas": "What should we improve?",
+    "feedback.improvements.ui": "Game layout and usability",
+    "feedback.improvements.difficulty": "Difficulty balance",
+    "feedback.improvements.hints": "Hints and explanations",
+    "feedback.improvements.performance": "Speed and performance",
+    "feedback.improvements.mobile": "Mobile experience",
+    "feedback.improvements.features": "More features or puzzle types",
+    "feedback.detailedFeedback": "Detailed feedback",
+    "feedback.feedbackPlaceholder": "Tell us what worked, what was confusing, or what you want next.",
+    "feedback.emailOptional": "Email (optional)",
+    "feedback.emailPlaceholder": "you@example.com",
+    "feedback.emailNote": "Only include your email if you want us to follow up.",
+    "feedback.submitFeedback": "Submit Feedback",
+    "feedback.submitting": "Submitting...",
+    "feedback.thankYou": "Thank you for the feedback",
+    "feedback.thankYouMessage": "Your note helps us make SudokuStudio better.",
+    "feedback.submitAnother": "Submit another response",
+    "feedback.ratingMessage.1": "Thanks. We will work on making it better.",
+    "feedback.ratingMessage.2": "Thanks. Your notes can help us improve.",
+    "feedback.ratingMessage.3": "Thanks for trying SudokuStudio.",
+    "feedback.ratingMessage.4": "Great to hear. Tell us what would make it even better.",
+    "feedback.ratingMessage.5": "Wonderful. Thanks for supporting SudokuStudio.",
+  }
+  const copy = (key: string) => {
+    const translated = t(key)
+    return translated === key ? fallbackCopy[key] || key : translated
+  }
+
   const improvementOptions = [
-    { id: "ui", label: t("feedback.improvements.ui") },
-    { id: "difficulty", label: t("feedback.improvements.difficulty") },
-    { id: "hints", label: t("feedback.improvements.hints") },
-    { id: "performance", label: t("feedback.improvements.performance") },
-    { id: "mobile", label: t("feedback.improvements.mobile") },
-    { id: "features", label: t("feedback.improvements.features") },
+    { id: "ui", label: copy("feedback.improvements.ui") },
+    { id: "difficulty", label: copy("feedback.improvements.difficulty") },
+    { id: "hints", label: copy("feedback.improvements.hints") },
+    { id: "performance", label: copy("feedback.improvements.performance") },
+    { id: "mobile", label: copy("feedback.improvements.mobile") },
+    { id: "features", label: copy("feedback.improvements.features") },
   ]
 
   if (isSubmitted) {
@@ -74,14 +108,14 @@ export function FeedbackSection() {
               <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
                 <Heart className="w-8 h-8 text-green-600" />
               </div>
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">{t("feedback.thankYou")}</h2>
-              <p className="text-xl text-gray-600 mb-6">{t("feedback.thankYouMessage")}</p>
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">{copy("feedback.thankYou")}</h2>
+              <p className="text-xl text-gray-600 mb-6">{copy("feedback.thankYouMessage")}</p>
               <Button
                 onClick={() => setIsSubmitted(false)}
                 variant="outline"
                 className="text-blue-600 border-blue-600 hover:bg-blue-50"
               >
-                {t("feedback.submitAnother")}
+                {copy("feedback.submitAnother")}
               </Button>
             </CardContent>
           </Card>
@@ -94,8 +128,8 @@ export function FeedbackSection() {
     <section className="py-20 px-4 bg-gradient-to-br from-blue-50 to-indigo-50">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">{t("feedback.title")}</h2>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">{t("feedback.subtitle")}</p>
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">{copy("feedback.title")}</h2>
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto">{copy("feedback.subtitle")}</p>
         </div>
 
         <Card className="border-0 shadow-xl bg-white">
@@ -103,14 +137,14 @@ export function FeedbackSection() {
             <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-4">
               <MessageSquare className="w-6 h-6 text-blue-600" />
             </div>
-            <CardTitle className="text-2xl">{t("feedback.shareExperience")}</CardTitle>
-            <CardDescription className="text-lg">{t("feedback.shareDescription")}</CardDescription>
+            <CardTitle className="text-2xl">{copy("feedback.shareExperience")}</CardTitle>
+            <CardDescription className="text-lg">{copy("feedback.shareDescription")}</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-8">
               {/* Rating Section */}
               <div className="space-y-4">
-                <Label className="text-lg font-semibold text-gray-900">{t("feedback.rateExperience")}</Label>
+                <Label className="text-lg font-semibold text-gray-900">{copy("feedback.rateExperience")}</Label>
                 <div className="flex justify-center space-x-2">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <button
@@ -130,13 +164,13 @@ export function FeedbackSection() {
                   ))}
                 </div>
                 {rating > 0 && (
-                  <p className="text-center text-sm text-gray-600">{t(`feedback.ratingMessage.${rating}`)}</p>
+                  <p className="text-center text-sm text-gray-600">{copy(`feedback.ratingMessage.${rating}`)}</p>
                 )}
               </div>
 
               {/* Improvement Areas */}
               <div className="space-y-4">
-                <Label className="text-lg font-semibold text-gray-900">{t("feedback.improvementAreas")}</Label>
+                <Label className="text-lg font-semibold text-gray-900">{copy("feedback.improvementAreas")}</Label>
                 <div className="flex flex-col gap-3">
                   {improvementOptions.map((option) => (
                     <div key={option.id} className="flex items-center space-x-2">
@@ -156,11 +190,11 @@ export function FeedbackSection() {
               {/* Detailed Feedback */}
               <div className="space-y-4">
                 <Label htmlFor="feedback" className="text-lg font-semibold text-gray-900">
-                  {t("feedback.detailedFeedback")}
+                  {copy("feedback.detailedFeedback")}
                 </Label>
                 <Textarea
                   id="feedback"
-                  placeholder={t("feedback.feedbackPlaceholder")}
+                  placeholder={copy("feedback.feedbackPlaceholder")}
                   value={feedback}
                   onChange={(e) => setFeedback(e.target.value)}
                   className="min-h-[120px] resize-none"
@@ -170,16 +204,16 @@ export function FeedbackSection() {
               {/* Email (Optional) */}
               <div className="space-y-4">
                 <Label htmlFor="email" className="text-lg font-semibold text-gray-900">
-                  {t("feedback.emailOptional")}
+                  {copy("feedback.emailOptional")}
                 </Label>
                 <Input
                   id="email"
                   type="email"
-                  placeholder={t("feedback.emailPlaceholder")}
+                  placeholder={copy("feedback.emailPlaceholder")}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
-                <p className="text-sm text-gray-500">{t("feedback.emailNote")}</p>
+                <p className="text-sm text-gray-500">{copy("feedback.emailNote")}</p>
               </div>
 
               {/* Submit Button */}
@@ -193,12 +227,12 @@ export function FeedbackSection() {
                   {isSubmitting ? (
                     <>
                       <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                      {t("feedback.submitting")}
+                      {copy("feedback.submitting")}
                     </>
                   ) : (
                     <>
                       <Send className="w-5 h-5 mr-2" />
-                      {t("feedback.submitFeedback")}
+                      {copy("feedback.submitFeedback")}
                     </>
                   )}
                 </Button>

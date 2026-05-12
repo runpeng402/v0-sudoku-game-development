@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import { StrategiesPageContent } from "@/components/strategies-page"
+import { localizedAlternates } from "@/lib/seo-locales"
 
 export const metadata: Metadata = {
   title: "Sudoku Strategies & Techniques - From Beginner to Expert | Sudoku Studio",
@@ -24,9 +25,7 @@ export const metadata: Metadata = {
     url: "https://www.sudokustudio.app/strategies",
     images: ["/og-strategies.png"],
   },
-  alternates: {
-    canonical: "https://www.sudokustudio.app/strategies",
-  },
+  alternates: localizedAlternates("en", "/strategies"),
 }
 
 export default function StrategiesPage() {

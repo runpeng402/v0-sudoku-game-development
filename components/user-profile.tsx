@@ -6,7 +6,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
 import { LogOut, Settings, User, Award, Clock, Calendar } from "lucide-react"
-import type { UserProfile as UserProfileType } from "@/services/auth-service"
+import type { GameSession, User as AuthUser, UserStats } from "@/services/auth-service"
+
+type UserProfileType = AuthUser & {
+  stats?: Partial<UserStats> & {
+    gamesCompleted?: number
+  }
+  gameSessions?: GameSession[]
+}
 
 interface UserProfileProps {
   user: UserProfileType

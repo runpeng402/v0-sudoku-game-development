@@ -2,8 +2,8 @@
 export const siteConfig = {
   name: "Sudoku Studio",
   description: "Play free sudoku puzzles online with multiple difficulty levels, hints, and solving techniques.",
-  url: "https://sudokustudio.app",
-  ogImage: "https://sudokustudio.app/og-image.png",
+  url: "https://www.sudokustudio.app",
+  ogImage: "https://www.sudokustudio.app/og-image.png",
   links: {
     twitter: "https://twitter.com/sudokustudio",
     github: "https://github.com/sudokustudio",
@@ -33,7 +33,7 @@ export const siteConfig = {
 
 // API配置
 export const apiConfig = {
-  baseUrl: process.env.NODE_ENV === "production" ? "https://sudokustudio.app/api" : "http://localhost:3000/api",
+  baseUrl: process.env.NODE_ENV === "production" ? "https://www.sudokustudio.app/api" : "http://localhost:3000/api",
 }
 
 // 社交媒体分享配置

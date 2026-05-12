@@ -25,9 +25,10 @@ export const useTranslation = () => {
 
 interface I18nProviderProps {
   children: React.ReactNode
+  initialLanguage?: "en" | "zh" | "es"
 }
 
-export function I18nProvider({ children }: I18nProviderProps) {
+export function I18nProvider({ children, initialLanguage = "en" }: I18nProviderProps) {
   const [i18nInstance, setI18nInstance] = useState<I18nInstance | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -39,8 +40,8 @@ export function I18nProvider({ children }: I18nProviderProps) {
         const i18n = await initI18n()
 
         // 确保默认语言是英文
-        if (i18n.language !== "en") {
-          await i18n.changeLanguage("en")
+        if (i18n.language !== initialLanguage) {
+          await i18n.changeLanguage(initialLanguage)
         }
 
         console.log("i18n initialized successfully, language:", i18n.language)
@@ -55,7 +56,7 @@ export function I18nProvider({ children }: I18nProviderProps) {
     }
 
     setupI18n()
-  }, [])
+  }, [initialLanguage])
 
   if (isLoading) {
     return (

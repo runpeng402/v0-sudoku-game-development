@@ -28,7 +28,7 @@ function ArticleDetailContent({ articleId }: ArticleDetailContentProps) {
       date: "2024-01-15",
       content: `
         <h2>What is Sudoku?</h2>
-        <p>Sudoku is a logic-based number puzzle that has captivated millions of people worldwide. The objective is simple: fill a 9×9 grid with digits so that each column, each row, and each of the nine 3×3 subgrids contains all of the digits from 1 to 9.</p>
+        <p>Sudoku is a logic-based number puzzle with a simple objective: fill a 9×9 grid with digits so that each column, each row, and each of the nine 3×3 subgrids contains all of the digits from 1 to 9.</p>
         
         <h2>Basic Rules</h2>
         <p>The rules of Sudoku are straightforward:</p>
@@ -615,7 +615,7 @@ function ArticleDetailContent({ articleId }: ArticleDetailContentProps) {
         <div className="mb-12">
           <h3 className="text-2xl font-bold mb-6">Continue Learning</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Link href="/how-to-play">
+            <Link href="/how-to-play-sudoku">
               <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow cursor-pointer">
                 <CardContent className="p-6 text-center">
                   <BookOpen className="w-12 h-12 text-blue-600 mx-auto mb-4" />

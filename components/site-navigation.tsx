@@ -4,19 +4,21 @@ import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { Menu, Home, BookOpen, HelpCircle, Trophy, FileText, Grid, User } from "lucide-react"
+import { Menu, Home, BookOpen, HelpCircle, FileText, Grid, Printer, User } from "lucide-react"
 import { LanguageSelector } from "@/components/language-selector"
-import { authService, type UserProfile } from "@/services/auth-service"
+import { authService, type User as UserProfile } from "@/services/auth-service"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useEffect } from "react"
+import { localizedPath, type SeoLocale } from "@/lib/seo-locales"
 
 export function SiteNavigation() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const [isOpen, setIsOpen] = useState(false)
   const [currentUser, setCurrentUser] = useState<UserProfile | null>(null)
   const pathname = usePathname()
+  const activeLocale: SeoLocale = i18n.language?.startsWith("zh") ? "zh" : i18n.language?.startsWith("es") ? "es" : "en"
 
   useEffect(() => {
     const user = authService.getCurrentUser()
@@ -26,12 +28,13 @@ export function SiteNavigation() {
   }, [])
 
   const navigationItems = [
-    { href: "/", label: t("nav.home"), icon: Home },
-    { href: "/how-to-play", label: t("nav.howToPlay"), icon: BookOpen },
-    { href: "/strategies", label: t("nav.strategies"), icon: HelpCircle },
+    { href: localizedPath(activeLocale, "/"), label: t("nav.home"), icon: Home },
+    { href: localizedPath(activeLocale, "/how-to-play-sudoku"), label: t("nav.howToPlay"), icon: BookOpen },
+    { href: localizedPath(activeLocale, "/sudoku-rules"), label: activeLocale === "zh" ? "数独规则" : activeLocale === "es" ? "Reglas" : "Rules", icon: HelpCircle },
+    { href: localizedPath(activeLocale, "/printable-sudoku"), label: activeLocale === "zh" ? "可打印数独" : activeLocale === "es" ? "Imprimible" : "Printable", icon: Printer },
+    { href: localizedPath(activeLocale, "/strategies"), label: t("nav.strategies"), icon: HelpCircle },
     { href: "/variants", label: t("nav.variants"), icon: Grid },
     { href: "/articles", label: t("nav.articles"), icon: FileText },
-    { href: "/leaderboard", label: t("nav.leaderboard"), icon: Trophy },
   ]
 
   // Get user initials for avatar
@@ -84,14 +87,14 @@ export function SiteNavigation() {
             {/* User Center Button */}
             <div className="flex items-center">
               {currentUser ? (
-                <Link href="/user-center" className="flex items-center space-x-2 hover:text-blue-600 transition-colors">
+                <Link href={localizedPath(activeLocale, "/user-center")} className="flex items-center space-x-2 hover:text-blue-600 transition-colors">
                   <Avatar className="h-8 w-8 bg-blue-500 text-white">
                     <AvatarFallback className="text-xs font-semibold">{getUserInitials()}</AvatarFallback>
                   </Avatar>
                   <span className="hidden xl:block text-sm text-gray-600">{t("common.profile")}</span>
                 </Link>
               ) : (
-                <Link href="/user-center">
+                <Link href={localizedPath(activeLocale, "/user-center")}>
                   <Button variant="outline" size="sm" className="flex items-center space-x-1 text-sm">
                     <User className="w-4 h-4" />
                     <span className="hidden sm:block">{t("nav.login")}</span>
@@ -118,7 +121,7 @@ export function SiteNavigation() {
                     {/* User Center in Mobile Menu */}
                     {!currentUser && (
                       <Link
-                        href="/user-center"
+                        href={localizedPath(activeLocale, "/user-center")}
                         className="flex items-center space-x-3 text-gray-600 hover:text-blue-600 transition-colors duration-200 p-2 rounded-lg hover:bg-gray-50 w-full text-left"
                         onClick={() => setIsOpen(false)}
                       >

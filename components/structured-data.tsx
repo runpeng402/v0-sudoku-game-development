@@ -15,8 +15,8 @@ export function StructuredData({ type, data }: StructuredDataProps) {
         return {
           "@context": "https://schema.org",
           "@type": "WebSite",
-          name: "Free Sudoku Game Online",
-          alternateName: "Sudoku Master",
+          name: "SudokuStudio",
+          alternateName: "Free Online Sudoku",
           description:
             "Play free sudoku puzzles online with multiple difficulty levels, hints, and solving techniques. Best online sudoku game with printable puzzles.",
           url: baseUrl,
@@ -27,7 +27,7 @@ export function StructuredData({ type, data }: StructuredDataProps) {
           },
           publisher: {
             "@type": "Organization",
-            name: "Sudoku Master",
+            name: "SudokuStudio",
             logo: {
               "@type": "ImageObject",
               url: `${baseUrl}/logo.png`,
@@ -57,13 +57,6 @@ export function StructuredData({ type, data }: StructuredDataProps) {
             priceCurrency: "USD",
             availability: "https://schema.org/InStock",
           },
-          aggregateRating: {
-            "@type": "AggregateRating",
-            ratingValue: "4.8",
-            ratingCount: "12847",
-            bestRating: "5",
-            worstRating: "1",
-          },
           gameItem: [
             {
               "@type": "Thing",
@@ -92,12 +85,12 @@ export function StructuredData({ type, data }: StructuredDataProps) {
           image: data.image || `${baseUrl}/article-default.png`,
           author: {
             "@type": "Organization",
-            name: "Sudoku Master",
+            name: "SudokuStudio",
             url: baseUrl,
           },
           publisher: {
             "@type": "Organization",
-            name: "Sudoku Master",
+            name: "SudokuStudio",
             logo: {
               "@type": "ImageObject",
               url: `${baseUrl}/logo.png`,
@@ -146,22 +139,18 @@ export function StructuredData({ type, data }: StructuredDataProps) {
         return {
           "@context": "https://schema.org",
           "@type": "Organization",
-          name: "Sudoku Master",
-          alternateName: "Free Sudoku Game Online",
+          name: "SudokuStudio",
+          alternateName: "Free Online Sudoku",
           url: baseUrl,
           logo: `${baseUrl}/logo.png`,
           description:
             "The best free online sudoku game platform with multiple difficulty levels, hints, and educational content.",
           foundingDate: "2024",
-          sameAs: [
-            "https://twitter.com/sudokumaster",
-            "https://facebook.com/sudokumaster",
-            "https://instagram.com/sudokumaster",
-          ],
+          sameAs: [siteConfig.links.twitter, siteConfig.links.facebook, siteConfig.links.instagram],
           contactPoint: {
             "@type": "ContactPoint",
             contactType: "Customer Service",
-            email: "support@sudokumaster.com",
+            email: "support@sudokustudio.app",
             availableLanguage: ["English", "Chinese", "Spanish"],
           },
         }

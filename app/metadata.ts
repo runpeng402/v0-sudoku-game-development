@@ -21,19 +21,19 @@ export const defaultMetadata: Metadata = {
     "puzzle game",
     "logic puzzle",
   ],
-  authors: [{ name: "Sudoku Master" }],
-  creator: "Sudoku Master",
-  publisher: "Sudoku Master",
+  authors: [{ name: "SudokuStudio Team" }],
+  creator: "SudokuStudio",
+  publisher: "SudokuStudio",
   formatDetection: {
     email: false,
     address: false,
     telephone: false,
   },
-  metadataBase: new URL("https://your-domain.com"),
+  metadataBase: new URL("https://www.sudokustudio.app"),
   alternates: {
     canonical: "/",
     languages: {
-      "en-US": "/en",
+      "en-US": "/",
       "zh-CN": "/zh",
       "es-ES": "/es",
     },
@@ -41,7 +41,7 @@ export const defaultMetadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://your-domain.com",
+    url: "https://www.sudokustudio.app",
     title: "Free Sudoku Game Online - Play Sudoku Puzzles with Hints & Solutions",
     description: "Play free sudoku puzzles online with multiple difficulty levels, hints, and solving techniques.",
     siteName: "Free Sudoku Game Online",
@@ -59,7 +59,7 @@ export const defaultMetadata: Metadata = {
     title: "Free Sudoku Game Online - Play Sudoku Puzzles with Hints & Solutions",
     description: "Play free sudoku puzzles online with multiple difficulty levels, hints, and solving techniques.",
     images: ["/twitter-image.png"],
-    creator: "@sudokumaster",
+    creator: "@sudokustudio",
   },
   robots: {
     index: true,
