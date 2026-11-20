@@ -11,6 +11,7 @@ const endpoint = "/api/sudoku-training"
 
 export function SudokuTrainingAccess() {
   const [token, setToken] = useState<string | null>(null)
+  const [sessionEmail, setSessionEmail] = useState("")
   const [sessionReady, setSessionReady] = useState(false)
   const [training, setTraining] = useState<TrainingResponse | null>(null)
   const [refresh, setRefresh] = useState(0)
@@ -30,6 +31,7 @@ export function SudokuTrainingAccess() {
     }
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setToken(session?.access_token ?? null)
+      setSessionEmail(session?.user.email ?? "")
       setSessionReady(true)
     })
     return () => subscription.unsubscribe()
@@ -139,11 +141,11 @@ export function SudokuTrainingAccess() {
     <div className="space-y-5">
       {!visible && !loadError && <p role="status">Loading exercises…</p>}
       {loadError && <p role="status">{loadError}</p>}
-      {checkoutReturn === "returned" && visible && (
+      {visible && (
         <p role="status" className="rounded-lg border bg-slate-50 p-4 text-sm">
-          {training.access === "unlocked" && `All ${training.exercises.length} exercises are unlocked.`}
-          {training.access === "signed-out" && <>Sign in with the email you used for checkout to restore your purchase. <a href="#training-purchase" className="underline">Go to sign-in</a></>}
-          {training.access === "locked" && <>Your purchase has not been confirmed yet. <a href="#training-purchase" className="underline">Check access</a></>}
+          {training.access === "unlocked" && <>All {training.exercises.length} exercises are unlocked. Signed in for training as <strong className="break-all">{sessionEmail}</strong>.</>}
+          {training.access === "signed-out" && <>Not signed in for training. Verify the email you used for checkout to restore your purchase. <a href="#training-purchase" className="underline">Go to sign-in</a></>}
+          {training.access === "locked" && <>Signed in for training as <strong className="break-all">{sessionEmail}</strong>. No training purchase confirmed for this account yet. <a href="#training-purchase" className="underline">Check access</a></>}
           {training.access === "free" && `All ${training.exercises.length} exercises are available.`}
         </p>
       )}
@@ -160,7 +162,7 @@ export function SudokuTrainingAccess() {
           {checkoutReturn === "cancelled" && gated && <p role="status">Checkout was cancelled. You can try again whenever you’re ready.</p>}
           {training.access === "signed-out" && supabase && (
             <div className="space-y-3">
-              <p className="text-sm">Use the same verified email to buy or restore your training on another device.</p>
+              <p className="text-sm">Training uses a separate email verification step. Use the email you used for checkout to restore access.</p>
               {codeSent ? (
                 <form key="verify-code" onSubmit={verifyCode} className="max-w-sm space-y-2">
                   <p className="text-sm">Code sent to <strong className="break-all">{email}</strong></p>
