@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 import Link from "next/link"
-import { SudokuTraining } from "@/components/sudoku-training"
+import { SudokuTrainingAccess } from "@/components/sudoku-training-access"
 
 const title = "Sudoku Practice Exercises: Learn 3 Solving Techniques"
 const description =
@@ -22,12 +22,12 @@ export default function SudokuPracticePage() {
         </Link>
         <h1 className="text-balance text-3xl font-bold tracking-tight text-slate-950 sm:text-5xl">Sudoku practice exercises</h1>
         <p className="max-w-2xl leading-7 text-slate-700">
-          Learn three Sudoku solving techniques in 12 free exercises. Each technique has three
-          guided examples and one independent check. Make one deduction per board, then read the reasoning.
+          Learn three Sudoku solving techniques in 12 exercises. The first example for each technique is free to try.
+          The full pack includes three guided examples and one independent check per technique. Make one deduction per board, then read the reasoning.
         </p>
       </header>
 
-      <SudokuTraining />
+      <SudokuTrainingAccess />
 
       <section aria-labelledby="techniques" className="max-w-2xl space-y-4 leading-7 text-slate-700">
         <h2 id="techniques" className="text-2xl font-semibold text-slate-950">Three Sudoku solving techniques to practice</h2>

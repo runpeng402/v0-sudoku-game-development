@@ -4,28 +4,14 @@ import { useRef, useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { SudokuPracticeBoard } from "@/components/sudoku-practice-board"
-import exercises from "@/lib/sudoku-training-exercises.json"
-
-const topics = [
-  { id: "single", name: "Naked singles" },
-  { id: "hidden", name: "Hidden singles" },
-  { id: "locked", name: "Locked candidates" },
-] as const
-
-const lessons = topics.flatMap((topic) =>
-  exercises[topic.id].map((exercise, index) => ({
-    ...exercise,
-    topic,
-    check: index === exercises[topic.id].length - 1,
-  })),
-)
+import type { TrainingExercise } from "@/lib/sudoku-training-types"
 
 function trackTraining(event: string, properties: Record<string, string | number> = {}) {
   const analytics = window as Window & { gtag?: (...args: unknown[]) => void }
   analytics.gtag?.("event", event, properties)
 }
 
-export function SudokuTraining() {
+export function SudokuTraining({ lessons }: { lessons: TrainingExercise[] }) {
   const [index, setIndex] = useState(0)
   const [hint, setHint] = useState(false)
   const [solved, setSolved] = useState(false)
@@ -53,7 +39,7 @@ export function SudokuTraining() {
   }
 
   function advance(next: number) {
-    if (next === lessons.length) trackTraining("sudoku_training_complete")
+    if (next === lessons.length) trackTraining("sudoku_training_complete", { exercise_count: lessons.length })
     if (next === 0) setStarted(false)
     setIndex(next)
     setSolved(false)
@@ -108,7 +94,7 @@ export function SudokuTraining() {
         </div>
       ) : (
         <div className="space-y-4 text-slate-700">
-          <p>You completed 12 exercises on naked singles, hidden singles and locked candidates.</p>
+          <p>You completed {lessons.length} exercises on naked singles, hidden singles and locked candidates.</p>
           <div className="flex flex-wrap gap-2">
             <Button asChild className="h-11"><Link href="/play">Play a full puzzle</Link></Button>
             <Button type="button" variant="outline" className="h-11" onClick={() => advance(0)}>Practice again</Button>
