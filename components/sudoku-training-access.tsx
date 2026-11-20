@@ -15,6 +15,8 @@ export function SudokuTrainingAccess() {
   const [sessionReady, setSessionReady] = useState(false)
   const [training, setTraining] = useState<TrainingResponse | null>(null)
   const [refresh, setRefresh] = useState(0)
+  const [manualRefresh, setManualRefresh] = useState(false)
+  const [refreshMessage, setRefreshMessage] = useState("")
   const [status, setStatus] = useState("")
   const [loadError, setLoadError] = useState("")
   const [sending, setSending] = useState(false)
@@ -52,9 +54,14 @@ export function SudokuTrainingAccess() {
         if (!request.signal.aborted) {
           loadedToken.current = token
           setTraining(data)
+          setRefreshMessage(data.access === "locked"
+            ? "Access checked. No purchase confirmed for this training account yet."
+            : data.access === "signed-out" ? "Access checked. Verify your checkout email to restore access." : `Access checked. All ${data.exercises.length} exercises are available.`)
         }
       } catch (error) {
         if (!request.signal.aborted) setLoadError(error instanceof Error ? error.message : "Training is unavailable.")
+      } finally {
+        if (!request.signal.aborted) setManualRefresh(false)
       }
     })()
     return () => request.abort()
@@ -128,6 +135,11 @@ export function SudokuTrainingAccess() {
   const visible = training && (training.access !== "unlocked" || loadedToken.current === token)
   const gated = visible && (training.access === "signed-out" || training.access === "locked")
   const checkingPurchase = checkoutReturn === "returned" && Boolean(token) && training?.access === "locked" && !loadError
+  const refreshAccess = () => {
+    setManualRefresh(true)
+    setRefreshMessage("")
+    setRefresh((value) => value + 1)
+  }
 
   useEffect(() => {
     if (!checkingPurchase) return
@@ -188,11 +200,12 @@ export function SudokuTrainingAccess() {
             </Button>
           )}
           {token && <Button type="button" variant="ghost" onClick={signOut}>Sign out</Button>}
-          {gated && <Button type="button" variant="outline" onClick={() => setRefresh((value) => value + 1)}>Refresh access</Button>}
+          {gated && <Button type="button" variant="outline" disabled={manualRefresh} onClick={refreshAccess}>{manualRefresh ? "Checking access…" : "Refresh access"}</Button>}
+          {gated && refresh > 0 && <p role="status" className="text-sm">{manualRefresh ? "Checking training access…" : loadError || refreshMessage}</p>}
           <p role="status">{status}</p>
         </section>
       )}
-      {loadError && !gated && <Button type="button" variant="outline" onClick={() => setRefresh((value) => value + 1)}>Refresh access</Button>}
+      {loadError && !gated && <Button type="button" variant="outline" disabled={manualRefresh} onClick={refreshAccess}>{manualRefresh ? "Checking access…" : "Refresh access"}</Button>}
     </div>
   )
 }
