@@ -125,11 +125,28 @@ export function SudokuTrainingAccess() {
 
   const visible = training && (training.access !== "unlocked" || loadedToken.current === token)
   const gated = visible && (training.access === "signed-out" || training.access === "locked")
+  const checkingPurchase = checkoutReturn === "returned" && Boolean(token) && training?.access === "locked" && !loadError
+
+  useEffect(() => {
+    if (!checkingPurchase) return
+    const checks = [2000, 5000, 10000, 20000].map((delay) =>
+      window.setTimeout(() => setRefresh((value) => value + 1), delay),
+    )
+    return () => checks.forEach((check) => window.clearTimeout(check))
+  }, [checkingPurchase, token])
 
   return (
     <div className="space-y-5">
       {!visible && !loadError && <p role="status">Loading exercises…</p>}
       {loadError && <p role="status">{loadError}</p>}
+      {checkoutReturn === "returned" && visible && (
+        <p role="status" className="rounded-lg border bg-slate-50 p-4 text-sm">
+          {training.access === "unlocked" && `All ${training.exercises.length} exercises are unlocked.`}
+          {training.access === "signed-out" && <>Sign in with the email you used for checkout to restore your purchase. <a href="#training-purchase" className="underline">Go to sign-in</a></>}
+          {training.access === "locked" && <>Your purchase has not been confirmed yet. <a href="#training-purchase" className="underline">Check access</a></>}
+          {training.access === "free" && `All ${training.exercises.length} exercises are available.`}
+        </p>
+      )}
       {visible && <SudokuTraining key={training.access === "unlocked" || training.access === "free" ? "full" : "sample"} lessons={training.exercises} />}
       {(gated || (visible && training.access === "unlocked")) && (
         <section aria-labelledby="training-purchase" className="space-y-4 rounded-lg border p-4 sm:p-6">
@@ -137,22 +154,25 @@ export function SudokuTrainingAccess() {
             {gated ? "Unlock all 12 exercises" : "Training pack unlocked"}
           </h2>
           {gated && <p>Try one exercise per technique for free. A one-time purchase adds nine exercises with explanations and independent checks. See the price and currency before paying on Dodo Payments.</p>}
-          {checkoutReturn === "returned" && gated && <p role="status">If you completed payment, it may take a moment to confirm. Refresh access below.</p>}
+          {checkoutReturn === "returned" && training.access === "locked" && (
+            <p>If you completed payment, use Refresh access to check again before placing another order.</p>
+          )}
           {checkoutReturn === "cancelled" && gated && <p role="status">Checkout was cancelled. You can try again whenever you’re ready.</p>}
           {training.access === "signed-out" && supabase && (
             <div className="space-y-3">
               <p className="text-sm">Use the same verified email to buy or restore your training on another device.</p>
               {codeSent ? (
-                <form onSubmit={verifyCode} className="max-w-sm space-y-2">
+                <form key="verify-code" onSubmit={verifyCode} className="max-w-sm space-y-2">
+                  <p className="text-sm">Code sent to <strong className="break-all">{email}</strong></p>
                   <label htmlFor="training-code" className="block text-sm font-medium">Email sign-in code</label>
-                  <Input id="training-code" name="code" type="text" inputMode="numeric" autoComplete="one-time-code" required />
+                  <Input id="training-code" name="code" type="text" inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]+" required />
                   <div className="flex flex-wrap gap-2">
                     <Button type="submit" disabled={sending}>Verify code</Button>
                     <Button type="button" variant="outline" disabled={sending} onClick={() => { setCodeSent(false); setStatus("") }}>Change email or resend</Button>
                   </div>
                 </form>
               ) : (
-                <form onSubmit={sendCode} className="max-w-sm space-y-2">
+                <form key="request-code" onSubmit={sendCode} className="max-w-sm space-y-2">
                   <label htmlFor="training-email" className="block text-sm font-medium">Email address</label>
                   <Input id="training-email" name="email" type="email" autoComplete="email" spellCheck={false} defaultValue={email} required />
                   <Button type="submit" disabled={sending}>Send sign-in code</Button>
@@ -166,10 +186,11 @@ export function SudokuTrainingAccess() {
             </Button>
           )}
           {token && <Button type="button" variant="ghost" onClick={signOut}>Sign out</Button>}
+          {gated && <Button type="button" variant="outline" onClick={() => setRefresh((value) => value + 1)}>Refresh access</Button>}
           <p role="status">{status}</p>
         </section>
       )}
-      {(loadError || gated) && <Button type="button" variant="outline" onClick={() => setRefresh((value) => value + 1)}>Refresh access</Button>}
+      {loadError && !gated && <Button type="button" variant="outline" onClick={() => setRefresh((value) => value + 1)}>Refresh access</Button>}
     </div>
   )
 }
