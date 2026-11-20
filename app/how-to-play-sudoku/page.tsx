@@ -1,30 +1,19 @@
 import type { Metadata } from "next"
 import Link from "next/link"
-import { BookOpen, CheckCircle, HelpCircle, Play, Search } from "lucide-react"
+import { BookOpen, CheckCircle, HelpCircle, Play } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { SudokuBeginnerLesson } from "@/components/sudoku-beginner-lesson"
 import { localizedAlternates } from "@/lib/seo-locales"
 
 const url = "https://www.sudokustudio.app/how-to-play-sudoku"
 
 export const metadata: Metadata = {
-  title: "How to Play Sudoku: Easy Step-by-Step Guide for Beginners",
-  description:
-    "Learn how to play Sudoku with simple rules, step-by-step examples, beginner tips, Sudoku instructions, and free puzzles you can practice instantly.",
-  keywords: [
-    "how to play sudoku",
-    "sudoku how to play",
-    "how do you play sudoku",
-    "how to play sudoku for beginners",
-    "how to play sudoku game",
-    "sudoku instructions",
-    "how does sudoku work",
-    "how to play sudoku step by step",
-  ],
+  title: "How to Play Sudoku for Beginners: Step-by-Step Guide",
+  description: "Learn how to play Sudoku with two interactive moves, step-by-step hints, and simple examples of the rules for rows, columns and boxes.",
   alternates: localizedAlternates("en", "/how-to-play-sudoku"),
   openGraph: {
-    title: "How to Play Sudoku: Easy Step-by-Step Guide for Beginners",
-    description:
-      "A beginner-friendly Sudoku guide with rules, examples, common mistakes, and practice puzzles.",
+    title: "How to Play Sudoku for Beginners: Step-by-Step Guide",
+    description: "Learn how to play Sudoku with two interactive moves, step-by-step hints, and simple examples of the rules for rows, columns and boxes.",
     url,
     type: "article",
   },
@@ -56,7 +45,7 @@ const howToSchema = {
     {
       "@type": "HowToStep",
       name: "Use a step-by-step example",
-      text: "In a nearly complete row, list missing numbers and eliminate choices that already appear in the same column or box.",
+      text: "Find the only number that fits in a marked cell by checking its row, column, and box.",
     },
     {
       "@type": "HowToStep",
@@ -137,18 +126,6 @@ const faqSchema = {
   ],
 }
 
-const exampleGrid = [
-  1, 2, 4, 5, 7, 8, 9, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 6, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0,
-]
-
 export default function HowToPlaySudokuPage() {
   return (
     <main className="min-h-screen bg-white">
@@ -167,18 +144,19 @@ export default function HowToPlaySudokuPage() {
             Back to SudokuStudio
           </Link>
           <h1 className="text-4xl font-bold tracking-tight text-gray-950 md:text-5xl">
-            How to Play Sudoku: A Beginner's Guide
+            How to Play Sudoku for Beginners
           </h1>
           <p className="mt-6 text-lg leading-8 text-gray-700">
             Sudoku is a logic puzzle played on a 9x9 grid. The goal is to fill every row,
             column, and 3x3 box with the numbers 1 to 9, without repeating any number.
+            Try the step-by-step lesson to find your first two numbers.
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Button asChild size="lg">
-              <Link href="/play">
+              <a href="#example">
                 <Play className="mr-2 h-5 w-5" />
-                Practice Sudoku Now
-              </Link>
+                Try the free lesson
+              </a>
             </Button>
             <Button asChild variant="outline" size="lg">
               <Link href="/sudoku-rules">Read the Rules</Link>
@@ -195,20 +173,16 @@ export default function HowToPlaySudokuPage() {
               <a className="block text-gray-600 hover:text-blue-700" href="#rules">Basic rules</a>
               <a className="block text-gray-600 hover:text-blue-700" href="#start">How to start</a>
               <a className="block text-gray-600 hover:text-blue-700" href="#example">Step-by-step example</a>
-              <a className="block text-gray-600 hover:text-blue-700" href="#visual-example">9x9 visual example</a>
               <a className="block text-gray-600 hover:text-blue-700" href="#mistakes">Beginner mistakes</a>
               <a className="block text-gray-600 hover:text-blue-700" href="#faq">FAQ</a>
             </nav>
           </aside>
 
-          <article className="prose prose-slate max-w-none">
+          <article className="space-y-4 leading-7 text-slate-700 [&_h2]:mt-8 [&_h2]:text-2xl [&_h2]:font-semibold [&_h2]:text-slate-950 [&_h3]:font-semibold [&_h3]:text-slate-950 [&_ol]:list-decimal [&_ol]:pl-6 [&_ul]:list-disc [&_ul]:pl-6">
             <h2>How do you play Sudoku?</h2>
             <p>
-              If you are searching for <strong>sudoku how to play</strong>, the short
-              answer is this: choose an empty cell and place a number from 1 to 9 only
-              when that number does not repeat in the same row, column, or 3x3 box. A
-              Sudoku game is solved when every empty cell is filled and all three checks
-              are still true.
+              Start with an empty cell. Check which numbers already appear in its row,
+              column and 3×3 box. If those areas rule out all but one number, fill it in.
             </p>
 
             <h2 id="rules">The 3 basic rules of Sudoku</h2>
@@ -258,63 +232,22 @@ export default function HowToPlaySudokuPage() {
               <li>Use hints to learn the reason behind a move, not just the answer.</li>
             </ul>
 
-            <h2 id="example">Step-by-step example for beginners</h2>
-            <p>
-              Imagine a row already has 1, 2, 4, 5, 7, 8, and 9. The only missing numbers
-              are 3 and 6. If one empty cell is in a column that already contains 6, that
-              cell cannot be 6. Therefore it must be 3.
-            </p>
-            <div className="not-prose my-8 rounded-lg border bg-blue-50 p-6">
-              <div className="mb-4 flex items-center gap-3">
-                <Search className="h-6 w-6 text-blue-700" />
-                <p className="font-semibold text-blue-950">Beginner logic pattern</p>
-              </div>
-              <p className="text-blue-950">
-                Missing numbers in the row: 3 and 6. The column blocks 6. The answer is 3.
+            <section aria-labelledby="example" className="mt-10">
+              <h2 id="example" className="scroll-mt-6 text-2xl font-semibold text-slate-950">Find your first two numbers</h2>
+              <p className="mt-2 leading-7 text-slate-700">
+                Try two moves on a real Sudoku board. For each marked square, rule out
+                numbers already in the same row, column or box. When only one number
+                remains, you have found a single candidate.
               </p>
-            </div>
-
-            <h2 id="visual-example">9x9 step-by-step Sudoku example</h2>
-            <p>
-              This small 9x9 example shows how a beginner move works. The first row is
-              missing only 3 and 6. The highlighted empty cell is in a column that already
-              contains 6, so 6 is blocked. That leaves 3 as the only logical answer.
-            </p>
-            <div className="not-prose my-8 grid gap-6 rounded-lg border bg-white p-5 md:grid-cols-[minmax(0,320px)_1fr] md:items-center">
-              <div className="grid grid-cols-9 border-2 border-gray-900 bg-gray-900">
-                {exampleGrid.map((value, index) => {
-                  const row = Math.floor(index / 9)
-                  const col = index % 9
-                  const isTarget = index === 7
-                  const isColumnClue = index === 16
-                  const backgroundClass = isTarget ? "bg-blue-100" : isColumnClue ? "bg-amber-100" : "bg-white"
-                  const textClass = isTarget ? "text-blue-800" : isColumnClue ? "text-amber-800" : "text-gray-900"
-                  return (
-                    <div
-                      key={index}
-                      className={`flex aspect-square items-center justify-center text-sm font-semibold ${backgroundClass} ${textClass} ${
-                        isTarget ? "ring-2 ring-inset ring-blue-500" : ""
-                      } ${
-                        col === 2 || col === 5 ? "border-r-2 border-r-gray-900" : "border-r border-r-gray-200"
-                      } ${row === 2 || row === 5 ? "border-b-2 border-b-gray-900" : "border-b border-b-gray-200"}`}
-                    >
-                      {isTarget ? "?" : value || ""}
-                    </div>
-                  )
-                })}
-              </div>
-              <ol className="space-y-3 text-sm leading-6 text-gray-700">
-                <li>
-                  <strong>Step 1:</strong> In the first row, the missing numbers are 3 and 6.
-                </li>
-                <li>
-                  <strong>Step 2:</strong> The highlighted cell shares a column with 6, so it cannot be 6.
-                </li>
-                <li>
-                  <strong>Step 3:</strong> The only remaining number is 3, so this cell should be 3.
-                </li>
-              </ol>
-            </div>
+              <SudokuBeginnerLesson />
+              <p>
+                Ready for more? Try the{" "}
+                <Link href="/sudoku-practice" className="font-medium text-blue-700 underline underline-offset-4">
+                  Sudoku practice exercises
+                </Link>{" "}
+                on naked singles, hidden singles and locked candidates.
+              </p>
+            </section>
 
             <h2 id="mistakes">Common beginner mistakes</h2>
             <ul>
@@ -323,11 +256,6 @@ export default function HowToPlaySudokuPage() {
               <li>Changing given numbers that are part of the original puzzle.</li>
               <li>Moving too fast and missing an obvious single.</li>
             </ul>
-
-            <p>
-              Sudoku is sometimes misspelled as sudoko, sodoku, or suduko, but the rules
-              are the same: fill the grid with logical deductions.
-            </p>
 
             <h2>Sudoku instructions in one minute</h2>
             <p>

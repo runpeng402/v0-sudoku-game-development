@@ -68,6 +68,7 @@ export function HintSystem({
 
   const hintsRemaining = maxHints - hintsUsed
   const canUseHint = hintsRemaining > 0
+  const hasIncorrectMoves = errors.some((row) => row.some(Boolean))
 
   // 计算可能的数字
   const getPossibleNumbers = (row: number, col: number): number[] => {
@@ -326,7 +327,9 @@ export function HintSystem({
         hintData = { cell: [row, col], hasError }
         hintMessage = hasError
           ? `${t("hints.hintTypes.error")}: 此位置有错误`
-          : `${t("hints.hintTypes.error")}: 此位置正确`
+          : userGrid[row][col] === null
+            ? t("hints.emptySquare")
+            : t("hints.correctSquare")
         break
 
       case "technique":
@@ -349,6 +352,10 @@ export function HintSystem({
   // 自动求解下一步
   const handleNextStep = () => {
     if (!canUseHint) return
+    if (hasIncorrectMoves) {
+      setLastHint(t("hints.correctErrorsFirst"))
+      return
+    }
 
     // 寻找最简单的下一步
     for (let row = 0; row < 9; row++) {

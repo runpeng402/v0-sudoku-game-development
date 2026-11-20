@@ -4,29 +4,11 @@ import { VariantsPageContent } from "@/components/variants-page"
 export const metadata: Metadata = {
   title: "Sudoku Variants & Printable Puzzles - Free Killer, Samurai, Jigsaw Sudoku",
   description:
-    "Explore exciting sudoku variants including killer sudoku online free, samurai sudoku puzzles printable, jigsaw sudoku puzzles free, diagonal sudoku, and 16x16 sudoku puzzles. Download printable PDF puzzles for all skill levels.",
-  keywords: [
-    "sudoku variants",
-    "killer sudoku online free",
-    "samurai sudoku puzzles printable",
-    "jigsaw sudoku puzzles free",
-    "diagonal sudoku puzzles printable",
-    "hyper sudoku online",
-    "16x16 sudoku puzzles online",
-    "sudoku printable PDF",
-    "free sudoku variants",
-    "sudoku puzzle generator",
-    "printable sudoku puzzles",
-    "sudoku for seniors printable",
-    "sudoku for classroom use",
-    "sudoku printable for teachers",
-    "custom sudoku puzzles",
-    "sudoku variants download",
-  ],
+    "Compare the rules of Killer, Samurai, Jigsaw, Diagonal, Hyper and 16×16 Sudoku.",
   openGraph: {
     title: "Free Sudoku Variants & Printable Puzzles - Killer, Samurai, Jigsaw",
     description:
-      "Download free printable sudoku variants including killer sudoku, samurai sudoku, jigsaw sudoku, and more. Perfect for all skill levels with PDF downloads available.",
+      "Compare Sudoku variants and learn the rules that distinguish them from classic Sudoku.",
     url: "https://www.sudokustudio.app/variants",
     type: "website",
     images: [
@@ -42,7 +24,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Free Sudoku Variants & Printable Puzzles",
     description:
-      "Download free printable sudoku variants including killer sudoku, samurai sudoku, jigsaw sudoku, and more.",
+      "Learn how the rules differ across popular Sudoku variants.",
     images: ["/twitter-variants.png"],
   },
   alternates: {

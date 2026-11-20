@@ -41,11 +41,11 @@ export function localizedAlternates(locale: SeoLocale, path = "/"): Metadata["al
 
 export const homeCopy = {
   en: {
-    title: "Free Online Sudoku: Play Easy to Expert Puzzles with Hints | SudokuStudio",
+    title: "Free Online Sudoku: Play Easy to Hard Puzzles with Hints | SudokuStudio",
     description:
-      "Play free online Sudoku puzzles with easy, medium, hard, and expert levels. No download required, with smart hints and beginner-friendly guides.",
+      "Play free online Sudoku puzzles with easy, medium, and hard levels. No download required, with smart hints and beginner-friendly guides.",
     h1: "Free Online Sudoku",
-    subtitle: "Play easy, medium, hard, and expert Sudoku puzzles with hints, notes, and beginner-friendly guides.",
+    subtitle: "Play easy, medium, and hard Sudoku puzzles with hints and beginner-friendly guides.",
     intro:
       "SudokuStudio gives you a fast, clean place to play Sudoku online, learn the rules, and practice with printable puzzles.",
     play: "Play Sudoku",
@@ -54,7 +54,7 @@ export const homeCopy = {
     printable: "Printable Sudoku",
     featuresTitle: "Everything you need to play and learn Sudoku",
     features: [
-      ["Four difficulty levels", "Start with easy puzzles and move toward hard and expert challenges."],
+      ["Three difficulty levels", "Play easy puzzles as a guest. Sign in to play medium and hard puzzles."],
       ["Smart hints", "Use hints when you are stuck without losing the logic of the puzzle."],
       ["Beginner guides", "Learn the rules, first solving steps, and common mistakes."],
       ["Printable puzzles", "Use printable Sudoku sheets for offline practice at home or in class."],
@@ -69,10 +69,10 @@ export const homeCopy = {
     ],
   },
   zh: {
-    title: "免费在线数独：简单到专家难度，带提示和入门教程 | SudokuStudio",
-    description: "在线玩免费数独，包含简单、中等、困难和专家难度。无需下载，支持提示、笔记、规则教程和可打印数独。",
+    title: "免费在线数独：简单到困难难度，带提示和入门教程 | SudokuStudio",
+    description: "在线玩免费数独，包含简单、中等和困难难度。无需下载，支持提示、规则教程和可打印数独。",
     h1: "免费在线数独",
-    subtitle: "在线游玩简单、中等、困难和专家难度数独，支持提示、笔记和入门教程。",
+    subtitle: "在线游玩简单、中等和困难难度数独，支持提示和入门教程。",
     intro: "SudokuStudio 提供清爽的在线数独体验，帮助你练习解题、学习规则，并使用可打印题目离线练习。",
     play: "开始数独",
     learn: "数独怎么玩",
@@ -80,7 +80,7 @@ export const homeCopy = {
     printable: "可打印数独",
     featuresTitle: "玩数独和学习数独所需的核心功能",
     features: [
-      ["四种难度", "从简单题开始，逐步挑战困难和专家级数独。"],
+      ["三种难度", "游客可玩简单难度。登录后可玩中等和困难难度。"],
       ["智能提示", "卡住时获得提示，同时保持逻辑推理的乐趣。"],
       ["入门教程", "学习基础规则、第一步解法和常见错误。"],
       ["可打印题目", "使用可打印数独题，在家中、课堂或离线场景练习。"],
@@ -95,11 +95,11 @@ export const homeCopy = {
     ],
   },
   es: {
-    title: "Sudoku gratis en línea: juega fácil a experto con pistas | SudokuStudio",
+    title: "Sudoku gratis en línea: juega fácil a difícil con pistas | SudokuStudio",
     description:
-      "Juega Sudoku gratis en línea con niveles fácil, medio, difícil y experto. Sin descargas, con pistas, notas, reglas y puzzles imprimibles.",
+      "Juega Sudoku gratis en línea con niveles fácil, medio y difícil. Sin descargas, con pistas, reglas y puzzles imprimibles.",
     h1: "Sudoku gratis en línea",
-    subtitle: "Juega puzzles de Sudoku fáciles, medios, difíciles y expertos con pistas, notas y guías para principiantes.",
+    subtitle: "Juega puzzles de Sudoku fáciles, medios y difíciles con pistas y guías para principiantes.",
     intro:
       "SudokuStudio ofrece una forma rápida y limpia de jugar Sudoku, aprender las reglas y practicar con puzzles imprimibles.",
     play: "Jugar Sudoku",
@@ -108,7 +108,7 @@ export const homeCopy = {
     printable: "Sudoku imprimible",
     featuresTitle: "Todo lo necesario para jugar y aprender Sudoku",
     features: [
-      ["Cuatro niveles", "Empieza con puzzles fáciles y avanza hacia retos difíciles y expertos."],
+      ["Tres niveles", "Juega el nivel fácil como invitado. Inicia sesión para jugar los niveles medio y difícil."],
       ["Pistas útiles", "Usa pistas cuando te bloquees sin perder la lógica del puzzle."],
       ["Guías para empezar", "Aprende reglas, primeros pasos y errores comunes."],
       ["Puzzles imprimibles", "Practica sin conexión con hojas de Sudoku para casa o clase."],

@@ -80,6 +80,9 @@ const resources = {
         },
       },
       hints: {
+        correctErrorsFirst: "Correct or clear the incorrect entries before asking for a logic hint.",
+        emptySquare: "This square is empty.",
+        correctSquare: "This square is correct.",
         teachingMode: "Teaching Mode",
         getHint: "Get Hint",
         showPossible: "Show Possible",
@@ -382,6 +385,9 @@ const resources = {
         },
       },
       hints: {
+        correctErrorsFirst: "请先修正或清除错误数字，再查看逻辑提示。",
+        emptySquare: "这一格还没有填写。",
+        correctSquare: "这一格填写正确。",
         teachingMode: "教学模式",
         getHint: "获取提示",
         showPossible: "显示可能",
@@ -681,6 +687,9 @@ const resources = {
         },
       },
       hints: {
+        correctErrorsFirst: "Corrige o borra los números incorrectos antes de pedir una pista lógica.",
+        emptySquare: "Esta casilla está vacía.",
+        correctSquare: "Esta casilla es correcta.",
         teachingMode: "Modo Enseñanza",
         getHint: "Obtener Pista",
         showPossible: "Mostrar Posibles",

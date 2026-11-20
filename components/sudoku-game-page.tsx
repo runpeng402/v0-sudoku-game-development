@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useRef, type KeyboardEvent } from "react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -68,6 +68,18 @@ function SudokuGameContent() {
   const [authRequiredFor, setAuthRequiredFor] = useState<string>("")
   const [showUserProfile, setShowUserProfile] = useState(false)
   const [showCelebration, setShowCelebration] = useState(false)
+  const roundId = useRef("")
+  const [hintRevision, setHintRevision] = useState(0)
+  const highlightTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+  const candidateTimers = useRef(new Map<string, ReturnType<typeof setTimeout>>())
+
+  function clearHintTimers() {
+    clearTimeout(highlightTimer.current)
+    candidateTimers.current.forEach((timer) => clearTimeout(timer))
+    candidateTimers.current.clear()
+  }
+
+  useEffect(() => clearHintTimers, [])
 
   const isRTL = ready && i18n && ["ar", "he"].includes(i18n.language)
   const themeStyles = getThemeStyles(currentTheme)
@@ -125,7 +137,8 @@ function SudokuGameContent() {
           const [row, col] = data.cell
           handleCellInput(row, col, data.answer)
           setHintHighlights([data.cell])
-          setTimeout(() => setHintHighlights([]), 3000)
+          clearTimeout(highlightTimer.current)
+          highlightTimer.current = setTimeout(() => setHintHighlights([]), 3000)
         }
         break
 
@@ -133,37 +146,42 @@ function SudokuGameContent() {
         if (data.cell && data.possible) {
           const key = `${data.cell[0]}-${data.cell[1]}`
           setPossibleNumbers((prev) => ({ ...prev, [key]: data.possible }))
-          setTimeout(() => {
+          clearTimeout(candidateTimers.current.get(key))
+          const timeout = setTimeout(() => {
+            candidateTimers.current.delete(key)
             setPossibleNumbers((prev) => {
               const newState = { ...prev }
               delete newState[key]
               return newState
             })
           }, 10000)
+          candidateTimers.current.set(key, timeout)
         }
         break
 
       case "technique":
         if (data.highlightCells) {
           setHintHighlights(data.highlightCells)
-          setTimeout(() => setHintHighlights([]), 5000)
+          clearTimeout(highlightTimer.current)
+          highlightTimer.current = setTimeout(() => setHintHighlights([]), 5000)
         }
         if (data.autoFill && data.cell && data.value) {
           const [row, col] = data.cell
-          setTimeout(() => {
-            handleCellInput(row, col, data.value)
-          }, 1000)
+          if (data.value === gameState.solution[row][col]) handleCellInput(row, col, data.value)
         }
         break
     }
   }
 
   // Generate new puzzle
-  const generateNewPuzzle = useCallback(() => {
-    if (!checkAuthForDifficulty(difficulty)) return
+  function generateNewPuzzle(nextDifficulty = difficulty, player = currentUser) {
+    if (!checkAuthForDifficulty(nextDifficulty)) return
 
-    const { puzzle, solution } = generateSudokuPuzzle(difficulty)
-    const puzzleId = `puzzle_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+    const { puzzle, solution } = generateSudokuPuzzle(nextDifficulty)
+    roundId.current = `puzzle_${Date.now()}_${Math.random().toString(36).slice(2)}`
+    clearHintTimers()
+    setShowCelebration(false)
+    setDifficulty(nextDifficulty)
 
     setGameState({
       puzzle,
@@ -183,10 +201,10 @@ function SudokuGameContent() {
     setPossibleNumbers({})
 
     // Start game session if user is authenticated
-    if (currentUser) {
-      authService.startGameSession(puzzleId, difficulty)
+    if (player) {
+      authService.startGameSession(roundId.current, nextDifficulty)
     }
-  }, [difficulty, currentUser])
+  }
 
   // Validate user input
   const validateCell = (row: number, col: number, value: number | null): boolean => {
@@ -196,7 +214,7 @@ function SudokuGameContent() {
 
   // Handle cell input
   const handleCellInput = (row: number, col: number, value: number | null) => {
-    if (gameState.puzzle[row][col] !== null) return // Can't modify given cells
+    if (gameState.isComplete || gameState.puzzle[row][col] !== null) return
 
     const newUserGrid = gameState.userGrid.map((r) => [...r])
     const newErrors = gameState.errors.map((r) => [...r])
@@ -217,9 +235,7 @@ function SudokuGameContent() {
 
     if (isComplete) {
       setIsTimerRunning(false)
-      setTimeout(() => {
-        setShowCelebration(true)
-      }, 500)
+      setShowCelebration(true)
       // End game session
       if (currentUser) {
         authService.completeGameSession(true)
@@ -242,34 +258,40 @@ function SudokuGameContent() {
     }))
   }
 
-  // Handle keyboard input
-  useEffect(() => {
-    const handleKeyPress = (e: KeyboardEvent) => {
-      if (!gameState.selectedCell) return
+  function handleBoardKeyDown(event: KeyboardEvent<HTMLDivElement>) {
+    if (event.altKey || event.ctrlKey || event.metaKey || gameState.isComplete) return
+    const cell = (event.target as HTMLElement).closest<HTMLButtonElement>("button[data-cell]")
+    if (!cell?.dataset.cell) return
 
-      const [row, col] = gameState.selectedCell
-
-      if (e.key >= "1" && e.key <= "9") {
-        handleCellInput(row, col, Number.parseInt(e.key))
-      } else if (e.key === "Backspace" || e.key === "Delete" || e.key === "0") {
-        handleCellInput(row, col, null)
-      } else if (e.key === "ArrowUp" && row > 0) {
-        setGameState((prev) => ({ ...prev, selectedCell: [row - 1, col] }))
-      } else if (e.key === "ArrowDown" && row < 8) {
-        setGameState((prev) => ({ ...prev, selectedCell: [row + 1, col] }))
-      } else if (e.key === "ArrowLeft" && col > 0) {
-        setGameState((prev) => ({ ...prev, selectedCell: [row, col - 1] }))
-      } else if (e.key === "ArrowRight" && col < 8) {
-        setGameState((prev) => ({ ...prev, selectedCell: [row, col + 1] }))
-      }
+    const [row, col] = cell.dataset.cell.split("-").map(Number)
+    if (/^[1-9]$/.test(event.key)) {
+      event.preventDefault()
+      handleCellInput(row, col, Number(event.key))
+      return
+    }
+    if (["Backspace", "Delete", "0"].includes(event.key)) {
+      event.preventDefault()
+      handleCellInput(row, col, null)
+      return
     }
 
-    window.addEventListener("keydown", handleKeyPress)
-    return () => window.removeEventListener("keydown", handleKeyPress)
-  }, [gameState.selectedCell])
+    const offsets: Record<string, [number, number]> = {
+      ArrowUp: [-1, 0], ArrowDown: [1, 0], ArrowLeft: [0, -1], ArrowRight: [0, 1],
+    }
+    const offset = offsets[event.key]
+    if (!offset) return
+    event.preventDefault()
+    event.currentTarget.querySelector<HTMLButtonElement>(
+      `[data-cell="${row + offset[0]}-${col + offset[1]}"]`,
+    )?.focus()
+  }
 
   // Reset puzzle
   const resetPuzzle = () => {
+    clearHintTimers()
+    setShowCelebration(false)
+    setHintRevision((revision) => revision + 1)
+    if (currentUser && roundId.current) authService.startGameSession(roundId.current, difficulty)
     setGameState((prev) => ({
       ...prev,
       userGrid: prev.puzzle.map((row) => [...row]),
@@ -301,17 +323,13 @@ function SudokuGameContent() {
 
     // If authentication was required for a specific difficulty, set that difficulty
     if (authRequiredFor === "medium" || authRequiredFor === "hard") {
-      setDifficulty(authRequiredFor as SudokuDifficulty)
-      // Generate a new puzzle with the selected difficulty
-      setTimeout(() => {
-        generateNewPuzzle()
-      }, 100)
+      generateNewPuzzle(authRequiredFor, user)
     }
   }
 
   // Generate initial puzzle on component mount
   useEffect(() => {
-    generateNewPuzzle()
+    generateNewPuzzle("easy", authService.getCurrentUser())
   }, [])
 
   if (!ready) {
@@ -390,7 +408,7 @@ function SudokuGameContent() {
               <Button
                 variant={difficulty === "easy" ? "default" : "outline"}
                 size="sm"
-                onClick={() => setDifficulty("easy")}
+                onClick={() => { if (difficulty !== "easy") generateNewPuzzle("easy") }}
                 className={difficulty === "easy" ? themeStyles.primary : ""}
               >
                 {t("game.difficulty.easy")}
@@ -399,9 +417,7 @@ function SudokuGameContent() {
                 variant={difficulty === "medium" ? "default" : "outline"}
                 size="sm"
                 onClick={() => {
-                  if (checkAuthForDifficulty("medium")) {
-                    setDifficulty("medium")
-                  }
+                  if (difficulty !== "medium") generateNewPuzzle("medium")
                 }}
                 className={difficulty === "medium" ? themeStyles.primary : ""}
               >
@@ -412,9 +428,7 @@ function SudokuGameContent() {
                 variant={difficulty === "hard" ? "default" : "outline"}
                 size="sm"
                 onClick={() => {
-                  if (checkAuthForDifficulty("hard")) {
-                    setDifficulty("hard")
-                  }
+                  if (difficulty !== "hard") generateNewPuzzle("hard")
                 }}
                 className={difficulty === "hard" ? themeStyles.primary : ""}
               >
@@ -424,7 +438,7 @@ function SudokuGameContent() {
             </div>
 
             <div className="flex flex-wrap gap-2 justify-center mb-6">
-              <Button onClick={generateNewPuzzle} className={`flex items-center gap-2 ${themeStyles.primary}`}>
+              <Button onClick={() => generateNewPuzzle()} className={`flex items-center gap-2 ${themeStyles.primary}`}>
                 <Shuffle className="w-4 h-4" />
                 {t("game.newGame")}
               </Button>
@@ -455,6 +469,7 @@ function SudokuGameContent() {
             {(teachingMode || hintsUsed > 0) && (
               <div className="mb-6">
                 <HintSystem
+                  key={`${roundId.current}-${hintRevision}`}
                   puzzle={gameState.puzzle}
                   solution={gameState.solution}
                   userGrid={gameState.userGrid}
@@ -469,7 +484,7 @@ function SudokuGameContent() {
             )}
 
             {/* Sudoku Grid */}
-            <div className="grid grid-cols-9 gap-0 mx-auto w-fit border-4 border-gray-800 rounded-lg overflow-hidden">
+            <div onKeyDown={handleBoardKeyDown} className="grid grid-cols-9 gap-0 mx-auto w-fit border-4 border-gray-800 rounded-lg overflow-hidden">
               {gameState.userGrid.map((row, rowIndex) =>
                 row.map((cell, colIndex) => {
                   const isSelected =
@@ -504,6 +519,9 @@ function SudokuGameContent() {
                         hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500
                         ${gameState.isComplete ? "bg-green-50" : ""}
                       `}
+                      data-cell={`${rowIndex}-${colIndex}`}
+                      aria-label={`${rowIndex + 1}, ${colIndex + 1}: ${cell ?? "–"}`}
+                      onFocus={() => handleCellClick(rowIndex, colIndex)}
                       onClick={() => handleCellClick(rowIndex, colIndex)}
                       disabled={gameState.isComplete}
                     >

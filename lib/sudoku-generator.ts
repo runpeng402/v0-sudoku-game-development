@@ -52,7 +52,19 @@ export function isValidCompletedGrid(grid: number[][]): boolean {
 }
 
 export function countSudokuSolutions(input: SudokuGrid, limit = 2): number {
+  if (input.length !== gridSize || input.some((row) => row.length !== gridSize) || limit < 1) return 0
+
   const grid = cloneGrid(input)
+  for (let row = 0; row < gridSize; row++) {
+    for (let column = 0; column < gridSize; column++) {
+      const value = grid[row][column]
+      if (value === null) continue
+      grid[row][column] = null
+      const valid = digits.includes(value) && isValidPlacement(grid, row, column, value)
+      grid[row][column] = value
+      if (!valid) return 0
+    }
+  }
   let count = 0
 
   const solve = (): void => {

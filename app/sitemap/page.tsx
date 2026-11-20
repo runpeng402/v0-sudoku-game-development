@@ -29,6 +29,7 @@ const groups = [
       ["/zh/sudoku-rules", "数独规则"],
       ["/es/sudoku-rules", "Reglas de Sudoku"],
       ["/strategies", "Sudoku Strategies"],
+      ["/sudoku-practice", "Sudoku Practice Exercises"],
       ["/zh/strategies", "数独策略"],
       ["/es/strategies", "Estrategias de Sudoku"],
       ["/variants", "Sudoku Variants"],

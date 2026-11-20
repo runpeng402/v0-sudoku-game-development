@@ -11,31 +11,31 @@ type SudokuPuzzle = {
 
 export const printableLevels: Record<
   PrintableLevel,
-  { label: string; filename: string; puzzleCount: number; removedCells: number }
+  { label: string; filename: string; puzzleCount: number; difficulty: SudokuDifficulty }
 > = {
   easy: {
     label: "Easy Sudoku",
     filename: "easy-sudoku-printable.pdf",
     puzzleCount: 4,
-    removedCells: 34,
+    difficulty: "easy",
   },
   medium: {
     label: "Medium Sudoku",
     filename: "medium-sudoku-printable.pdf",
     puzzleCount: 4,
-    removedCells: 44,
+    difficulty: "medium",
   },
   hard: {
     label: "Hard Sudoku",
     filename: "hard-sudoku-with-answers.pdf",
     puzzleCount: 4,
-    removedCells: 54,
+    difficulty: "hard",
   },
   "large-print": {
-  label: "Large Print Sudoku",
+    label: "Large Print Sudoku",
     filename: "large-print-sudoku.pdf",
     puzzleCount: 2,
-    removedCells: 34,
+    difficulty: "easy",
   },
 }
 
@@ -50,7 +50,7 @@ export function normalizePrintableLevel(level: string | null): PrintableLevel {
 export function generatePrintableSudokuPdf(level: PrintableLevel): Buffer {
   const config = printableLevels[level]
   const puzzles = Array.from({ length: config.puzzleCount }, (_, index) =>
-    createPuzzle(config.label, config.removedCells, index + 1),
+    createPuzzle(config.label, config.difficulty, index + 1),
   )
   const pageStreams = [
     ...puzzles.map((puzzle, index) => drawPuzzlePage(puzzle, index + 1, level === "large-print")),
@@ -60,8 +60,7 @@ export function generatePrintableSudokuPdf(level: PrintableLevel): Buffer {
   return buildPdf(pageStreams)
 }
 
-function createPuzzle(difficulty: string, removedCells: number, seed: number): SudokuPuzzle {
-  const level = printableDifficultyFromRemovedCells(removedCells)
+function createPuzzle(difficulty: string, level: SudokuDifficulty, seed: number): SudokuPuzzle {
   const { puzzle, solution } = generateSudokuPuzzle(level)
   const grid = puzzle.map((row) => row.map((value) => value ?? 0))
 
@@ -71,12 +70,6 @@ function createPuzzle(difficulty: string, removedCells: number, seed: number): S
     grid,
     solution,
   }
-}
-
-function printableDifficultyFromRemovedCells(removedCells: number): SudokuDifficulty {
-  if (removedCells >= 50) return "hard"
-  if (removedCells >= 44) return "medium"
-  return "easy"
 }
 
 function drawPuzzlePage(puzzle: SudokuPuzzle, number: number, largePrint: boolean): string {

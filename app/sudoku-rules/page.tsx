@@ -7,19 +7,8 @@ import { localizedAlternates } from "@/lib/seo-locales"
 const url = "https://www.sudokustudio.app/sudoku-rules"
 
 export const metadata: Metadata = {
-  title: "Sudoku Rules Explained: Simple Rules for Beginners",
-  description:
-    "Understand the rules of Sudoku in minutes. Learn basic Sudoku game rules for rows, columns, and 3x3 boxes with clear beginner examples.",
-  keywords: [
-    "sudoku rules",
-    "rules of sudoku",
-    "sudoku game rules",
-    "rules of sudoku game",
-    "rules for sudoku",
-    "sudoku rules for beginners",
-    "basic rules of sudoku",
-    "sudoku puzzle rules",
-  ],
+  title: "Sudoku Rules: Rows, Columns and 3×3 Boxes",
+  description: "Learn the three rules of 9×9 Sudoku, see why repeated digits are invalid, and check common questions about grids and clues.",
   alternates: localizedAlternates("en", "/sudoku-rules"),
   openGraph: {
     title: "Sudoku Rules Explained: Simple Rules for Beginners",
@@ -282,7 +271,7 @@ export default function SudokuRulesPage() {
           <h2>Related beginner guides</h2>
           <ul>
             <li>
-              <Link href="/how-to-play-sudoku">How to Play Sudoku: Step-by-Step Guide</Link>
+              <Link href="/how-to-play-sudoku">Learn how to play Sudoku step by step</Link>
             </li>
             <li>
               <Link href="/printable-sudoku">Printable Sudoku Puzzles PDF</Link>

@@ -29,6 +29,7 @@ const pages = [
   { url: "/es/how-to-play", priority: "0.7", changefreq: "weekly" },
 
   // 策略页面
+  { url: "/sudoku-practice", priority: "0.7", changefreq: "monthly" },
   { url: "/strategies", priority: "0.8", changefreq: "weekly" },
   { url: "/zh/strategies", priority: "0.7", changefreq: "weekly" },
   { url: "/es/strategies", priority: "0.7", changefreq: "weekly" },

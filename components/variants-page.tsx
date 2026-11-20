@@ -2,7 +2,6 @@
 
 import Link from "next/link"
 import { useState } from "react"
-import { useTranslation } from "react-i18next"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -19,24 +18,14 @@ import {
   Home,
   Play,
   BookOpen,
-  Download,
   CheckCircle,
   Info,
   Clock,
 } from "lucide-react"
-import { authService } from "@/services/auth-service"
-import { AuthModal } from "@/components/auth-modal"
-import { PuzzleGenerator } from "@/components/puzzle-generator"
 
 function VariantsContent() {
-  const { t } = useTranslation()
   const [selectedVariant, setSelectedVariant] = useState<any>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [showAuthModal, setShowAuthModal] = useState(false)
-  const [authRequiredFor, setAuthRequiredFor] = useState<string>("")
-  const [showPuzzleGenerator, setShowPuzzleGenerator] = useState(false)
-  const [currentUser, setCurrentUser] = useState(authService.getCurrentUser())
-  const [pendingAction, setPendingAction] = useState<(() => void) | null>(null)
 
   const sudokuVariants = [
     {
@@ -261,76 +250,6 @@ function VariantsContent() {
     setIsModalOpen(true)
   }
 
-  const handleGetPuzzles = async (variantId: string) => {
-    if (!authService.canDownloadPuzzles()) {
-      // Store the action to execute after login
-      setPendingAction(() => () => executeDownload(variantId))
-      setAuthRequiredFor("download")
-      setShowAuthModal(true)
-      return
-    }
-
-    await executeDownload(variantId)
-  }
-
-  const executeDownload = async (variantId: string) => {
-    try {
-      // Show loading state
-      const button = document.querySelector(`[data-variant="${variantId}"]`) as HTMLButtonElement
-      if (button) {
-        button.disabled = true
-        button.textContent = "Generating..."
-      }
-
-      // Generate PDF content
-      const { generateVariantPDF } = await import("@/lib/variant-pdf-generator")
-      const htmlContent = generateVariantPDF(variantId, 5)
-
-      // Create and download PDF
-      const blob = new Blob([htmlContent], { type: "text/html" })
-      const url = URL.createObjectURL(blob)
-      const link = document.createElement("a")
-      link.href = url
-      link.download = `${variantId}-sudoku-puzzles-${new Date().toISOString().split("T")[0]}.html`
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
-      URL.revokeObjectURL(url)
-
-      // Reset button state
-      if (button) {
-        button.disabled = false
-        button.innerHTML = '<Download className="w-4 h-4 mr-2" />Get Puzzles'
-      }
-
-      // Show success message
-      alert(`${variantId.charAt(0).toUpperCase() + variantId.slice(1)} Sudoku puzzles downloaded successfully!`)
-    } catch (error) {
-      console.error("Download error:", error)
-      alert("Sorry, there was an error generating your puzzles. Please try again.")
-    }
-  }
-
-  const handlePrintPuzzles = (purposeId: string) => {
-    handleGetPuzzles(purposeId)
-  }
-
-  const handleGenerateCustomPuzzles = () => {
-    if (!authService.canDownloadPuzzles()) {
-      setAuthRequiredFor("download")
-      setShowAuthModal(true)
-      return
-    }
-    setShowPuzzleGenerator(true)
-  }
-
-  const handleAuthSuccess = (user: any) => {
-    setCurrentUser(user)
-    setShowAuthModal(false)
-    // Clear the pending action after it's been set up to execute
-    setPendingAction(null)
-  }
-
   const renderVariantExample = (variantId: string) => {
     switch (variantId) {
       case "diagonal":
@@ -448,14 +367,6 @@ function VariantsContent() {
                     <Button variant="outline" onClick={() => handleLearnMore(variant)} className="flex-1">
                       Learn More
                     </Button>
-                    <Button
-                      onClick={() => handleGetPuzzles(variant.id)}
-                      className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
-                      data-variant={variant.id}
-                    >
-                      <Download className="w-4 h-4 mr-2" />
-                      Get Puzzles
-                    </Button>
                   </div>
                 </CardContent>
               </Card>
@@ -485,13 +396,6 @@ function VariantsContent() {
                     <Button variant="outline" onClick={() => handleLearnMore(collection)} className="flex-1">
                       Learn More
                     </Button>
-                    <Button
-                      onClick={() => handlePrintPuzzles(collection.id)}
-                      className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
-                    >
-                      <Printer className="w-4 h-4 mr-2" />
-                      Print Puzzles
-                    </Button>
                   </div>
                 </CardContent>
               </Card>
@@ -499,112 +403,12 @@ function VariantsContent() {
           </div>
         </section>
 
-        {/* Sudoku Puzzle Generator */}
-        <section className="mb-16">
-          <Card className="bg-white shadow-lg">
-            <CardHeader className="text-center">
-              <CardTitle className="text-3xl font-bold text-gray-900 mb-4">Sudoku Puzzle Generator Online</CardTitle>
-              <p className="text-xl text-gray-600">
-                Create custom puzzles with our <strong>sudoku puzzle generator online</strong> tool
-              </p>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-                <div>
-                  <h3 className="text-xl font-semibold mb-4 text-blue-600">Generator Features:</h3>
-                  <ul className="space-y-2">
-                    <li className="flex items-center gap-2">
-                      <CheckCircle className="w-5 h-5 text-blue-600" />
-                      <span>
-                        <strong>Multiple difficulty levels</strong> from easy to expert
-                      </span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle className="w-5 h-5 text-blue-600" />
-                      <span>
-                        <strong>Custom grid sizes</strong> including 4×4, 6×6, 9×9, and 16×16
-                      </span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle className="w-5 h-5 text-blue-600" />
-                      <span>
-                        <strong>Variant options</strong> including killer, diagonal, and hyper sudoku
-                      </span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle className="w-5 h-5 text-blue-600" />
-                      <span>
-                        <strong>PDF export</strong> with <strong>sudoku printable PDF with answers</strong>
-                      </span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle className="w-5 h-5 text-blue-600" />
-                      <span>
-                        <strong>Guaranteed solvable</strong> puzzles with unique solutions
-                      </span>
-                    </li>
-                  </ul>
-                </div>
-                <div>
-                  <h3 className="text-xl font-semibold mb-4 text-green-600">Perfect For:</h3>
-                  <ul className="space-y-2">
-                    <li className="flex items-center gap-2">
-                      <CheckCircle className="w-5 h-5 text-green-600" />
-                      <span>
-                        <strong>Teachers</strong> creating <strong>sudoku for classroom use</strong>
-                      </span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle className="w-5 h-5 text-green-600" />
-                      <span>
-                        <strong>Puzzle enthusiasts</strong> seeking fresh challenges
-                      </span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle className="w-5 h-5 text-green-600" />
-                      <span>
-                        <strong>Publications</strong> needing <strong>free sudoku puzzles no ads</strong>
-                      </span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle className="w-5 h-5 text-green-600" />
-                      <span>
-                        <strong>Caregivers</strong> providing <strong>sudoku for seniors printable</strong> activities
-                      </span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle className="w-5 h-5 text-green-600" />
-                      <span>
-                        <strong>Event organizers</strong> creating custom puzzle challenges
-                      </span>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-              <div className="text-center">
-                <Button
-                  onClick={handleGenerateCustomPuzzles}
-                  size="lg"
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3"
-                >
-                  Generate Custom Sudoku Puzzles
-                  <ArrowRight className="w-5 h-5 ml-2" />
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+        <section className="mb-12 space-y-3 text-center">
+          <p className="text-gray-700">Variant downloads and custom generation are temporarily unavailable.</p>
+          <Button asChild>
+            <Link href="/printable-sudoku">Download classic Sudoku with answers</Link>
+          </Button>
         </section>
-
-        {/* SEO Content */}
-        <div className="prose prose-lg max-w-4xl mx-auto">
-          <p>
-            Looking to expand your <strong>sudoku</strong> experience beyond the classic puzzle? Our collection of{" "}
-            <strong>sudoku variants</strong> offers exciting new challenges that build on the traditional{" "}
-            <strong>sudoku rules</strong> while adding unique twists. From{" "}
-            <strong>samurai sudoku puzzles printable</strong> formats to <strong>16x16 sudoku puzzles online</strong>,
-            these variations will test your skills in new and exciting ways.
-          </p>
-        </div>
       </div>
 
       {/* Variant Detail Modal */}
@@ -728,13 +532,6 @@ function VariantsContent() {
                 {/* Action Buttons */}
                 <div className="flex gap-3 pt-4">
                   <Button
-                    className="flex-1 bg-blue-600 text-white hover:bg-blue-700"
-                    onClick={() => handleGetPuzzles(selectedVariant.id)}
-                  >
-                    <Download className="w-4 h-4 mr-2" />
-                    Download {selectedVariant.title}
-                  </Button>
-                  <Button
                     variant="outline"
                     onClick={() => setIsModalOpen(false)}
                     className="bg-white text-gray-700 border-gray-300"
@@ -748,20 +545,6 @@ function VariantsContent() {
         </DialogContent>
       </Dialog>
 
-      {/* Auth Modal */}
-      <AuthModal
-        isOpen={showAuthModal}
-        onClose={() => {
-          setShowAuthModal(false)
-          setPendingAction(null)
-        }}
-        onSuccess={handleAuthSuccess}
-        requiredFor={authRequiredFor}
-        pendingAction={pendingAction ?? undefined}
-      />
-
-      {/* Puzzle Generator Modal */}
-      {showPuzzleGenerator && <PuzzleGenerator onClose={() => setShowPuzzleGenerator(false)} />}
     </div>
   )
 }
