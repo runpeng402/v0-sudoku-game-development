@@ -28,6 +28,18 @@ export function hiddenSingleArea(marks: number[][], { target, digit }: Deduction
   return { cells: houses[index] ?? [], label: `${name} ${index % 9 + 1}` }
 }
 
+export function hiddenSingleAlternatives(marks: number[][], target: number, digit: number) {
+  return houses.filter((house) => house.includes(target)).flatMap((house) =>
+    house.filter((square) => square !== target && marks[square].includes(digit)).slice(0, 1),
+  )
+}
+
+export function shareReasoningArea(squares: number[]) {
+  return houses.some((house) => squares.every((square) => house.includes(square)))
+}
+
+export { sees as seesReasoningSquare }
+
 export function findDeductions(marks: number[][], technique: Technique): Deduction[] {
   const results: Deduction[] = []
   if (technique === "hidden") {

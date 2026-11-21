@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { SudokuPracticeBoard } from "@/components/sudoku-practice-board"
-import { findDeductions, hiddenSingleArea, reasoningCandidates, type ReasoningExercise, type Deduction } from "@/lib/sudoku-reasoning"
+import { findDeductions, hiddenSingleAlternatives, hiddenSingleArea, reasoningCandidates, seesReasoningSquare, shareReasoningArea, type ReasoningExercise, type Deduction } from "@/lib/sudoku-reasoning"
 
 const modules = {
   hidden: { level: "Beginner", title: "Hidden single", rule: "Look for a digit with only one possible square in a row, column or box." },
@@ -56,6 +56,7 @@ function Exercise({ exercise, number, next, onComplete, heading }: {
   const [attempted, setAttempted] = useState(false)
   const [done, setDone] = useState(false)
   const [feedback, setFeedback] = useState("")
+  const [correction, setCorrection] = useState<{ squares: number[]; digit: number } | null>(null)
   const [retry, setRetry] = useState(0)
   const marks = reasoningCandidates(board)
   const guidedSingle = technique === "hidden" && kind === "guided"
@@ -67,6 +68,7 @@ function Exercise({ exercise, number, next, onComplete, heading }: {
   const displayedMarks = marks.map((values, index) => index === move?.target && isElimination ? values.filter((value) => value !== move.digit) : values)
   const visibleMarks = displayedMarks.map((values, index) => {
     if (selection === index || counterexample === index || (isElimination && marks[index].length === 2)) return values
+    if (correction?.squares.includes(index)) return [correction.digit]
     return guidedSingle?.cells.includes(index) ? values.filter((value) => value === digit) : []
   })
   if (done && move) displayBoard[move.target] = isElimination ? displayedMarks[move.target][0] : move.digit
@@ -82,22 +84,40 @@ function Exercise({ exercise, number, next, onComplete, heading }: {
   }
 
   function checkNumber(value: number) {
+    setCorrection(null)
     if (move) {
       if (displayedMarks[move.target][0] === value) {
         finish(`Correct. After removing ${move.digit}, only ${value} remains at ${position(move.target)}.`)
       } else {
         setAttempted(true)
-        setFeedback("Check which candidate remains in the selected square after the deletion.")
+        setFeedback(`${value} was the candidate you removed. Look at the small number still visible in the selected square, then choose it below.`)
       }
       return
     }
-    const deduction = findDeductions(marks, technique).find((item) =>
-      item.target === selection && item.digit === value &&
-      item.evidence.every((square) => evidence.includes(square)),
-    )
+    if (selection === null) return
+    const matchingEvidence = findDeductions(marks, technique).filter((item) =>
+      item.evidence.every((square) => evidence.includes(square)))
+    const deduction = matchingEvidence.find((item) => item.target === selection && item.digit === value)
     if (!deduction) {
       setAttempted(true)
-      setFeedback(isElimination ? "This selection does not justify that deletion. Check the relationship between the evidence squares and the target." : "Check whether this digit has only one possible position in the selected square’s row, column or box.")
+      if (technique === "hidden") {
+        const alternatives = [...new Set(hiddenSingleAlternatives(marks, selection, value))]
+        setCorrection({ squares: alternatives, digit: value })
+        setFeedback(alternatives.length === 0
+          ? "This square already has just one candidate. For this exercise, look for a square with multiple candidates where one of them has no other place in a row, column or box."
+          : `${value} also fits at ${alternatives.map(position).join(", ")}. The highlighted squares show other places for it in the same row, column and box. Try a different digit or square.`)
+      } else if (matchingEvidence.some((item) => item.target === selection)) {
+        setFeedback(`The evidence supports a deletion in this square. Check which candidate is shared by ${technique === "pair" ? "the two squares in the pair" : "the two wings"}.`)
+      } else if (technique === "pair") {
+        setFeedback(shareReasoningArea(evidence) && marks[evidence[0]].join() === marks[evidence[1]].join()
+          ? "Your pair is valid. Choose a target in the row, column or box shared by both pair squares."
+          : "Recheck your two evidence squares. They must share a row, column or box and show the same two small numbers. Tap a selected square again to change it.")
+      } else {
+        const wings = matchingEvidence[0]?.evidence.slice(1)
+        setFeedback(wings?.some((square) => !seesReasoningSquare(square, selection))
+          ? "Look for a target that sees both wings. For each wing, check whether it shares a row, column or box with the target."
+          : "Recheck the three evidence squares. Find a pivot that sees both wings and shares a different candidate with each. The wings must share a third candidate.")
+      }
       return
     }
     setMove(deduction)
@@ -109,6 +129,8 @@ function Exercise({ exercise, number, next, onComplete, heading }: {
   }
 
   function selectSquare(square: number) {
+    setCorrection(null)
+    setFeedback("")
     if (technique === "hidden") setSelection(square)
     else if (evidence.includes(square)) {
       setEvidence(evidence.filter((item) => item !== square))
@@ -116,7 +138,6 @@ function Exercise({ exercise, number, next, onComplete, heading }: {
     } else if (isElimination && marks[square].length !== 2) {
       setFeedback("Choose a square with exactly two small numbers.")
     } else if (chooseEvidence) {
-      setFeedback("")
       setEvidence([...evidence, square])
     }
     else setSelection(square)
@@ -127,6 +148,7 @@ function Exercise({ exercise, number, next, onComplete, heading }: {
     setSelection(null)
     setMove(null)
     setHint(0)
+    setCorrection(null)
     setDone(false)
     setAttempted(true)
     setFeedback("")
@@ -162,7 +184,7 @@ function Exercise({ exercise, number, next, onComplete, heading }: {
           <p className="text-sm text-slate-700"><strong>Large numbers</strong> are already on the board. <span className="font-medium">Small numbers</span> are options for empty squares.</p>
           <SudokuPracticeBoard cells={displayBoard} originalCells={board} candidates={visibleMarks}
             selected={[...evidence, ...(selection === null ? [] : [selection])]}
-            target={counterexample} highlighted={kind === "distinction" ? exercise.evidence : hint >= 2 ? [...exercise.evidence, target] : guidedSingle?.cells}
+            target={counterexample} highlighted={correction?.squares ?? (kind === "distinction" ? exercise.evidence : hint >= 2 ? [...exercise.evidence, target] : guidedSingle?.cells)}
             onSelect={hasBoardAction ? selectSquare : undefined} />
         </div>
         <div className="space-y-3">
@@ -175,7 +197,11 @@ function Exercise({ exercise, number, next, onComplete, heading }: {
               {!done && <div className="flex flex-wrap gap-2">
                 <Button type="button" variant="outline" onClick={() => {
                   setAttempted(true)
-                  setFeedback(isElimination ? "The highlighted square can still hold that digit. Check which evidence squares it can see." : "This placement is not forced by a hidden single here. Look for another possible square in each unit.")
+                  setFeedback(technique === "pair"
+                    ? "Find the row, column or box that contains both pair squares. Is the target inside that same area?"
+                    : technique === "wing"
+                      ? "Compare the target with each wing. Does it share a row, column or box with both wings?"
+                      : "Look for another square that could hold this digit in the target’s row, then check its column and box.")
                 }}>Yes, this move is justified</Button>
                 <Button type="button" variant="outline" onClick={() => finish(isElimination
                   ? "Correct. This target is outside the scope of the deletion and still needs the candidate."
@@ -190,12 +216,12 @@ function Exercise({ exercise, number, next, onComplete, heading }: {
                     <Button type="button" key={value} variant="outline" onClick={() => checkNumber(value)}>{value}</Button>)}
                 </div>
               )}
-              {!move && kind !== "independent" && hint < 3 && <Button type="button" variant="ghost" onClick={() => setHint((value) => value + 1)}>{hint ? "More help" : "Show a hint"}</Button>}
+              {!move && (kind !== "independent" || attempted) && hint < 3 && <Button type="button" variant="ghost" onClick={() => { setCorrection(null); setHint((value) => value + 1) }}>{hint ? "More help" : "Show a hint"}</Button>}
               <p aria-live="polite">{!move && hint > 0 && (hint === 1 ? module.rule : hint === 2 ? "Look at the highlighted squares." : `Try ${position(target)} and digit ${digit}.`)}</p>
             </>
           )}
           <div role="status" className="space-y-2">
-            <p>{feedback}</p>
+            {feedback && <p className="rounded-md border bg-white p-3">{feedback}</p>}
             {done && <p>{explanation}</p>}
           </div>
           {done && <div className="flex flex-wrap gap-2">
