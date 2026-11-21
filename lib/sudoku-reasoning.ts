@@ -21,6 +21,13 @@ export function reasoningCandidates(board: number[]) {
   return board.map((value, index) => value ? [] : digits.filter((digit) => peers[index].every((peer) => board[peer] !== digit)))
 }
 
+export function hiddenSingleArea(marks: number[][], { target, digit }: Deduction) {
+  const index = houses.findIndex((house) => house.includes(target) &&
+    house.every((square) => square === target || !marks[square].includes(digit)))
+  const name = ["row", "column", "box"][Math.floor(index / 9)]
+  return { cells: houses[index] ?? [], label: `${name} ${index % 9 + 1}` }
+}
+
 export function findDeductions(marks: number[][], technique: Technique): Deduction[] {
   const results: Deduction[] = []
   if (technique === "hidden") {

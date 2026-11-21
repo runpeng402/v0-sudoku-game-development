@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { SudokuPracticeBoard } from "@/components/sudoku-practice-board"
-import { findDeductions, reasoningCandidates, type ReasoningExercise, type Deduction } from "@/lib/sudoku-reasoning"
+import { findDeductions, hiddenSingleArea, reasoningCandidates, type ReasoningExercise, type Deduction } from "@/lib/sudoku-reasoning"
 
 const modules = {
   hidden: { level: "Beginner", title: "Hidden single", rule: "Look for a digit with only one possible square in a row, column or box." },
@@ -58,11 +58,17 @@ function Exercise({ exercise, number, next, onComplete, heading }: {
   const [feedback, setFeedback] = useState("")
   const [retry, setRetry] = useState(0)
   const marks = reasoningCandidates(board)
+  const guidedSingle = technique === "hidden" && kind === "guided"
+    ? hiddenSingleArea(marks, exercise) : null
   const evidenceCount = technique === "wing" ? 3 : 2
   const isElimination = technique !== "hidden"
   const chooseEvidence = isElimination && evidence.length < evidenceCount && selection === null
   const displayBoard = [...board]
   const displayedMarks = marks.map((values, index) => index === move?.target && isElimination ? values.filter((value) => value !== move.digit) : values)
+  const visibleMarks = displayedMarks.map((values, index) => {
+    if (selection === index || counterexample === index || (isElimination && marks[index].length === 2)) return values
+    return guidedSingle?.cells.includes(index) ? values.filter((value) => value === digit) : []
+  })
   if (done && move) displayBoard[move.target] = isElimination ? displayedMarks[move.target][0] : move.digit
 
   useEffect(() => {
@@ -107,7 +113,12 @@ function Exercise({ exercise, number, next, onComplete, heading }: {
     else if (evidence.includes(square)) {
       setEvidence(evidence.filter((item) => item !== square))
       setSelection(null)
-    } else if (chooseEvidence) setEvidence([...evidence, square])
+    } else if (isElimination && marks[square].length !== 2) {
+      setFeedback("Choose a square with exactly two small numbers.")
+    } else if (chooseEvidence) {
+      setFeedback("")
+      setEvidence([...evidence, square])
+    }
     else setSelection(square)
   }
 
@@ -123,6 +134,17 @@ function Exercise({ exercise, number, next, onComplete, heading }: {
   }
 
   const hasBoardAction = kind !== "distinction" && !done && !move
+  const instruction = move
+    ? `Choose the remaining number for ${position(move.target)}.`
+    : selection !== null && (!isElimination || marks[selection].length === 2)
+      ? `${isElimination ? "Choose the number to remove from" : "Choose the number to place in"} ${position(selection)}.`
+      : guidedSingle
+        ? `Look at ${guidedSingle.label} (shaded blue). Tap the square where ${digit} can go.`
+        : !isElimination
+          ? "Tap an empty square where a digit has no other possible position in its row, column, or box."
+          : chooseEvidence
+            ? `Tap ${evidenceCount} squares that support your move (${evidence.length} selected).`
+            : "Tap a different square with two small numbers. Then choose which number to remove."
   const explanation = technique === "wing"
     ? "The pivot forces one wing to hold the shared digit. The target sees both wings, so it cannot hold that digit."
     : technique === "pair"
@@ -134,11 +156,15 @@ function Exercise({ exercise, number, next, onComplete, heading }: {
       <h2 ref={heading} tabIndex={-1} className="text-xl font-semibold">
         {number}. {labels[kind]}{kind === "independent" && !done ? "" : ` · ${module.title}`}
       </h2>
+      {kind !== "distinction" && !done && <p role="status" className="rounded-md border border-blue-200 bg-blue-50 px-3 py-2 font-medium text-blue-950">{instruction}</p>}
       <div className="grid items-start gap-5 md:grid-cols-[minmax(0,23rem)_minmax(0,1fr)]">
-        <SudokuPracticeBoard cells={displayBoard} candidates={displayedMarks}
-          selected={[...evidence, ...(selection === null ? [] : [selection])]}
-          target={counterexample} highlighted={kind === "distinction" ? exercise.evidence : hint >= 2 ? [...exercise.evidence, target] : []}
-          onSelect={hasBoardAction ? selectSquare : undefined} />
+        <div className="space-y-2">
+          <p className="text-sm text-slate-700"><strong>Large numbers</strong> are already on the board. <span className="font-medium">Small numbers</span> are options for empty squares.</p>
+          <SudokuPracticeBoard cells={displayBoard} originalCells={board} candidates={visibleMarks}
+            selected={[...evidence, ...(selection === null ? [] : [selection])]}
+            target={counterexample} highlighted={kind === "distinction" ? exercise.evidence : hint >= 2 ? [...exercise.evidence, target] : guidedSingle?.cells}
+            onSelect={hasBoardAction ? selectSquare : undefined} />
+        </div>
         <div className="space-y-3">
           {kind === "guided" && <p>{module.rule}</p>}
           {kind === "distinction" ? (
@@ -158,9 +184,6 @@ function Exercise({ exercise, number, next, onComplete, heading }: {
             </>
           ) : !done && (
             <>
-              <p>{move ? "Place the remaining candidate." : !isElimination ? "Find a square whose value is forced by its position in a unit. Select the square and its digit."
-                : chooseEvidence ? `Select ${evidenceCount} evidence squares (${evidence.length} selected).`
-                  : "Select a different square with two candidates, then choose the candidate to remove."}</p>
               {selection !== null && (move || !isElimination || marks[selection].length === 2) && (
                 <div role="group" aria-label={move || !isElimination ? "Digit to place" : "Candidate to remove"} className="flex flex-wrap gap-2">
                   {(move ? marks[move.target] : marks[selection]).map((value) =>
