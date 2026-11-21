@@ -56,6 +56,7 @@ function Exercise({ exercise, number, next, onComplete, heading }: {
   const [attempted, setAttempted] = useState(false)
   const [done, setDone] = useState(false)
   const [feedback, setFeedback] = useState("")
+  const [rejectedDigit, setRejectedDigit] = useState<number | null>(null)
   const [correction, setCorrection] = useState<{ squares: number[]; digit: number } | null>(null)
   const [retry, setRetry] = useState(0)
   const marks = reasoningCandidates(board)
@@ -85,21 +86,30 @@ function Exercise({ exercise, number, next, onComplete, heading }: {
 
   function checkNumber(value: number) {
     setCorrection(null)
+    setRejectedDigit(null)
     if (move) {
       if (displayedMarks[move.target][0] === value) {
         finish(`Correct. After removing ${move.digit}, only ${value} remains at ${position(move.target)}.`)
       } else {
         setAttempted(true)
+        setRejectedDigit(value)
         setFeedback(`${value} was the candidate you removed. Look at the small number still visible in the selected square, then choose it below.`)
       }
       return
     }
     if (selection === null) return
+    if (guidedSingle && value !== digit) {
+      setAttempted(true)
+      setRejectedDigit(value)
+      setFeedback(`This step is about ${digit}. Look for its only possible square in ${guidedSingle.label}.`)
+      return
+    }
     const matchingEvidence = findDeductions(marks, technique).filter((item) =>
       item.evidence.every((square) => evidence.includes(square)))
     const deduction = matchingEvidence.find((item) => item.target === selection && item.digit === value)
     if (!deduction) {
       setAttempted(true)
+      setRejectedDigit(value)
       if (technique === "hidden") {
         const alternatives = [...new Set(hiddenSingleAlternatives(marks, selection, value))]
         setCorrection({ squares: alternatives, digit: value })
@@ -129,6 +139,7 @@ function Exercise({ exercise, number, next, onComplete, heading }: {
   }
 
   function selectSquare(square: number) {
+    setRejectedDigit(null)
     setCorrection(null)
     setFeedback("")
     if (technique === "hidden") setSelection(square)
@@ -149,6 +160,7 @@ function Exercise({ exercise, number, next, onComplete, heading }: {
     setMove(null)
     setHint(0)
     setCorrection(null)
+    setRejectedDigit(null)
     setDone(false)
     setAttempted(true)
     setFeedback("")
@@ -158,11 +170,13 @@ function Exercise({ exercise, number, next, onComplete, heading }: {
   const hasBoardAction = kind !== "distinction" && !done && !move
   const instruction = move
     ? `Choose the remaining number for ${position(move.target)}.`
+    : guidedSingle
+      ? selection === target
+        ? `Tap ${digit} below to place it in this square.`
+        : `In ${guidedSingle.label}, tap the square with the small amber ${digit}.`
     : selection !== null && (!isElimination || marks[selection].length === 2)
       ? `${isElimination ? "Choose the number to remove from" : "Choose the number to place in"} ${position(selection)}.`
-      : guidedSingle
-        ? `Look at ${guidedSingle.label} (shaded blue). Tap the square where ${digit} can go.`
-        : !isElimination
+      : !isElimination
           ? "Tap an empty square where a digit has no other possible position in its row, column, or box."
           : chooseEvidence
             ? `Tap ${evidenceCount} squares that support your move (${evidence.length} selected).`
@@ -181,10 +195,11 @@ function Exercise({ exercise, number, next, onComplete, heading }: {
       {kind !== "distinction" && !done && <p role="status" className="rounded-md border border-blue-200 bg-blue-50 px-3 py-2 font-medium text-blue-950">{instruction}</p>}
       <div className="grid items-start gap-5 md:grid-cols-[minmax(0,23rem)_minmax(0,1fr)]">
         <div className="space-y-2">
-          <p className="text-sm text-slate-700"><strong>Large numbers</strong> are already on the board. <span className="font-medium">Small numbers</span> are options for empty squares.</p>
           <SudokuPracticeBoard cells={displayBoard} originalCells={board} candidates={visibleMarks}
             selected={[...evidence, ...(selection === null ? [] : [selection])]}
-            target={counterexample} highlighted={correction?.squares ?? (kind === "distinction" ? exercise.evidence : hint >= 2 ? [...exercise.evidence, target] : guidedSingle?.cells)}
+            target={counterexample} highlighted={guidedSingle?.cells}
+            clues={correction?.squares ?? (kind === "distinction" ? exercise.evidence : hint >= 2 ? [...exercise.evidence, target] : guidedSingle && !done ? [target] : [])}
+            rejected={rejectedDigit === null ? null : selection}
             onSelect={hasBoardAction ? selectSquare : undefined} />
         </div>
         <div className="space-y-3">
@@ -210,10 +225,14 @@ function Exercise({ exercise, number, next, onComplete, heading }: {
             </>
           ) : !done && (
             <>
-              {selection !== null && (move || !isElimination || marks[selection].length === 2) && (
+              {selection !== null && (!guidedSingle || selection === target) && (move || !isElimination || marks[selection].length === 2) && (
                 <div role="group" aria-label={move || !isElimination ? "Digit to place" : "Candidate to remove"} className="flex flex-wrap gap-2">
-                  {(move ? marks[move.target] : marks[selection]).map((value) =>
-                    <Button type="button" key={value} variant="outline" onClick={() => checkNumber(value)}>{value}</Button>)}
+                  {(guidedSingle ? [digit] : move ? marks[move.target] : marks[selection]).map((value) =>
+                    <Button type="button" key={value} variant={guidedSingle ? "default" : "outline"}
+                      className={value === rejectedDigit ? "border-red-700 bg-red-100 text-red-950" : undefined}
+                      onClick={() => checkNumber(value)}>
+                      {guidedSingle ? `Place ${value}` : value}{value === rejectedDigit && <><span aria-hidden="true"> ×</span><span className="sr-only">, try another</span></>}
+                    </Button>)}
                 </div>
               )}
               {!move && (kind !== "independent" || attempted) && hint < 3 && <Button type="button" variant="ghost" onClick={() => { setCorrection(null); setHint((value) => value + 1) }}>{hint ? "More help" : "Show a hint"}</Button>}
