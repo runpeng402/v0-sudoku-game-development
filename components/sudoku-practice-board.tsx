@@ -41,7 +41,7 @@ export function SudokuPracticeBoard({ cells, target, highlighted = [], candidate
                   ${row % 3 === 2 ? "border-b-2 border-b-slate-800" : ""}
                   ${style}`}>
                   {onSelect && !value ? (
-                    <button type="button" className={`grid aspect-square w-full place-items-center text-slate-600 hover:bg-blue-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-700 ${candidateGrid ? "grid-cols-3 text-[9px] font-normal leading-none sm:text-xs" : ""}`}
+                    <button type="button" className={`grid aspect-square w-full place-items-center text-slate-600 hover:bg-blue-600/10 active:bg-blue-600/25 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-blue-800 ${candidateGrid ? "grid-cols-3 text-[9px] font-normal leading-none sm:text-xs" : ""}`}
                       aria-label={`${position}, ${marks?.length ? `candidates ${marks.join(", ")}` : "empty square"}${incorrect ? ", try another move" : clue ? ", hint" : ""}`} aria-pressed={pressed} onClick={() => onSelect(index)}>
                       {candidateGrid ?? <span aria-hidden="true" className="text-slate-400">{pressed ? "✓" : "·"}</span>}
                     </button>

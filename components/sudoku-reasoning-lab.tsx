@@ -1,6 +1,7 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useId, useRef, useState } from "react"
+import { ArrowRight, Lightbulb, RotateCcw } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { SudokuPracticeBoard } from "@/components/sudoku-practice-board"
 import { findDeductions, hiddenSingleAlternatives, hiddenSingleArea, reasoningCandidates, seesReasoningSquare, shareReasoningArea, type ReasoningExercise, type Deduction } from "@/lib/sudoku-reasoning"
@@ -12,6 +13,8 @@ const modules = {
 }
 const labels = { guided: "Guided", variation: "Variation", distinction: "Spot the error", independent: "Independent check" }
 const position = (index: number) => `r${Math.floor(index / 9) + 1}c${index % 9 + 1}`
+const actionStyle = "min-h-11 h-auto whitespace-normal text-left shadow-sm focus-visible:ring-blue-700 active:shadow-none motion-safe:active:scale-[0.98]"
+const outlineStyle = "border-slate-400 bg-white text-slate-950 hover:border-blue-600 hover:bg-blue-50 active:bg-blue-100"
 
 export function SudokuReasoningLab({ exercises }: { exercises: ReasoningExercise[] }) {
   const [index, setIndex] = useState(0)
@@ -24,7 +27,7 @@ export function SudokuReasoningLab({ exercises }: { exercises: ReasoningExercise
       <p role="status">{Object.keys(completed).length} of {exercises.length} completed · {Object.values(completed).filter((value) => value === "independent").length} without help</p>
       <label className="block space-y-1">
         <span className="block font-medium">Choose an exercise</span>
-        <select className="max-w-full rounded-md border bg-white p-2" value={index} onChange={(event) => setIndex(Number(event.target.value))}>
+        <select className="min-h-11 max-w-full cursor-pointer rounded-md border border-slate-400 bg-white px-3 py-2 hover:border-blue-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700" value={index} onChange={(event) => setIndex(Number(event.target.value))}>
           {exercises.map((item, i) => (
             <option key={i} value={i}>{i + 1}. {modules[item.technique].level} · {labels[item.kind]}{completed[i] ? " ✓" : ""}</option>
           ))}
@@ -59,6 +62,7 @@ function Exercise({ exercise, number, next, onComplete, heading }: {
   const [rejectedDigit, setRejectedDigit] = useState<number | null>(null)
   const [correction, setCorrection] = useState<{ squares: number[]; digit: number } | null>(null)
   const [retry, setRetry] = useState(0)
+  const hintId = useId()
   const marks = reasoningCandidates(board)
   const guidedSingle = technique === "hidden" && kind === "guided"
     ? hiddenSingleArea(marks, exercise) : null
@@ -186,6 +190,13 @@ function Exercise({ exercise, number, next, onComplete, heading }: {
     : technique === "pair"
       ? "The pair must use both of its digits in their shared unit. Other squares in that unit cannot use either digit."
       : module.rule
+  const showHintControl = kind !== "distinction" && !done && !move && (kind !== "independent" || attempted)
+  const hintText = [
+    "",
+    module.rule,
+    "Look at the amber-outlined squares.",
+    `Try ${position(target)} and digit ${digit}.`,
+  ][hint]
 
   return (
     <section className="space-y-4 rounded-xl border bg-slate-50 p-3 sm:p-6">
@@ -210,15 +221,15 @@ function Exercise({ exercise, number, next, onComplete, heading }: {
                 ? `Can this ${module.title.toLowerCase()} at ${exercise.evidence.map(position).join(", ")} remove ${digit} from ${position(counterexample!)}?`
                 : `Does a hidden single force ${digit} at ${position(counterexample!)}?`}</p>
               {!done && <div className="flex flex-wrap gap-2">
-                <Button type="button" variant="outline" onClick={() => {
+                <Button type="button" variant="outline" className={`${actionStyle} ${feedback ? "border-red-700 bg-red-100 text-red-950 hover:bg-red-200" : outlineStyle}`} onClick={() => {
                   setAttempted(true)
                   setFeedback(technique === "pair"
                     ? "Find the row, column or box that contains both pair squares. Is the target inside that same area?"
                     : technique === "wing"
                       ? "Compare the target with each wing. Does it share a row, column or box with both wings?"
                       : "Look for another square that could hold this digit in the target’s row, then check its column and box.")
-                }}>Yes, this move is justified</Button>
-                <Button type="button" variant="outline" onClick={() => finish(isElimination
+                }}>Yes, this move is justified{feedback && <span aria-hidden="true">×</span>}</Button>
+                <Button type="button" variant="outline" className={`${actionStyle} ${outlineStyle}`} onClick={() => finish(isElimination
                   ? "Correct. This target is outside the scope of the deletion and still needs the candidate."
                   : "Correct. This square is not the only possible location for the digit in any of its units.")}>No, there’s insufficient evidence</Button>
               </div>}
@@ -229,23 +240,38 @@ function Exercise({ exercise, number, next, onComplete, heading }: {
                 <div role="group" aria-label={move || !isElimination ? "Digit to place" : "Candidate to remove"} className="flex flex-wrap gap-2">
                   {(guidedSingle ? [digit] : move ? marks[move.target] : marks[selection]).map((value) =>
                     <Button type="button" key={value} variant={guidedSingle ? "default" : "outline"}
-                      className={value === rejectedDigit ? "border-red-700 bg-red-100 text-red-950" : undefined}
+                      className={`${actionStyle} min-w-11 justify-center ${value === rejectedDigit ? "border-red-700 bg-red-100 text-red-950 hover:bg-red-200 active:bg-red-200" : guidedSingle ? "bg-blue-700 text-white hover:bg-blue-800 active:bg-blue-900" : outlineStyle}`}
                       onClick={() => checkNumber(value)}>
                       {guidedSingle ? `Place ${value}` : value}{value === rejectedDigit && <><span aria-hidden="true"> ×</span><span className="sr-only">, try another</span></>}
                     </Button>)}
                 </div>
               )}
-              {!move && (kind !== "independent" || attempted) && hint < 3 && <Button type="button" variant="ghost" onClick={() => { setCorrection(null); setHint((value) => value + 1) }}>{hint ? "More help" : "Show a hint"}</Button>}
-              <p aria-live="polite">{!move && hint > 0 && (hint === 1 ? module.rule : hint === 2 ? "Look at the highlighted squares." : `Try ${position(target)} and digit ${digit}.`)}</p>
             </>
           )}
           <div role="status" className="space-y-2">
-            {feedback && <p className="rounded-md border bg-white p-3">{feedback}</p>}
+            {feedback && <p className={`rounded-md border p-3 ${done || (move && rejectedDigit === null) ? "border-emerald-300 bg-emerald-50 text-emerald-950" : "border-red-300 bg-red-50 text-red-950"}`}>{feedback}</p>}
             {done && <p>{explanation}</p>}
           </div>
+          {showHintControl && <div className="space-y-2">
+            <Button type="button" variant="outline" aria-disabled={hint === 3} aria-controls={hintId}
+              className={`${actionStyle} border-amber-500 bg-amber-100 text-amber-950 hover:bg-amber-200 active:bg-amber-300 aria-disabled:cursor-default aria-disabled:bg-amber-50 aria-disabled:shadow-none`}
+              onClick={() => {
+                if (hint === 3) return
+                setCorrection(null)
+                setRejectedDigit(null)
+                setFeedback("")
+                setHint((value) => value + 1)
+              }}>
+              <Lightbulb aria-hidden="true" />
+              {hint === 0 ? "Show a hint" : hint === 3 ? "All hints shown" : "Show next hint"}
+            </Button>
+            <div id={hintId} role="status">
+              {hint > 0 && <p className="rounded-md border border-amber-300 bg-amber-50 p-3 text-amber-950"><strong>Hint {hint} of 3.</strong> {hintText}</p>}
+            </div>
+          </div>}
           {done && <div className="flex flex-wrap gap-2">
-            {next && <Button type="button" onClick={next}>Next exercise</Button>}
-            <Button type="button" variant="outline" onClick={reset}>Practice again</Button>
+            {next && <Button type="button" className={`${actionStyle} bg-blue-700 text-white hover:bg-blue-800 active:bg-blue-900`} onClick={next}>Next exercise <ArrowRight aria-hidden="true" /></Button>}
+            <Button type="button" variant="outline" className={`${actionStyle} ${outlineStyle}`} onClick={reset}><RotateCcw aria-hidden="true" />Practice again</Button>
           </div>}
         </div>
       </div>
