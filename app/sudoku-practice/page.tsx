@@ -2,9 +2,9 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import { SudokuTrainingAccess } from "@/components/sudoku-training-access"
 
-const title = "Sudoku Practice Exercises: Learn 3 Solving Techniques"
+const title = "Sudoku Practice Exercises: 9 Technique Modules"
 const description =
-  "Practice naked singles, hidden singles and locked candidates with 12 interactive Sudoku exercises, optional hints and step-by-step explanations."
+  "Practice Sudoku solving techniques from naked singles to XY-Wing with interactive exercises, hints and independent checks."
 
 export const metadata: Metadata = {
   title,
@@ -22,8 +22,8 @@ export default function SudokuPracticePage() {
         </Link>
         <h1 className="text-balance text-3xl font-bold tracking-tight text-slate-950 sm:text-5xl">Sudoku practice exercises</h1>
         <p className="max-w-2xl leading-7 text-slate-700">
-          Learn three Sudoku solving techniques in 12 exercises. The first example for each technique is free to try.
-          The full pack includes three guided examples and one independent check per technique. Make one deduction per board, then read the reasoning.
+          Start with 9 free exercises, one in each module. The full training pack adds 90 exercises across three levels.
+          Practice placing digits, eliminating candidates, and using one deduction to set up the next.
         </p>
         <Link href="/pricing" className="inline-block font-medium text-blue-700 underline">See training pricing</Link>
       </header>
@@ -31,7 +31,7 @@ export default function SudokuPracticePage() {
       <SudokuTrainingAccess />
 
       <section aria-labelledby="techniques" className="max-w-2xl space-y-4 leading-7 text-slate-700">
-        <h2 id="techniques" className="text-2xl font-semibold text-slate-950">Three Sudoku solving techniques to practice</h2>
+        <h2 id="techniques" className="text-2xl font-semibold text-slate-950">Beginner techniques</h2>
         <dl className="space-y-4">
           <div>
             <dt className="font-semibold text-slate-950">Naked single</dt>

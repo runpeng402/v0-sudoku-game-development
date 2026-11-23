@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { SudokuTraining } from "@/components/sudoku-training"
 import { supabase } from "@/lib/supabase"
+import { freeExerciseCount, paidExerciseCount } from "@/lib/sudoku-training-catalog"
 import type { TrainingResponse } from "@/lib/sudoku-training-types"
 
 const endpoint = "/api/sudoku-training"
@@ -203,7 +204,7 @@ export function SudokuTrainingAccess({ entry = "practice" }: { entry?: "practice
           {training.access === "unlocked" && <>All {training.exercises.length} exercises are unlocked. Signed in for training as <strong className="break-all">{sessionEmail}</strong>.</>}
           {training.access === "signed-out" && <>Not signed in for training. Verify the email you used for checkout to restore your purchase. <a href="#training-purchase" className="underline">Go to sign-in</a></>}
           {training.access === "locked" && <>Signed in for training as <strong className="break-all">{sessionEmail}</strong>. No training purchase confirmed for this account yet. <a href="#training-purchase" className="underline">Check access</a></>}
-          {training.access === "free" && (pricing ? "Checkout is currently unavailable." : `All ${training.exercises.length} exercises are available.`)}
+          {training.access === "free" && `All ${freeExerciseCount} free samples are available. Paid checkout is not open yet.`}
         </p>
       )}
       {visible && !pricing && <SudokuTraining key={training.access === "unlocked" || training.access === "free" ? "full" : "sample"} lessons={training.exercises} resumeTopic={resumeTopic} onTopicChange={(value) => {
@@ -213,9 +214,9 @@ export function SudokuTrainingAccess({ entry = "practice" }: { entry?: "practice
       {(gated || (visible && training.access === "unlocked")) && (
         <section aria-labelledby="training-purchase" className="space-y-4 rounded-lg border p-4 sm:p-6">
           <h2 id="training-purchase" className="text-xl font-semibold text-slate-950">
-            {gated ? "Unlock all 12 exercises" : "Training pack unlocked"}
+            {gated ? `Unlock ${paidExerciseCount} additional exercises` : "Training pack unlocked"}
           </h2>
-          {gated && <p>Try one exercise per technique for free. The test pack adds nine exercises. The checkout page shows the test amount and currency.</p>}
+          {gated && <p>Try one exercise per module for free. A one-time purchase unlocks 10 additional exercises in each module.</p>}
           {pricing && training.access === "unlocked" && <Button asChild><Link href="/sudoku-practice#exercises">Start training</Link></Button>}
           {checkoutReturn === "returned" && training.access === "locked" && (
             <div className="space-y-3 rounded-lg border border-amber-300 bg-amber-50 p-4 text-amber-950">

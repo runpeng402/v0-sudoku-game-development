@@ -1,22 +1,32 @@
 import { NextResponse } from "next/server"
-import fixtures from "@/lib/sudoku-training-exercises.json"
+import fixtures from "@/lib/sudoku-training-course.json"
+import { trainingModules } from "@/lib/sudoku-training-catalog"
 import { hasTrainingPurchase, trainingBuyer, trainingPack, trainingPaymentServices, trainingPaymentsEnabled } from "@/lib/sudoku-training-payments"
 import type { TrainingExercise, TrainingResponse } from "@/lib/sudoku-training-types"
 
 export const dynamic = "force-dynamic"
 
-const topics = [
-  { id: "single", name: "Naked singles" },
-  { id: "hidden", name: "Hidden singles" },
-  { id: "locked", name: "Locked candidates" },
-] as const
-
-const lessons: TrainingExercise[] = topics.flatMap((topic) =>
-  fixtures[topic.id].map((exercise, index, group) => ({
-    ...exercise, topic, check: index === group.length - 1,
-  })),
+const lessons: TrainingExercise[] = trainingModules.flatMap(({ id, name, level }) =>
+  fixtures.filter((exercise) => exercise.module === id).map((exercise) => {
+    const action = exercise.technique === "single" || exercise.technique === "hidden" ? "place" : "eliminate"
+    const position = `row ${Math.floor(exercise.target / 9) + 1}, column ${exercise.target % 9 + 1}`
+    return {
+      topic: { id, name, level },
+      kind: exercise.kind as TrainingExercise["kind"],
+      board: exercise.board,
+      target: exercise.target,
+      answer: exercise.digit,
+      action,
+      prompt: action === "place" ? `Which digit belongs at ${position}?` : `Which candidate can you eliminate at ${position}?`,
+      hint: exercise.hint,
+      explanation: exercise.explanation,
+      highlight: exercise.evidence.filter((cell) => cell !== exercise.target),
+      followUp: exercise.followUp,
+      choices: exercise.choices,
+    }
+  }),
 )
-const sample = lessons.filter((_, index) => index % 4 === 0)
+const sample = lessons.filter(({ kind }) => kind === "preview")
 
 function reply(body: TrainingResponse | { error: string } | { url: string; }, status = 200) {
   return NextResponse.json(body, { status, headers: { "Cache-Control": "private, no-store" } })
@@ -48,7 +58,7 @@ async function paymentStatus(request: Request, services: ReturnType<typeof train
 }
 
 export async function GET(request: Request) {
-  if (!trainingPaymentsEnabled()) return reply({ access: "free", exercises: lessons })
+  if (!trainingPaymentsEnabled()) return reply({ access: "free", exercises: sample })
 
   try {
     const services = trainingPaymentServices()
@@ -104,7 +114,7 @@ export async function POST(request: Request) {
     if (reservationError) throw reservationError
 
     const entry = params.get("entry") === "pricing" ? "/pricing" : "/sudoku-practice"
-    const topic = topics.find((item) => item.id === params.get("topic"))
+    const topic = trainingModules.find((item) => item.id === params.get("topic"))
     const back = new URL(entry, services.origin)
     if (entry === "/sudoku-practice" && topic) back.searchParams.set("topic", topic.id)
     back.hash = entry === "/pricing" ? "training-purchase" : "exercises"

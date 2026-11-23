@@ -40,6 +40,79 @@ export function shareReasoningArea(squares: number[]) {
 
 export { sees as seesReasoningSquare }
 
+export type CourseTechnique = Technique | "single" | "locked" | "triple" | "hidden-set" | "x-wing"
+
+function combinations<T>(items: T[], size: number, start = 0): T[][] {
+  if (size === 0) return [[]]
+  return items.slice(start).flatMap((item, index) =>
+    combinations(items, size - 1, start + index + 1).map((rest) => [item, ...rest]),
+  )
+}
+
+export function findCourseDeductions(marks: number[][], technique: CourseTechnique): Deduction[] {
+  if (technique === "hidden" || technique === "pair" || technique === "wing") return findDeductions(marks, technique)
+  if (technique === "single") return squares.filter((cell) => marks[cell].length === 1)
+    .map((target) => ({ target, digit: marks[target][0], evidence: [] }))
+
+  const results: Deduction[] = []
+  const places = (house: number[], digit: number) => house.filter((cell) => marks[cell].includes(digit))
+  if (technique === "locked" || technique === "x-wing") {
+    for (const digit of digits) {
+      if (technique === "locked") {
+        for (const house of houses) {
+          const evidence = places(house, digit)
+          if (evidence.length < 2) continue
+          for (const cross of houses) {
+            if (cross === house || !evidence.every((cell) => cross.includes(cell))) continue
+            for (const target of places(cross, digit).filter((cell) => !house.includes(cell))) {
+              results.push({ evidence, target, digit })
+            }
+          }
+        }
+      } else {
+        for (const [offset, slot] of [[0, col], [9, row]] as const) {
+          const lines = houses.slice(offset, offset + 9).map((house) => places(house, digit))
+            .filter((line) => line.length === 2)
+          for (const [a, b] of combinations(lines, 2)) {
+            const slots = a.map(slot)
+            if (!b.every((cell) => slots.includes(slot(cell)))) continue
+            const evidence = [...a, ...b]
+            for (const target of squares.filter((cell) => slots.includes(slot(cell)) && !evidence.includes(cell) && marks[cell].includes(digit))) {
+              results.push({ evidence, target, digit })
+            }
+          }
+        }
+      }
+    }
+    return results
+  }
+
+  for (const house of houses) {
+    if (technique === "triple") {
+      const cells = house.filter((cell) => marks[cell].length >= 2 && marks[cell].length <= 3)
+      for (const evidence of combinations(cells, 3)) {
+        const reserved = new Set(evidence.flatMap((cell) => marks[cell]))
+        if (reserved.size !== 3) continue
+        for (const target of house.filter((cell) => !evidence.includes(cell))) {
+          for (const digit of marks[target].filter((value) => reserved.has(value))) results.push({ evidence, target, digit })
+        }
+      }
+    } else {
+      for (const size of [2, 3]) {
+        const restricted = digits.filter((digit) => places(house, digit).length >= 2 && places(house, digit).length <= size)
+        for (const reserved of combinations(restricted, size)) {
+          const evidence = house.filter((cell) => reserved.some((digit) => marks[cell].includes(digit)))
+          if (evidence.length !== size) continue
+          for (const target of evidence) {
+            for (const digit of marks[target].filter((value) => !reserved.includes(value))) results.push({ evidence, target, digit })
+          }
+        }
+      }
+    }
+  }
+  return results
+}
+
 export function findDeductions(marks: number[][], technique: Technique): Deduction[] {
   const results: Deduction[] = []
   if (technique === "hidden") {

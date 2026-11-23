@@ -1,3 +1,5 @@
+import type { trainingModules } from "./sudoku-training-catalog"
+
 export interface TrainingExercise {
   board: string[]
   target: number
@@ -6,8 +8,11 @@ export interface TrainingExercise {
   hint: string
   explanation: string
   highlight: number[]
-  topic: { id: "single" | "hidden" | "locked"; name: string }
-  check: boolean
+  topic: Pick<(typeof trainingModules)[number], "id" | "name" | "level">
+  kind: "preview" | "guided" | "variation" | "distinction" | "independent"
+  action: "place" | "eliminate"
+  followUp?: number
+  choices?: number[]
 }
 
 export type TrainingAccess = "free" | "signed-out" | "locked" | "unlocked"

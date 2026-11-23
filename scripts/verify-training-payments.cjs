@@ -87,6 +87,7 @@ function loadRoute(filename) {
   const exports = {}
   new Function("exports", "require", outputText)(exports, (name) => {
     if (name === "@/lib/sudoku-training-payments") return fakePayments
+    if (name === "@/lib/sudoku-training-catalog") return loadRoute("lib/sudoku-training-catalog.ts")
     if (name.startsWith("@/")) return require(path.join(__dirname, "..", name.slice(2)))
     return require(name)
   })
@@ -125,22 +126,27 @@ async function expectAccess(token, access, count) {
   const result = await response.json()
   assert.equal(result.access, access)
   assert.equal(result.exercises.length, count)
+  if (access === "unlocked") {
+    assert.equal(result.exercises.filter((exercise) => exercise.kind !== "preview").length, 90)
+  } else {
+    assert.ok(result.exercises.every((exercise) => exercise.kind === "preview"))
+  }
   return result.exercises
 }
 
 async function main() {
   enabled = false
-  await expectAccess(null, "free", 12)
+  await expectAccess(null, "free", 9)
   assert.equal((await training.POST(request("verified", "POST"))).status, 503)
   enabled = true
   configReady = false
   assert.equal((await training.GET(request(null))).status, 503)
   configReady = true
 
-  const sample = await expectAccess(null, "signed-out", 3)
-  assert.equal(new Set(sample.map((entry) => entry.topic.id)).size, 3)
+  const sample = await expectAccess(null, "signed-out", 9)
+  assert.equal(new Set(sample.map((entry) => entry.topic.id)).size, 9)
   assert.equal((await training.POST(request("unverified", "POST"))).status, 401)
-  await expectAccess("verified", "locked", 3)
+  await expectAccess("verified", "locked", 9)
   const start = sessionsCreated
   const parallel = await Promise.all(["pricing", "practice"].map((entry) =>
     training.POST(request("verified", "POST", "?entry=" + entry))))
@@ -188,26 +194,26 @@ async function main() {
 
   const eventPayment = { payment_id: payment.payment_id }
   assert.equal((await notify("payment.succeeded", eventPayment, false)).status, 400)
-  await expectAccess("verified", "locked", 3)
+  await expectAccess("verified", "locked", 9)
   await notify("payment.cancelled", eventPayment)
-  await expectAccess("verified", "locked", 3)
+  await expectAccess("verified", "locked", 9)
   payment.metadata.sudoku_mode = "live_mode"
   await notify("payment.succeeded", eventPayment)
-  await expectAccess("verified", "locked", 3)
+  await expectAccess("verified", "locked", 9)
   payment.metadata.sudoku_mode = "test_mode"
 
   assert.equal((await notify("payment.succeeded", eventPayment)).status, 200)
   await notify("payment.succeeded", eventPayment)
   assert.equal(rows.size, 1)
-  await expectAccess("verified", "unlocked", 12)
-  await expectAccess("unverified", "signed-out", 3)
+  await expectAccess("verified", "unlocked", 99)
+  await expectAccess("unverified", "signed-out", 9)
   assert.equal((await training.POST(request("verified", "POST"))).status, 409)
 
   await notify("refund.succeeded", { ...eventPayment, is_partial: true })
-  await expectAccess("verified", "unlocked", 12)
+  await expectAccess("verified", "unlocked", 99)
   await notify("refund.succeeded", { ...eventPayment, is_partial: false })
   await notify("payment.succeeded", eventPayment)
-  await expectAccess("verified", "locked", 3)
+  await expectAccess("verified", "locked", 9)
 
   sessionStatus = { payment_status: "succeeded", payment_id: payment.payment_id }
   payment.refund_status = "full"
