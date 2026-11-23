@@ -22,6 +22,31 @@ function reply(body: TrainingResponse | { error: string } | { url: string; }, st
   return NextResponse.json(body, { status, headers: { "Cache-Control": "private, no-store" } })
 }
 
+async function paymentStatus(request: Request, services: ReturnType<typeof trainingPaymentServices>, buyerId: string): Promise<TrainingResponse["paymentStatus"]> {
+  const id = new URL(request.url).searchParams.get("payment_id")
+  if (!id || !/^pay_[A-Za-z0-9]{1,100}$/.test(id)) return
+
+  try {
+    const payment = await services.dodo.payments.retrieve(id)
+    if (payment.metadata?.sudoku_buyer_id !== buyerId ||
+        payment.metadata.sudoku_pack !== trainingPack ||
+        payment.metadata.sudoku_mode !== services.mode ||
+        !payment.product_cart?.some((item) => item.product_id === services.productId)) return
+
+    switch (payment.status) {
+      case "failed":
+      case "cancelled":
+      case "succeeded":
+        return payment.status
+      default:
+        return "processing"
+    }
+  } catch {
+    // An unavailable payment lookup must not prevent checking existing access.
+    return
+  }
+}
+
 export async function GET(request: Request) {
   if (!trainingPaymentsEnabled()) return reply({ access: "free", exercises: lessons })
 
@@ -30,7 +55,8 @@ export async function GET(request: Request) {
     const buyer = await trainingBuyer(request, services.db)
     if (!buyer) return reply({ access: "signed-out", exercises: sample })
     const purchased = await hasTrainingPurchase(services, buyer.id)
-    return reply(purchased ? { access: "unlocked", exercises: lessons } : { access: "locked", exercises: sample })
+    if (purchased) return reply({ access: "unlocked", exercises: lessons })
+    return reply({ access: "locked", exercises: sample, paymentStatus: await paymentStatus(request, services, buyer.id) })
   } catch {
     return reply({ error: "Training access is temporarily unavailable. Please try again." }, 503)
   }
@@ -44,8 +70,12 @@ export async function POST(request: Request) {
     const buyer = await trainingBuyer(request, services.db)
     if (!buyer) return reply({ error: "Sign in with a verified email first." }, 401)
     if (await hasTrainingPurchase(services, buyer.id)) return reply({ error: "You already own the training pack. Refresh your access." }, 409)
-
     const params = new URL(request.url).searchParams
+    const status = await paymentStatus(request, services, buyer.id)
+    if (params.has("payment_id") && status !== "failed" && status !== "cancelled") {
+      return reply({ error: "A payment already exists for this checkout. Refresh access before trying again." }, 409)
+    }
+
     const entry = services.mode === "test_mode" && params.get("entry") === "pricing" ? "/pricing" : "/sudoku-practice"
     const topic = topics.find((item) => item.id === params.get("topic"))
     const back = new URL(entry, services.origin)

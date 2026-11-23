@@ -24,6 +24,7 @@ export function SudokuTrainingAccess({ entry = "practice" }: { entry?: "practice
   const [email, setEmail] = useState("")
   const [codeSent, setCodeSent] = useState(false)
   const [checkoutReturn, setCheckoutReturn] = useState("")
+  const [paymentId, setPaymentId] = useState("")
   const [autoChecksEnded, setAutoChecksEnded] = useState(false)
   const [resumeTopic, setResumeTopic] = useState("")
   const [intent, setIntent] = useState<"buy" | "restore" | null>(null)
@@ -35,6 +36,7 @@ export function SudokuTrainingAccess({ entry = "practice" }: { entry?: "practice
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     setCheckoutReturn(params.get("checkout") ?? "")
+    setPaymentId(params.get("payment_id") ?? "")
     topic.current = params.get("topic") ?? ""
     setResumeTopic(topic.current)
     if (!supabase) {
@@ -55,7 +57,8 @@ export function SudokuTrainingAccess({ entry = "practice" }: { entry?: "practice
     setLoadError("")
     void (async () => {
       try {
-        const response = await fetch(endpoint, {
+        const query = paymentId ? `?${new URLSearchParams({ payment_id: paymentId })}` : ""
+        const response = await fetch(endpoint + query, {
           signal: request.signal,
           headers: token ? { Authorization: `Bearer ${token}` } : {},
         })
@@ -75,7 +78,7 @@ export function SudokuTrainingAccess({ entry = "practice" }: { entry?: "practice
       }
     })()
     return () => request.abort()
-  }, [token, sessionReady, refresh])
+  }, [token, sessionReady, refresh, paymentId])
 
   async function sendCode(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -138,6 +141,7 @@ export function SudokuTrainingAccess({ entry = "practice" }: { entry?: "practice
     let leaving = false
     try {
       const params = new URLSearchParams({ entry, topic: topic.current })
+      if (paymentId) params.set("payment_id", paymentId)
       const response = await fetch(`${endpoint}?${params}`, { method: "POST", headers: { Authorization: `Bearer ${accessToken}` } })
       const result = await response.json()
       if (!response.ok || typeof result.url !== "string") {
@@ -168,7 +172,9 @@ export function SudokuTrainingAccess({ entry = "practice" }: { entry?: "practice
 
   const visible = training && (training.access !== "unlocked" || loadedToken.current === token)
   const gated = visible && (training.access === "signed-out" || training.access === "locked")
-  const checkingPurchase = checkoutReturn === "returned" && Boolean(token) && training?.access === "locked"
+  const paymentState = loadedToken.current === token ? training?.paymentStatus : undefined
+  const paymentFailed = paymentState === "failed" || paymentState === "cancelled"
+  const checkingPurchase = checkoutReturn === "returned" && Boolean(token) && training?.access === "locked" && !paymentFailed
   const refreshAccess = () => {
     setManualRefresh(true)
     setRefreshMessage("")
@@ -213,10 +219,17 @@ export function SudokuTrainingAccess({ entry = "practice" }: { entry?: "practice
           {pricing && training.access === "unlocked" && <Button asChild><Link href="/sudoku-practice#exercises">Start training</Link></Button>}
           {checkoutReturn === "returned" && training.access === "locked" && (
             <div className="space-y-3 rounded-lg border border-amber-300 bg-amber-50 p-4 text-amber-950">
-              <p role="status">{autoChecksEnded
+              <p role="status">{paymentFailed
+                ? "Payment did not complete. You can try again with another card."
+                : paymentState === "succeeded"
+                  ? "Payment succeeded. We’re waiting for your training access to update."
+                  : autoChecksEnded
                 ? "Automatic checks ended. Your training pack is still locked. If your receipt shows the payment succeeded, refresh access before trying to pay again."
                 : "You’re back from checkout. We’re checking for a confirmed purchase. Your training pack is still locked."}</p>
-              {autoChecksEnded && !loadError && <details>
+              {paymentFailed && <Button type="button" disabled={sending || manualRefresh || !token} onClick={() => checkout(token, true)}>
+                {sending ? "Opening checkout…" : "Retry checkout"}
+              </Button>}
+              {autoChecksEnded && !paymentId && !paymentState && !loadError && <details>
                 <summary className="cursor-pointer font-medium underline">Payment failed or was cancelled?</summary>
                 <p className="my-2">If you confirmed the payment failed or was cancelled, you can start a new checkout.</p>
                 <Button type="button" variant="outline" disabled={sending || manualRefresh || !token}

@@ -14,7 +14,7 @@ let enabled = true
 let configReady = true
 let checkoutBody
 let payment = {
-  payment_id: "payment-1",
+  payment_id: "pay_test1",
   status: "succeeded",
   product_cart: [{ product_id: "training-product" }],
   metadata: { sudoku_buyer_id: "buyer", sudoku_pack: pack, sudoku_mode: "test_mode" },
@@ -132,6 +132,20 @@ async function main() {
   assert.equal(checkoutBody.return_url, "https://sudoku.example.com/sudoku-practice?topic=locked&checkout=returned#exercises")
   assert.equal((await training.POST(request("verified", "POST", "?entry=https://untrusted.example&topic=untrusted"))).status, 200)
   assert.equal(checkoutBody.return_url, "https://sudoku.example.com/sudoku-practice?checkout=returned#exercises")
+
+  const paymentQuery = "?payment_id=" + payment.payment_id
+  for (const [provider, expected] of [["failed", "failed"], ["cancelled", "cancelled"], ["processing", "processing"], ["succeeded", "succeeded"]]) {
+    payment.status = provider
+    const result = await (await training.GET(request("verified", "GET", paymentQuery + "&status=untrusted"))).json()
+    assert.equal(result.paymentStatus, expected)
+    assert.equal(result.access, "locked", "provider status alone does not unlock access")
+    assert.equal((await training.POST(request("verified", "POST", paymentQuery))).status,
+      provider === "processing" || provider === "succeeded" ? 409 : 200)
+  }
+  payment.metadata.sudoku_buyer_id = "another-buyer"
+  assert.equal((await (await training.GET(request("verified", "GET", paymentQuery))).json()).paymentStatus, undefined)
+  assert.equal((await training.POST(request("verified", "POST", paymentQuery))).status, 409)
+  payment.metadata.sudoku_buyer_id = "buyer"
 
   const eventPayment = { payment_id: payment.payment_id }
   assert.equal((await notify("payment.succeeded", eventPayment, false)).status, 400)

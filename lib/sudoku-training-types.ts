@@ -15,4 +15,5 @@ export type TrainingAccess = "free" | "signed-out" | "locked" | "unlocked"
 export interface TrainingResponse {
   access: TrainingAccess
   exercises: TrainingExercise[]
+  paymentStatus?: "processing" | "failed" | "cancelled" | "succeeded"
 }
