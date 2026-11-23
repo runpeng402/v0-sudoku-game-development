@@ -5,7 +5,23 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
 // 如果环境变量不存在，创建一个空的客户端或返回 null
-export const supabase = supabaseUrl && supabaseAnonKey ? createClient(supabaseUrl, supabaseAnonKey) : null
+export const supabase = supabaseUrl && supabaseAnonKey ? createClient(supabaseUrl, supabaseAnonKey, {
+  global: {
+    fetch: async (input, init) => {
+      if (typeof input !== "string" || !input.endsWith("/auth/v1/otp") || init?.signal) {
+        return fetch(input, init)
+      }
+
+      const controller = new AbortController()
+      const timer = setTimeout(() => controller.abort(), 15000)
+      try {
+        return await fetch(input, { ...init, signal: controller.signal })
+      } finally {
+        clearTimeout(timer)
+      }
+    },
+  },
+}) : null
 
 // Database types
 export interface User {

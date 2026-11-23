@@ -24,6 +24,7 @@ export function SudokuTrainingAccess({ entry = "practice" }: { entry?: "practice
   const [email, setEmail] = useState("")
   const [codeSent, setCodeSent] = useState(false)
   const [checkoutReturn, setCheckoutReturn] = useState("")
+  const [autoChecksEnded, setAutoChecksEnded] = useState(false)
   const [resumeTopic, setResumeTopic] = useState("")
   const [intent, setIntent] = useState<"buy" | "restore" | null>(null)
   const topic = useRef("")
@@ -82,15 +83,28 @@ export function SudokuTrainingAccess({ entry = "practice" }: { entry?: "practice
     const address = String(new FormData(event.currentTarget).get("email")).trim()
     setSending(true)
     setStatus("")
+    const slow = window.setTimeout(() => {
+      setStatus("The email service is taking longer than usual. Please wait for this request to finish.")
+    }, 4000)
     try {
       const { error } = await supabase.auth.signInWithOtp({ email: address })
-      if (error) throw error
+      if (error) {
+        if (error.status === 429) {
+          setStatus("Too many code requests. Wait a minute before trying again.")
+        } else if (error.status === 0) {
+          setStatus("The email service did not respond. Check your inbox first, then try again if no code arrives.")
+        } else {
+          setStatus("The email service could not send a code. Check the address and try again shortly.")
+        }
+        return
+      }
       setEmail(address)
       setCodeSent(true)
-      setStatus("Check your email for your sign-in code.")
+      setStatus("Email request accepted. Check your inbox and spam folder for the latest code.")
     } catch {
       setStatus("Could not send a sign-in code. Wait a moment and try again.")
     } finally {
+      window.clearTimeout(slow)
       setSending(false)
     }
   }
@@ -116,8 +130,8 @@ export function SudokuTrainingAccess({ entry = "practice" }: { entry?: "practice
     }
   }
 
-  async function checkout(accessToken: string | null) {
-    if (!accessToken || opening.current || checkoutReturn === "returned") return
+  async function checkout(accessToken: string | null, confirmedRetry = false) {
+    if (!accessToken || opening.current || (checkoutReturn === "returned" && !confirmedRetry)) return
     opening.current = true
     setSending(true)
     setStatus("")
@@ -154,7 +168,7 @@ export function SudokuTrainingAccess({ entry = "practice" }: { entry?: "practice
 
   const visible = training && (training.access !== "unlocked" || loadedToken.current === token)
   const gated = visible && (training.access === "signed-out" || training.access === "locked")
-  const checkingPurchase = checkoutReturn === "returned" && Boolean(token) && training?.access === "locked" && !loadError
+  const checkingPurchase = checkoutReturn === "returned" && Boolean(token) && training?.access === "locked"
   const refreshAccess = () => {
     setManualRefresh(true)
     setRefreshMessage("")
@@ -163,10 +177,15 @@ export function SudokuTrainingAccess({ entry = "practice" }: { entry?: "practice
 
   useEffect(() => {
     if (!checkingPurchase) return
+    setAutoChecksEnded(false)
     const checks = [2000, 5000, 10000, 20000].map((delay) =>
       window.setTimeout(() => setRefresh((value) => value + 1), delay),
     )
-    return () => checks.forEach((check) => window.clearTimeout(check))
+    const end = window.setTimeout(() => setAutoChecksEnded(true), 22000)
+    return () => {
+      checks.forEach((check) => window.clearTimeout(check))
+      window.clearTimeout(end)
+    }
   }, [checkingPurchase, token])
 
   return (
@@ -193,7 +212,19 @@ export function SudokuTrainingAccess({ entry = "practice" }: { entry?: "practice
           {gated && <p>Try one exercise per technique for free. The test pack adds nine exercises. The checkout page shows the test amount and currency.</p>}
           {pricing && training.access === "unlocked" && <Button asChild><Link href="/sudoku-practice#exercises">Start training</Link></Button>}
           {checkoutReturn === "returned" && training.access === "locked" && (
-            <p role="status">Waiting for payment confirmation. Access is checked automatically. You can also refresh access below.</p>
+            <div className="space-y-3 rounded-lg border border-amber-300 bg-amber-50 p-4 text-amber-950">
+              <p role="status">{autoChecksEnded
+                ? "Automatic checks ended. Your training pack is still locked. If your receipt shows the payment succeeded, refresh access before trying to pay again."
+                : "You’re back from checkout. We’re checking for a confirmed purchase. Your training pack is still locked."}</p>
+              {autoChecksEnded && !loadError && <details>
+                <summary className="cursor-pointer font-medium underline">Payment failed or was cancelled?</summary>
+                <p className="my-2">If you confirmed the payment failed or was cancelled, you can start a new checkout.</p>
+                <Button type="button" variant="outline" disabled={sending || manualRefresh || !token}
+                  onClick={() => checkout(token, true)}>
+                  {sending ? "Opening checkout…" : "Retry checkout"}
+                </Button>
+              </details>}
+            </div>
           )}
           {checkoutReturn === "cancelled" && gated && <p role="status">Checkout was cancelled. You can try again whenever you’re ready.</p>}
           {training.access === "signed-out" && supabase && !intent && (
@@ -211,28 +242,29 @@ export function SudokuTrainingAccess({ entry = "practice" }: { entry?: "practice
                   <label htmlFor="training-code" className="block text-sm font-medium">Email sign-in code</label>
                   <Input id="training-code" name="code" type="text" inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]+" required />
                   <div className="flex flex-wrap gap-2">
-                    <Button type="submit" disabled={sending}>Verify code</Button>
+                    <Button type="submit" disabled={sending}>{sending ? "Verifying code…" : "Verify code"}</Button>
                     <Button type="button" variant="outline" disabled={sending} onClick={() => { setCodeSent(false); setStatus("") }}>Change email or resend</Button>
                   </div>
                 </form>
               ) : (
                 <form key="request-code" onSubmit={sendCode} className="max-w-sm space-y-2">
                   <label htmlFor="training-email" className="block text-sm font-medium">Email address</label>
-                  <Input id="training-email" name="email" type="email" autoComplete="email" spellCheck={false} defaultValue={email} required />
-                  <Button type="submit" disabled={sending}>Send sign-in code</Button>
+                  <Input id="training-email" name="email" type="email" autoComplete="email" spellCheck={false} defaultValue={email} readOnly={sending} required />
+                  <Button type="submit" disabled={sending}>{sending ? "Sending code…" : "Send sign-in code"}</Button>
                 </form>
               )}
+              <p role="status">{status}</p>
             </div>
           )}
           {training.access === "locked" && checkoutReturn !== "returned" && (
             <Button type="button" onClick={() => checkout(token)} disabled={sending || !token}>
-              {sending ? "Opening checkout…" : "Buy the training pack"}
+              {sending ? "Opening checkout…" : checkoutReturn === "cancelled" ? "Retry checkout" : "Buy the training pack"}
             </Button>
           )}
           {token && <Button type="button" variant="ghost" onClick={signOut}>Sign out</Button>}
           {gated && <Button type="button" variant="outline" disabled={manualRefresh} onClick={refreshAccess}>{manualRefresh ? "Checking access…" : "Refresh access"}</Button>}
           {gated && refresh > 0 && <p role="status" className="text-sm">{manualRefresh ? "Checking training access…" : loadError || refreshMessage}</p>}
-          <p role="status">{status}</p>
+          {!(training.access === "signed-out" && supabase && intent) && <p role="status">{status}</p>}
         </section>
       )}
       {loadError && !gated && <Button type="button" variant="outline" disabled={manualRefresh} onClick={refreshAccess}>{manualRefresh ? "Checking access…" : "Refresh access"}</Button>}
