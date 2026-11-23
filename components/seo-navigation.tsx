@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { BookOpen, Grid, HelpCircle, Home, Printer, UserCircle } from "lucide-react"
+import { BookOpen, Grid, HelpCircle, Home, Printer, Tag, UserCircle } from "lucide-react"
 import { homeCopy, localizedPath, pageCopy, type SeoLocale } from "@/lib/seo-locales"
 import { SeoLanguageLinks } from "@/components/seo-language-links"
 
@@ -16,6 +16,7 @@ export function SeoNavigation({ locale, path = "/" }: SeoNavigationProps) {
     { href: localizedPath(locale, pageCopy.rules.path), label: copy.rules, icon: HelpCircle },
     { href: localizedPath(locale, pageCopy.printable.path), label: copy.printable, icon: Printer },
     { href: localizedPath(locale, "/play"), label: locale === "zh" ? "游戏" : locale === "es" ? "Jugar" : "Play", icon: Grid },
+    { href: "/pricing", label: locale === "zh" ? "定价" : locale === "es" ? "Precios" : "Pricing", icon: Tag },
   ]
   const accountLabel = locale === "zh" ? "账号" : locale === "es" ? "Cuenta" : "Account"
 
@@ -29,8 +30,8 @@ export function SeoNavigation({ locale, path = "/" }: SeoNavigationProps) {
 
         <div className="flex flex-wrap items-center gap-x-5 gap-y-3 md:justify-center lg:gap-x-7">
           {items.map((item) => (
-            <Link key={item.href} href={item.href} className="flex items-center gap-1.5 text-sm font-medium text-gray-600 hover:text-blue-700">
-              <item.icon className="h-4 w-4" />
+            <Link key={item.href} href={item.href} className="flex items-center gap-1.5 whitespace-nowrap text-sm font-medium text-gray-600 hover:text-blue-700">
+              <item.icon aria-hidden="true" className="h-4 w-4 shrink-0" />
               {item.label}
             </Link>
           ))}
