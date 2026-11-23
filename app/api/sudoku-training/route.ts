@@ -103,7 +103,7 @@ export async function POST(request: Request) {
     if (reservationError?.code === "23505") return alreadyOpening()
     if (reservationError) throw reservationError
 
-    const entry = services.mode === "test_mode" && params.get("entry") === "pricing" ? "/pricing" : "/sudoku-practice"
+    const entry = params.get("entry") === "pricing" ? "/pricing" : "/sudoku-practice"
     const topic = topics.find((item) => item.id === params.get("topic"))
     const back = new URL(entry, services.origin)
     if (entry === "/sudoku-practice" && topic) back.searchParams.set("topic", topic.id)

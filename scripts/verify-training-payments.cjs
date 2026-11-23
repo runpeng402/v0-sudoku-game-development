@@ -162,6 +162,11 @@ async function main() {
   assert.equal((await training.POST(request("verified", "POST", "?entry=pricing&topic=hidden"))).status, 200)
   assert.equal(checkoutBody.return_url, "https://sudoku.example.com/pricing?checkout=returned#training-purchase")
   assert.equal(checkoutBody.cancel_url, "https://sudoku.example.com/pricing?checkout=cancelled#training-purchase")
+  services.mode = "live_mode"
+  assert.equal((await training.POST(request("verified", "POST", "?entry=pricing"))).status, 200)
+  assert.equal(checkoutBody.return_url, "https://sudoku.example.com/pricing?checkout=returned#training-purchase")
+  assert.equal(checkoutBody.cancel_url, "https://sudoku.example.com/pricing?checkout=cancelled#training-purchase")
+  services.mode = "test_mode"
   assert.equal((await training.POST(request("verified", "POST", "?entry=practice&topic=locked"))).status, 200)
   assert.equal(checkoutBody.return_url, "https://sudoku.example.com/sudoku-practice?topic=locked&checkout=returned#exercises")
   assert.equal((await training.POST(request("verified", "POST", "?entry=https://untrusted.example&topic=untrusted"))).status, 200)

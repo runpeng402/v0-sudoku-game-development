@@ -1,16 +1,20 @@
 import type { Metadata } from "next"
 import Link from "next/link"
-import { notFound } from "next/navigation"
 import { SudokuTrainingAccess } from "@/components/sudoku-training-access"
 
 export const dynamic = "force-dynamic"
-export const metadata: Metadata = {
-  title: "SudokuStudio Training Pricing",
-  robots: { index: false, follow: false },
+export function generateMetadata(): Metadata {
+  return {
+    title: "SudokuStudio Training Pricing",
+    alternates: { canonical: "/pricing" },
+    robots: process.env.DODO_TRAINING_MODE === "test_mode" ? { index: false, follow: false } : undefined,
+  }
 }
 
 export default function TrainingPricingPage() {
-  if (process.env.DODO_TRAINING_MODE !== "test_mode") notFound()
+  const mode = process.env.DODO_TRAINING_MODE
+  const testCheckout = mode === "test_mode"
+  const checkoutEnabled = testCheckout || mode === "live_mode"
 
   return (
     <main className="mx-auto max-w-4xl space-y-8 px-4 py-8 sm:py-12">
@@ -22,17 +26,18 @@ export default function TrainingPricingPage() {
         <section className="space-y-3 rounded-xl border bg-white p-6">
           <h2 className="text-xl font-semibold">Free practice</h2>
           <p className="text-3xl font-bold">Free</p>
-          <p>Try a sample exercise for each technique in the test pack.</p>
+          <p>Try one exercise for each of the three techniques.</p>
           <Link className="font-medium text-blue-700 underline" href="/sudoku-practice#exercises">Try free exercises</Link>
         </section>
         <section className="space-y-3 rounded-xl border border-blue-200 bg-blue-50 p-6">
           <h2 className="text-xl font-semibold">Complete training pack</h2>
           <p className="text-3xl font-bold">US$6.90</p>
-          <p>Planned one-time launch price. The public pack is planned to contain 90 paid exercises across three difficulty levels.</p>
-          <p className="text-sm font-medium">Test checkout grants access to the current 12-exercise test pack. The checkout page shows the test amount.</p>
+          <p>Get 12 interactive exercises covering naked singles, hidden singles, and locked candidates. Each technique includes three guided exercises and one independent check.</p>
+          {testCheckout && <p className="text-sm font-medium">US$6.90 is the planned launch price. The test checkout shows its own amount and currency.</p>}
+          {!checkoutEnabled && <p className="text-sm font-medium">Planned one-time price. The training pack is currently available to try for free. Paid checkout is not open yet.</p>}
         </section>
       </div>
-      <SudokuTrainingAccess entry="pricing" />
+      {checkoutEnabled && <SudokuTrainingAccess entry="pricing" />}
     </main>
   )
 }

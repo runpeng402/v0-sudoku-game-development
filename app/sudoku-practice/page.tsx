@@ -25,7 +25,7 @@ export default function SudokuPracticePage() {
           Learn three Sudoku solving techniques in 12 exercises. The first example for each technique is free to try.
           The full pack includes three guided examples and one independent check per technique. Make one deduction per board, then read the reasoning.
         </p>
-        {process.env.DODO_TRAINING_MODE === "test_mode" && <Link href="/pricing" className="inline-block font-medium text-blue-700 underline">See training pricing</Link>}
+        <Link href="/pricing" className="inline-block font-medium text-blue-700 underline">See training pricing</Link>
       </header>
 
       <SudokuTrainingAccess />

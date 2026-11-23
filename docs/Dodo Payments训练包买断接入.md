@@ -2,7 +2,7 @@
 
 ## 当前范围
 
-现有 /sudoku-practice 提供买断流程。开启付费配置时，裸单、隐单和区块排除各提供 1 道免费练习，服务端确认购买后开放全部 12 道。默认模式保留当前的 12 道免费练习。没有新增公开页面或改动站点地图。
+`/sudoku-practice` 提供训练入口，并链接到公开销售页 `/pricing`。开启付费配置时，裸单、隐单和区块排除各提供 1 道免费练习，服务端确认购买后开放全部 12 道。默认模式保留 12 道免费练习，销售页显示计划售价与尚未开放购买的状态。
 
 支付使用 Dodo 托管结账。购买者用 Supabase 验证邮箱验证码，同一邮箱可跨设备恢复。训练包原始题目已存在历史提交中，付费控制的是站内训练访问。过去公开的题目不能视为具有内容保密性。
 
@@ -24,7 +24,7 @@
 | SUPABASE_SERVICE_ROLE_KEY | 同一项目服务端服务角色密钥 |
 
 4. 在 Dodo 测试后台添加 Webhook，地址为测试站点加 /api/webhooks/dodo。订阅 payment.succeeded、refund.succeeded、dispute.accepted、dispute.lost。用同一模式的签名密钥。部署后测试访客、验证码、取消、完成支付、刷新解锁、第二台设备恢复和全额退款。
-5. 测试通过后，再用独立的正式商品、密钥、Webhook 与正式站点配置切换 live_mode。测试订单权限与正式订单资料按模式隔离。已开出的结账链接可能与并行标签页中的链接同时存在，正式收费前应验证并补上同一账号的并行结账去重。
+5. 正式收费使用独立的正式商品、密钥、Webhook、Supabase 配置和正式站点回跳地址。先执行两份 SQL，并核对销售页、商品名称、实际交付题量和美元基础价。等 Dodo 正式账户可用且配置齐备后再设置 `live_mode`。测试订单权限与正式订单资料按模式隔离。
 
 ## 验收
 
@@ -48,7 +48,8 @@
 
 - Passed — node scripts/verify-training-payments.cjs 在模拟订单接口和数据库下，用 Dodo SDK 实际校验签名。覆盖默认免费、未登录拒绝结账、测试订单隔离、取消、成功、重复通知、部分退款、全额撤销和延迟成功通知。
 - Passed — TypeScript、生产构建、标准数独 300 盘和 12 道训练题回归。
-- Not run — Dodo 测试后台的真实结账、订单通知投递、Supabase SQL 执行、邮箱实际收码和跨设备恢复。正式收费尚未启用。
+- Passed — Preview 测试模式已验证邮箱验证码、拒付后重试、成功回跳、解锁、退款后权限收回，以及同一账号通过共用结账会话重新购买。复购后新增一笔成功测试付款，原退款记录保留。
+- Not run — 正式商品、正式支付配置和生产购买验收。
 
 参考 Dodo 官方开发入口 https://docs.dodopayments.com/developer-resources/build-with-ai-coding-agents
 参考 Supabase 邮箱验证码 https://supabase.com/docs/guides/auth/auth-email-passwordless

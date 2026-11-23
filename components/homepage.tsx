@@ -377,6 +377,9 @@ export function Homepage() {
               <p className="text-gray-300 max-w-2xl mx-auto">
                 Move from playing to learning with focused guides, rules, printable puzzles, and strategies.
               </p>
+              <Link href="/pricing" className="mt-4 inline-block font-medium text-blue-300 underline underline-offset-4">
+                See training pricing
+              </Link>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
