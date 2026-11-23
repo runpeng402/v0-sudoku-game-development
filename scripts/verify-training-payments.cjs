@@ -10,6 +10,9 @@ const pack = "sudoku-techniques-v1"
 const key = randomBytes(32).toString("base64")
 const dodo = new DodoPayments({ bearerToken: "local-test-only", environment: "test_mode", webhookKey: key })
 const rows = new Map()
+let activeCheckout = null
+let sessionStatus = {}
+let sessionsCreated = 0
 let enabled = true
 let configReady = true
 let checkoutBody
@@ -26,8 +29,9 @@ dodo.payments.retrieve = async (id) => {
 }
 dodo.checkoutSessions.create = async (body) => {
   checkoutBody = body
-  return { checkout_url: "https://checkout.example.com/training" }
+  return { session_id: "cks_" + ++sessionsCreated, checkout_url: "https://checkout.example.com/training/" + sessionsCreated }
 }
+dodo.checkoutSessions.retrieve = async () => sessionStatus
 
 const services = {
   mode: "test_mode",
@@ -36,6 +40,22 @@ const services = {
   dodo,
   db: {
     from(table) {
+      if (table === "sudoku_training_checkouts") return {
+        select: () => ({ match: () => ({ maybeSingle: async () => ({ data: activeCheckout }) }) }),
+        async insert(key) {
+          if (activeCheckout) return { error: { code: "23505" } }
+          activeCheckout = { ...key, session_id: null, checkout_url: null }
+          return { error: null }
+        },
+        update: (data) => ({ match: async () => {
+          activeCheckout = { ...activeCheckout, ...data }
+          return { error: null }
+        } }),
+        delete: () => ({ match: async (key) => {
+          if (activeCheckout?.session_id === key.session_id) activeCheckout = null
+          return { error: null }
+        } }),
+      }
       assert.equal(table, "sudoku_training_payments")
       return {
         async upsert(row, { ignoreDuplicates }) {
@@ -121,6 +141,20 @@ async function main() {
   assert.equal(new Set(sample.map((entry) => entry.topic.id)).size, 3)
   assert.equal((await training.POST(request("unverified", "POST"))).status, 401)
   await expectAccess("verified", "locked", 3)
+  const start = sessionsCreated
+  const parallel = await Promise.all(["pricing", "practice"].map((entry) =>
+    training.POST(request("verified", "POST", "?entry=" + entry))))
+  assert.deepEqual(parallel.map((response) => response.status).sort(), [200, 409])
+  assert.equal(sessionsCreated - start, 1)
+  const [firstUrl, reusedUrl] = await Promise.all([
+    parallel.find((response) => response.ok).json(),
+    training.POST(request("verified", "POST")).then((response) => response.json()),
+  ])
+  assert.deepEqual(firstUrl, reusedUrl)
+  assert.equal(sessionsCreated - start, 1)
+  sessionStatus = { payment_status: "processing", payment_id: payment.payment_id }
+  assert.equal((await training.POST(request("verified", "POST"))).status, 409)
+  sessionStatus = { payment_status: "failed", payment_id: payment.payment_id }
   assert.equal((await training.POST(request("verified", "POST"))).status, 200)
   assert.deepEqual(checkoutBody.product_cart, [{ product_id: "training-product", quantity: 1 }])
   assert.equal(checkoutBody.metadata.sudoku_buyer_id, "buyer")
@@ -170,7 +204,18 @@ async function main() {
   await notify("payment.succeeded", eventPayment)
   await expectAccess("verified", "locked", 3)
 
-  console.log("Passed: free fallback, authorization, checkout, signed webhooks, duplicate delivery, cancel, refund, and delayed success.")
+  sessionStatus = { payment_status: "succeeded", payment_id: payment.payment_id }
+  payment.refund_status = "full"
+  const afterRefund = sessionsCreated
+  assert.equal((await training.POST(request("verified", "POST"))).status, 200)
+  assert.equal(sessionsCreated - afterRefund, 1)
+
+  activeCheckout = null
+  dodo.checkoutSessions.create = async () => { throw new Error("Provider response could not be read") }
+  assert.equal((await training.POST(request("verified", "POST"))).status, 502)
+  assert.equal((await training.POST(request("verified", "POST"))).status, 409)
+
+  console.log("Passed: checkout concurrency and reuse, payment states, post-refund repurchase, uncertain creation, signed webhooks, and delayed success.")
 }
 
 main().catch((error) => {

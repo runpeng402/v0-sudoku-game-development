@@ -76,6 +76,33 @@ export async function POST(request: Request) {
       return reply({ error: "A payment already exists for this checkout. Refresh access before trying again." }, 409)
     }
 
+    const key = { mode: services.mode, pack: trainingPack, buyer_id: buyer.id }
+    const checkouts = services.db.from("sudoku_training_checkouts")
+    const { data: existing, error: readError } = await checkouts.select("session_id, checkout_url").match(key).maybeSingle()
+    if (readError) throw readError
+
+    const alreadyOpening = () => reply({ error: "A checkout is already opening or awaiting confirmation. Wait a moment and check again." }, 409)
+    if (existing) {
+      if (!existing.session_id || !existing.checkout_url) return alreadyOpening()
+      const session = await services.dodo.checkoutSessions.retrieve(existing.session_id)
+      const fullyRefunded = session.payment_status === "succeeded" && session.payment_id &&
+        (await services.dodo.payments.retrieve(session.payment_id)).refund_status === "full"
+      if (session.payment_status !== "failed" && session.payment_status !== "cancelled" && !fullyRefunded) {
+        if (!session.payment_id || session.payment_status === "requires_payment_method") {
+          return reply({ url: existing.checkout_url })
+        }
+        return alreadyOpening()
+      }
+      // Compare against the retired session so a concurrent request cannot remove its replacement.
+      const { error } = await checkouts.delete().match({ ...key, session_id: existing.session_id })
+      if (error) throw error
+    }
+
+    // A unique row is reserved before calling Dodo, across tabs and server instances.
+    const { error: reservationError } = await checkouts.insert(key)
+    if (reservationError?.code === "23505") return alreadyOpening()
+    if (reservationError) throw reservationError
+
     const entry = services.mode === "test_mode" && params.get("entry") === "pricing" ? "/pricing" : "/sudoku-practice"
     const topic = topics.find((item) => item.id === params.get("topic"))
     const back = new URL(entry, services.origin)
@@ -91,9 +118,11 @@ export async function POST(request: Request) {
       return_url: returnUrl,
       cancel_url: back.href,
     })
-    if (!checkout.checkout_url || new URL(checkout.checkout_url).protocol !== "https:") {
+    if (!checkout.session_id || !checkout.checkout_url || new URL(checkout.checkout_url).protocol !== "https:") {
       return reply({ error: "The checkout link is unavailable. Please try again." }, 502)
     }
+    const { error: saveError } = await checkouts.update({ session_id: checkout.session_id, checkout_url: checkout.checkout_url }).match(key)
+    if (saveError) throw saveError
     return reply({ url: checkout.checkout_url })
   } catch {
     return reply({ error: "Could not open checkout. Please try again." }, 502)
