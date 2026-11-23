@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState, type FormEvent } from "react"
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { SudokuTraining } from "@/components/sudoku-training"
@@ -9,7 +10,7 @@ import type { TrainingResponse } from "@/lib/sudoku-training-types"
 
 const endpoint = "/api/sudoku-training"
 
-export function SudokuTrainingAccess() {
+export function SudokuTrainingAccess({ entry = "practice" }: { entry?: "practice" | "pricing" }) {
   const [token, setToken] = useState<string | null>(null)
   const [sessionEmail, setSessionEmail] = useState("")
   const [sessionReady, setSessionReady] = useState(false)
@@ -23,10 +24,18 @@ export function SudokuTrainingAccess() {
   const [email, setEmail] = useState("")
   const [codeSent, setCodeSent] = useState(false)
   const [checkoutReturn, setCheckoutReturn] = useState("")
+  const [resumeTopic, setResumeTopic] = useState("")
+  const [intent, setIntent] = useState<"buy" | "restore" | null>(null)
+  const topic = useRef("")
+  const opening = useRef(false)
+  const pricing = entry === "pricing"
   const loadedToken = useRef<string | null>(null)
 
   useEffect(() => {
-    setCheckoutReturn(new URLSearchParams(window.location.search).get("checkout") ?? "")
+    const params = new URLSearchParams(window.location.search)
+    setCheckoutReturn(params.get("checkout") ?? "")
+    topic.current = params.get("topic") ?? ""
+    setResumeTopic(topic.current)
     if (!supabase) {
       setSessionReady(true)
       return
@@ -93,32 +102,43 @@ export function SudokuTrainingAccess() {
     setSending(true)
     setStatus("")
     try {
-      const { error } = await supabase.auth.verifyOtp({ email, token: code, type: "email" })
+      const { error, data } = await supabase.auth.verifyOtp({ email, token: code, type: "email" })
       if (error) throw error
       setCodeSent(false)
+      if (intent === "buy" && checkoutReturn !== "returned" && data.session) {
+        await checkout(data.session.access_token)
+      }
+      setIntent(null)
     } catch {
       setStatus("That code could not be verified. Check the email or request a new code.")
     } finally {
-      setSending(false)
+      if (!opening.current) setSending(false)
     }
   }
 
-  async function checkout() {
-    if (!token) return
+  async function checkout(accessToken: string | null) {
+    if (!accessToken || opening.current || checkoutReturn === "returned") return
+    opening.current = true
     setSending(true)
     setStatus("")
+    let leaving = false
     try {
-      const response = await fetch(endpoint, { method: "POST", headers: { Authorization: `Bearer ${token}` } })
+      const params = new URLSearchParams({ entry, topic: topic.current })
+      const response = await fetch(`${endpoint}?${params}`, { method: "POST", headers: { Authorization: `Bearer ${accessToken}` } })
       const result = await response.json()
       if (!response.ok || typeof result.url !== "string") {
         setStatus(result.error ?? "Checkout is temporarily unavailable.")
         return
       }
       window.location.assign(result.url)
+      leaving = true
     } catch {
       setStatus("Could not open checkout. Please try again.")
     } finally {
-      setSending(false)
+      if (!leaving) {
+        opening.current = false
+        setSending(false)
+      }
     }
   }
 
@@ -151,30 +171,40 @@ export function SudokuTrainingAccess() {
 
   return (
     <div className="space-y-5">
-      {!visible && !loadError && <p role="status">Loading exercises…</p>}
+      {!visible && !loadError && <p role="status">Checking training access…</p>}
       {loadError && <p role="status">{loadError}</p>}
       {visible && (
         <p role="status" className="rounded-lg border bg-slate-50 p-4 text-sm">
           {training.access === "unlocked" && <>All {training.exercises.length} exercises are unlocked. Signed in for training as <strong className="break-all">{sessionEmail}</strong>.</>}
           {training.access === "signed-out" && <>Not signed in for training. Verify the email you used for checkout to restore your purchase. <a href="#training-purchase" className="underline">Go to sign-in</a></>}
           {training.access === "locked" && <>Signed in for training as <strong className="break-all">{sessionEmail}</strong>. No training purchase confirmed for this account yet. <a href="#training-purchase" className="underline">Check access</a></>}
-          {training.access === "free" && `All ${training.exercises.length} exercises are available.`}
+          {training.access === "free" && (pricing ? "Checkout is currently unavailable." : `All ${training.exercises.length} exercises are available.`)}
         </p>
       )}
-      {visible && <SudokuTraining key={training.access === "unlocked" || training.access === "free" ? "full" : "sample"} lessons={training.exercises} />}
+      {visible && !pricing && <SudokuTraining key={training.access === "unlocked" || training.access === "free" ? "full" : "sample"} lessons={training.exercises} resumeTopic={resumeTopic} onTopicChange={(value) => {
+        topic.current = value
+        setResumeTopic(value)
+      }} />}
       {(gated || (visible && training.access === "unlocked")) && (
         <section aria-labelledby="training-purchase" className="space-y-4 rounded-lg border p-4 sm:p-6">
           <h2 id="training-purchase" className="text-xl font-semibold text-slate-950">
             {gated ? "Unlock all 12 exercises" : "Training pack unlocked"}
           </h2>
-          {gated && <p>Try one exercise per technique for free. A one-time purchase adds nine exercises with explanations and independent checks. See the price and currency before paying on Dodo Payments.</p>}
+          {gated && <p>Try one exercise per technique for free. The test pack adds nine exercises. The checkout page shows the test amount and currency.</p>}
+          {pricing && training.access === "unlocked" && <Button asChild><Link href="/sudoku-practice#exercises">Start training</Link></Button>}
           {checkoutReturn === "returned" && training.access === "locked" && (
-            <p>If you completed payment, use Refresh access to check again before placing another order.</p>
+            <p role="status">Waiting for payment confirmation. Access is checked automatically. You can also refresh access below.</p>
           )}
           {checkoutReturn === "cancelled" && gated && <p role="status">Checkout was cancelled. You can try again whenever you’re ready.</p>}
-          {training.access === "signed-out" && supabase && (
+          {training.access === "signed-out" && supabase && !intent && (
+            <div className="flex flex-wrap gap-2">
+              {checkoutReturn !== "returned" && <Button type="button" onClick={() => setIntent("buy")}>Buy the training pack</Button>}
+              <Button type="button" variant="outline" onClick={() => setIntent("restore")}>Restore purchase</Button>
+            </div>
+          )}
+          {training.access === "signed-out" && supabase && intent && (
             <div className="space-y-3">
-              <p className="text-sm">Training uses a separate email verification step. Use the email you used for checkout to restore access.</p>
+              <p className="text-sm">{intent === "buy" ? "Verify your email to continue to checkout." : "Verify the email you used for checkout to restore access."}</p>
               {codeSent ? (
                 <form key="verify-code" onSubmit={verifyCode} className="max-w-sm space-y-2">
                   <p className="text-sm">Code sent to <strong className="break-all">{email}</strong></p>
@@ -194,8 +224,8 @@ export function SudokuTrainingAccess() {
               )}
             </div>
           )}
-          {training.access === "locked" && (
-            <Button type="button" onClick={checkout} disabled={sending || !token}>
+          {training.access === "locked" && checkoutReturn !== "returned" && (
+            <Button type="button" onClick={() => checkout(token)} disabled={sending || !token}>
               {sending ? "Opening checkout…" : "Buy the training pack"}
             </Button>
           )}

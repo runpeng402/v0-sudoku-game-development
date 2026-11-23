@@ -45,12 +45,21 @@ export async function POST(request: Request) {
     if (!buyer) return reply({ error: "Sign in with a verified email first." }, 401)
     if (await hasTrainingPurchase(services, buyer.id)) return reply({ error: "You already own the training pack. Refresh your access." }, 409)
 
+    const params = new URL(request.url).searchParams
+    const entry = services.mode === "test_mode" && params.get("entry") === "pricing" ? "/pricing" : "/sudoku-practice"
+    const topic = topics.find((item) => item.id === params.get("topic"))
+    const back = new URL(entry, services.origin)
+    if (entry === "/sudoku-practice" && topic) back.searchParams.set("topic", topic.id)
+    back.hash = entry === "/pricing" ? "training-purchase" : "exercises"
+    back.searchParams.set("checkout", "returned")
+    const returnUrl = back.href
+    back.searchParams.set("checkout", "cancelled")
     const checkout = await services.dodo.checkoutSessions.create({
       product_cart: [{ product_id: services.productId, quantity: 1 }],
       customer: { email: buyer.email, name: buyer.email.split("@")[0] },
       metadata: { sudoku_buyer_id: buyer.id, sudoku_pack: trainingPack, sudoku_mode: services.mode },
-      return_url: `${services.origin}/sudoku-practice?checkout=returned`,
-      cancel_url: `${services.origin}/sudoku-practice?checkout=cancelled`,
+      return_url: returnUrl,
+      cancel_url: back.href,
     })
     if (!checkout.checkout_url || new URL(checkout.checkout_url).protocol !== "https:") {
       return reply({ error: "The checkout link is unavailable. Please try again." }, 502)

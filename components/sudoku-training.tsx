@@ -11,8 +11,12 @@ function trackTraining(event: string, properties: Record<string, string | number
   analytics.gtag?.("event", event, properties)
 }
 
-export function SudokuTraining({ lessons }: { lessons: TrainingExercise[] }) {
-  const [index, setIndex] = useState(0)
+export function SudokuTraining({ lessons, resumeTopic, onTopicChange }: {
+  lessons: TrainingExercise[]
+  resumeTopic?: string
+  onTopicChange?: (topic: TrainingExercise["topic"]["id"]) => void
+}) {
+  const [index, setIndex] = useState(() => Math.max(0, lessons.findIndex((lesson) => lesson.topic.id === resumeTopic)))
   const [hint, setHint] = useState(false)
   const [solved, setSolved] = useState(false)
   const [feedback, setFeedback] = useState("")
@@ -39,6 +43,7 @@ export function SudokuTraining({ lessons }: { lessons: TrainingExercise[] }) {
   }
 
   function advance(next: number) {
+    if (lessons[next]) onTopicChange?.(lessons[next].topic.id)
     if (next === lessons.length) trackTraining("sudoku_training_complete", { exercise_count: lessons.length })
     if (next === 0) setStarted(false)
     setIndex(next)

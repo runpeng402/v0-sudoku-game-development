@@ -76,8 +76,8 @@ function loadRoute(filename) {
 const training = loadRoute("app/api/sudoku-training/route.ts")
 const webhook = loadRoute("app/api/webhooks/dodo/route.ts")
 
-function request(token, method = "GET") {
-  return new Request("https://sudoku.example.com/api/sudoku-training", {
+function request(token, method = "GET", query = "") {
+  return new Request("https://sudoku.example.com/api/sudoku-training" + query, {
     method, headers: token ? { Authorization: `Bearer ${token}` } : {},
   })
 }
@@ -124,7 +124,14 @@ async function main() {
   assert.equal((await training.POST(request("verified", "POST"))).status, 200)
   assert.deepEqual(checkoutBody.product_cart, [{ product_id: "training-product", quantity: 1 }])
   assert.equal(checkoutBody.metadata.sudoku_buyer_id, "buyer")
-  assert.equal(checkoutBody.cancel_url, "https://sudoku.example.com/sudoku-practice?checkout=cancelled")
+  assert.equal(checkoutBody.cancel_url, "https://sudoku.example.com/sudoku-practice?checkout=cancelled#exercises")
+  assert.equal((await training.POST(request("verified", "POST", "?entry=pricing&topic=hidden"))).status, 200)
+  assert.equal(checkoutBody.return_url, "https://sudoku.example.com/pricing?checkout=returned#training-purchase")
+  assert.equal(checkoutBody.cancel_url, "https://sudoku.example.com/pricing?checkout=cancelled#training-purchase")
+  assert.equal((await training.POST(request("verified", "POST", "?entry=practice&topic=locked"))).status, 200)
+  assert.equal(checkoutBody.return_url, "https://sudoku.example.com/sudoku-practice?topic=locked&checkout=returned#exercises")
+  assert.equal((await training.POST(request("verified", "POST", "?entry=https://untrusted.example&topic=untrusted"))).status, 200)
+  assert.equal(checkoutBody.return_url, "https://sudoku.example.com/sudoku-practice?checkout=returned#exercises")
 
   const eventPayment = { payment_id: payment.payment_id }
   assert.equal((await notify("payment.succeeded", eventPayment, false)).status, 400)
