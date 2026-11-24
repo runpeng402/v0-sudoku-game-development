@@ -38,14 +38,14 @@ export default function TrainingPricingPage() {
           {testCheckout && <p className="text-sm font-medium">US$6.90 is the planned launch price. The test checkout shows its own amount and currency.</p>}
           {checkoutEnabled ? <SudokuTrainingAccess entry="pricing" /> : (
             <>
-              <Button type="button" disabled aria-describedby="checkout-availability">Buy the training pack</Button>
-              <p id="checkout-availability" className="text-sm font-medium">Paid checkout is not open yet.</p>
+              <p className="text-sm font-medium">Paid checkout is currently unavailable. Try a free exercise from any module below.</p>
+              <Button asChild><a href="#training-modules">Browse training modules</a></Button>
             </>
           )}
         </section>
       </div>
       <section aria-labelledby="training-modules" className="space-y-4">
-        <h2 id="training-modules" className="text-2xl font-semibold">Training modules</h2>
+        <h2 id="training-modules" tabIndex={-1} className="scroll-mt-6 text-2xl font-semibold">Training modules</h2>
         <div className="grid gap-4 sm:grid-cols-3">
           {(["Beginner", "Intermediate", "Advanced"] as const).map((level) => (
             <div key={level} className="rounded-xl border p-4">
