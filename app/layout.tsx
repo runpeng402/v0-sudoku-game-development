@@ -3,6 +3,7 @@ import "./globals.css"
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import Script from "next/script"
+import { SeoNavigation } from "@/components/seo-navigation"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -39,7 +40,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }}
         />
       </head>
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        <SeoNavigation />
+        {children}
+      </body>
     </html>
   )
 }

@@ -1,7 +1,6 @@
 import Link from "next/link"
 import { BookOpen, CheckCircle, Grid3X3, Layers, Lightbulb, Play, Target } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { SeoNavigation } from "@/components/seo-navigation"
 import { htmlLangByLocale, localizedPath, localizedUrl, pageCopy, type SeoLocale } from "@/lib/seo-locales"
 
 type StrategyCopy = {
@@ -152,7 +151,6 @@ export function SeoStrategiesPage({ locale }: SeoStrategiesPageProps) {
 
   return (
     <div className="min-h-screen bg-white" lang={htmlLangByLocale[locale]}>
-      <SeoNavigation locale={locale} path="/strategies" />
       <main>
         <section className="border-b bg-gradient-to-br from-blue-50 via-white to-slate-50 px-4 py-14">
           <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">

@@ -2,7 +2,6 @@ import Link from "next/link"
 import { ArrowLeft, CheckCircle, Play } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { PrintableSudokuDownloads } from "@/components/printable-sudoku-downloads"
-import { SeoNavigation } from "@/components/seo-navigation"
 import {
   homeCopy,
   htmlLangByLocale,
@@ -28,7 +27,6 @@ export function SeoInfoPage({ locale, pageKey }: SeoInfoPageProps) {
 
   return (
     <div className="min-h-screen bg-white" lang={htmlLangByLocale[locale]}>
-      <SeoNavigation locale={locale} path={page.path} />
       <main>
         <section className="border-b bg-slate-50 px-4 py-14">
           <div className="mx-auto max-w-4xl">

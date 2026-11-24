@@ -2,7 +2,6 @@ import Link from "next/link"
 import { BookOpen, Brain, CheckCircle, Clock, FileText, Play, Printer, Target } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { SeoNavigation } from "@/components/seo-navigation"
 import { homeCopy, htmlLangByLocale, localizedPath, pageCopy, type SeoLocale } from "@/lib/seo-locales"
 
 interface SeoHomePageProps {
@@ -38,7 +37,6 @@ export function SeoHomePage({ locale }: SeoHomePageProps) {
 
   return (
     <div className="min-h-screen bg-white" lang={htmlLangByLocale[locale]}>
-      <SeoNavigation locale={locale} path="/" />
       <main>
         <section className="bg-gradient-to-br from-blue-50 via-white to-indigo-50 px-4 py-16 md:py-20">
           <div className="mx-auto max-w-5xl text-center">
