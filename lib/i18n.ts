@@ -61,6 +61,7 @@ const resources = {
       },
       game: {
         title: "Sudoku Game",
+        heading: "Play Sudoku Online",
         newGame: "New Game",
         reset: "Reset",
         pause: "Pause",
@@ -79,6 +80,16 @@ const resources = {
           navigation: "Use arrow keys to navigate between cells",
         },
       },
+      ui: {
+        theme: "Theme",
+      },
+      themes: {
+        default: "Classic",
+        christmas: "Christmas",
+        chineseNewYear: "Lunar New Year",
+        halloween: "Halloween",
+        spring: "Spring",
+      },
       hints: {
         correctErrorsFirst: "Correct or clear the incorrect entries before asking for a logic hint.",
         emptySquare: "This square is empty.",
@@ -87,6 +98,27 @@ const resources = {
         getHint: "Get Hint",
         showPossible: "Show Possible",
         explainTechnique: "Explain Technique",
+        title: "Hints",
+        hintType: "Hint type",
+        hintsRemaining: "{{count}} left",
+        hintUsed: "Hints used: {{count}}",
+        noHintsLeft: "No hints left for this puzzle.",
+        nextStep: "Next Step",
+        none: "none",
+        hasError: "this square is wrong",
+        noTechnique: "No simple technique applies to this square yet. Try another square.",
+        noNextStep: "No simple next step found. Try candidates or another area.",
+        autoFilled: "Filled {{value}}: {{explanation}}",
+        hintTypes: {
+          answer: "Reveal answer",
+          possible: "Possible numbers",
+          error: "Check square",
+          technique: "Solving technique",
+        },
+        techniques: {
+          nakedSingle: "Naked single: only one number fits this square.",
+          hiddenSingle: "Hidden single: this number fits in only one square of its row, column or box.",
+        },
         hintsUsed: "Hints Used: {{count}}",
       },
       auth: {
@@ -366,6 +398,7 @@ const resources = {
       },
       game: {
         title: "数独游戏",
+        heading: "在线玩数独",
         newGame: "新游戏",
         reset: "重置",
         pause: "暂停",
@@ -384,6 +417,16 @@ const resources = {
           navigation: "使用方向键在单元格间导航",
         },
       },
+      ui: {
+        theme: "主题",
+      },
+      themes: {
+        default: "经典",
+        christmas: "圣诞",
+        chineseNewYear: "春节",
+        halloween: "万圣节",
+        spring: "春天",
+      },
       hints: {
         correctErrorsFirst: "请先修正或清除错误数字，再查看逻辑提示。",
         emptySquare: "这一格还没有填写。",
@@ -392,6 +435,27 @@ const resources = {
         getHint: "获取提示",
         showPossible: "显示可能",
         explainTechnique: "解释技巧",
+        title: "提示",
+        hintType: "提示类型",
+        hintsRemaining: "剩余 {{count}} 次",
+        hintUsed: "已用提示：{{count}}",
+        noHintsLeft: "本题的提示次数已用完。",
+        nextStep: "下一步",
+        none: "无",
+        hasError: "此位置有错误",
+        noTechnique: "这一格暂时没有简单技巧可用，换一格试试。",
+        noNextStep: "未找到明显的下一步，试试候选数或换个区域。",
+        autoFilled: "已填入 {{value}}：{{explanation}}",
+        hintTypes: {
+          answer: "显示答案",
+          possible: "可能的数字",
+          error: "检查此格",
+          technique: "解题技巧",
+        },
+        techniques: {
+          nakedSingle: "唯一候选数：这一格只能填一个数字。",
+          hiddenSingle: "隐性唯一：这个数字在所在行、列或宫里只有这一个位置。",
+        },
         hintsUsed: "已使用提示：{{count}}",
       },
       auth: {
@@ -668,6 +732,7 @@ const resources = {
       },
       game: {
         title: "Juego de Sudoku",
+        heading: "Jugar Sudoku en línea",
         newGame: "Nuevo Juego",
         reset: "Reiniciar",
         pause: "Pausar",
@@ -686,6 +751,16 @@ const resources = {
           navigation: "Usa las teclas de flecha para navegar entre celdas",
         },
       },
+      ui: {
+        theme: "Tema",
+      },
+      themes: {
+        default: "Clásico",
+        christmas: "Navidad",
+        chineseNewYear: "Año Nuevo Lunar",
+        halloween: "Halloween",
+        spring: "Primavera",
+      },
       hints: {
         correctErrorsFirst: "Corrige o borra los números incorrectos antes de pedir una pista lógica.",
         emptySquare: "Esta casilla está vacía.",
@@ -694,6 +769,27 @@ const resources = {
         getHint: "Obtener Pista",
         showPossible: "Mostrar Posibles",
         explainTechnique: "Explicar Técnica",
+        title: "Pistas",
+        hintType: "Tipo de pista",
+        hintsRemaining: "Quedan {{count}}",
+        hintUsed: "Pistas usadas: {{count}}",
+        noHintsLeft: "No quedan pistas para este puzzle.",
+        nextStep: "Siguiente paso",
+        none: "ninguno",
+        hasError: "esta casilla es incorrecta",
+        noTechnique: "Ninguna técnica simple sirve aún para esta casilla. Prueba otra.",
+        noNextStep: "No se encontró un siguiente paso simple. Prueba con candidatos u otra zona.",
+        autoFilled: "Se colocó {{value}}: {{explanation}}",
+        hintTypes: {
+          answer: "Mostrar respuesta",
+          possible: "Números posibles",
+          error: "Revisar casilla",
+          technique: "Técnica de resolución",
+        },
+        techniques: {
+          nakedSingle: "Single desnudo: solo un número cabe en esta casilla.",
+          hiddenSingle: "Single oculto: este número solo cabe en una casilla de su fila, columna o caja.",
+        },
         hintsUsed: "Pistas Usadas: {{count}}",
       },
       auth: {
@@ -919,6 +1015,26 @@ const resources = {
       },
     },
   },
+}
+
+export type AppLanguage = "en" | "zh" | "es"
+
+// Resources are bundled, so init completes synchronously and pages render translated HTML on the server.
+export function createI18nInstance(lng: AppLanguage) {
+  const instance = i18n.createInstance()
+  instance.use(initReactI18next).init({
+    resources,
+    lng,
+    fallbackLng: "en",
+    initAsync: false,
+    interpolation: {
+      escapeValue: false,
+    },
+    react: {
+      useSuspense: false,
+    },
+  })
+  return instance
 }
 
 export const initI18n = async () => {
