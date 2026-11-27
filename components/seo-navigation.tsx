@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { BookOpen, Grid, HelpCircle, Home, Printer, Tag, UserCircle } from "lucide-react"
+import { Brain, BookOpen, Grid, HelpCircle, Home, Printer, Target, UserCircle } from "lucide-react"
 import { homeCopy, localizedPath, pageCopy, type SeoLocale } from "@/lib/seo-locales"
 import { SeoLanguageLinks } from "@/components/seo-language-links"
 
@@ -21,7 +21,9 @@ export function SeoNavigation() {
     { href: localizedPath(locale, pageCopy.rules.path), label: copy.rules, icon: HelpCircle },
     { href: localizedPath(locale, pageCopy.printable.path), label: copy.printable, icon: Printer },
     { href: localizedPath(locale, "/play"), label: locale === "zh" ? "游戏" : locale === "es" ? "Jugar" : "Play", icon: Grid },
-    { href: "/pricing", label: locale === "zh" ? "定价" : locale === "es" ? "Precios" : "Pricing", icon: Tag },
+    locale === "en"
+      ? { href: "/sudoku-practice", label: "Practice", icon: Brain }
+      : { href: localizedPath(locale, "/strategies"), label: locale === "zh" ? "数独策略" : "Estrategias", icon: Target },
   ]
   const accountLabel = locale === "zh" ? "账号" : locale === "es" ? "Cuenta" : "Account"
 

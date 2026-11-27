@@ -1,6 +1,8 @@
 import type { Metadata } from "next"
+import { defaultOgImage } from "@/lib/seo-locales"
 import Link from "next/link"
 import { SudokuTrainingAccess } from "@/components/sudoku-training-access"
+import { trainingPaymentsEnabled } from "@/lib/sudoku-training-payments"
 
 const title = "Sudoku Practice Exercises: 9 Technique Modules"
 const description =
@@ -10,10 +12,12 @@ export const metadata: Metadata = {
   title,
   description,
   alternates: { canonical: "/sudoku-practice" },
-  openGraph: { title, description, url: "/sudoku-practice", type: "website" },
+  openGraph: { title, description, url: "/sudoku-practice", type: "website", images: [defaultOgImage] },
 }
 
 export default function SudokuPracticePage() {
+  const paymentsEnabled = trainingPaymentsEnabled()
+
   return (
     <main className="mx-auto max-w-4xl space-y-8 px-4 py-8 sm:py-12">
       <header className="space-y-4">
@@ -22,10 +26,12 @@ export default function SudokuPracticePage() {
         </Link>
         <h1 className="text-balance text-3xl font-bold tracking-tight text-slate-950 sm:text-5xl">Sudoku practice exercises</h1>
         <p className="max-w-2xl leading-7 text-slate-700">
-          Start with 9 free exercises, one in each module. The full training pack adds 90 exercises across three levels.
+          {paymentsEnabled
+            ? "Start with 9 free exercises, one in each module. The full training pack adds 90 exercises across three levels. "
+            : "Work through 9 free exercises, one in each technique module, from naked singles to XY-Wing. "}
           Practice placing digits, eliminating candidates, and using one deduction to set up the next.
         </p>
-        <Link href="/pricing" className="inline-block font-medium text-blue-700 underline">See training pricing</Link>
+        {paymentsEnabled && <Link href="/pricing" className="inline-block font-medium text-blue-700 underline">See training pricing</Link>}
       </header>
 
       <SudokuTrainingAccess />
