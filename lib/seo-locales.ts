@@ -5,6 +5,13 @@ export type SeoLocale = "en" | "zh" | "es"
 export const siteUrl = "https://www.sudokustudio.app"
 export const locales: SeoLocale[] = ["en", "zh", "es"]
 
+export const defaultOgImage = {
+  url: "/opengraph-image",
+  width: 1200,
+  height: 630,
+  alt: "SudokuStudio: free online Sudoku with hints and technique practice",
+}
+
 export const localeNames: Record<SeoLocale, string> = {
   en: "English",
   zh: "中文",
@@ -41,21 +48,21 @@ export function localizedAlternates(locale: SeoLocale, path = "/"): Metadata["al
 
 export const homeCopy = {
   en: {
-    title: "Free Online Sudoku: Play Easy to Hard Puzzles with Hints | SudokuStudio",
+    title: "Free Online Sudoku with Hints and Technique Practice | SudokuStudio",
     description:
-      "Play free online Sudoku puzzles with easy, medium, and hard levels. No download required, with smart hints and beginner-friendly guides.",
+      "Play free online Sudoku at easy, medium, and hard levels with no sign-up. Get hints that explain the logic, practice solving techniques, and print PDF puzzles.",
     h1: "Free Online Sudoku",
-    subtitle: "Play easy, medium, and hard Sudoku puzzles with hints and beginner-friendly guides.",
+    subtitle: "Play easy, medium, and hard Sudoku with hints, then learn the logic behind every move.",
     intro:
-      "SudokuStudio gives you a fast, clean place to play Sudoku online, learn the rules, and practice with printable puzzles.",
+      "SudokuStudio is a clean place to play Sudoku online without signing up, learn the rules, practice techniques from naked singles to X-Wing, and print puzzles with answer keys.",
     play: "Play Sudoku",
     learn: "How to Play",
     rules: "Sudoku Rules",
     printable: "Printable Sudoku",
     featuresTitle: "Everything you need to play and learn Sudoku",
     features: [
-      ["Three difficulty levels", "Play easy puzzles as a guest. Sign in to play medium and hard puzzles."],
-      ["Smart hints", "Use hints when you are stuck without losing the logic of the puzzle."],
+      ["Three difficulty levels", "Play easy, medium, and hard puzzles for free. No account needed."],
+      ["Hints that teach", "When you are stuck, reveal a number, list the candidates, or see which technique applies."],
       ["Beginner guides", "Learn the rules, first solving steps, and common mistakes."],
       ["Printable puzzles", "Use printable Sudoku sheets for offline practice at home or in class."],
     ],
@@ -80,7 +87,7 @@ export const homeCopy = {
     printable: "可打印数独",
     featuresTitle: "玩数独和学习数独所需的核心功能",
     features: [
-      ["三种难度", "游客可玩简单难度。登录后可玩中等和困难难度。"],
+      ["三种难度", "简单、中等和困难难度全部免费，无需登录。"],
       ["智能提示", "卡住时获得提示，同时保持逻辑推理的乐趣。"],
       ["入门教程", "学习基础规则、第一步解法和常见错误。"],
       ["可打印题目", "使用可打印数独题，在家中、课堂或离线场景练习。"],
@@ -108,7 +115,7 @@ export const homeCopy = {
     printable: "Sudoku imprimible",
     featuresTitle: "Todo lo necesario para jugar y aprender Sudoku",
     features: [
-      ["Tres niveles", "Juega el nivel fácil como invitado. Inicia sesión para jugar los niveles medio y difícil."],
+      ["Tres niveles", "Juega gratis los niveles fácil, medio y difícil. No necesitas cuenta."],
       ["Pistas útiles", "Usa pistas cuando te bloquees sin perder la lógica del puzzle."],
       ["Guías para empezar", "Aprende reglas, primeros pasos y errores comunes."],
       ["Puzzles imprimibles", "Practica sin conexión con hojas de Sudoku para casa o clase."],

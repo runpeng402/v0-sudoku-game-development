@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import { defaultOgImage } from "@/lib/seo-locales"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import { ArrowLeft, Calendar, Clock } from "lucide-react"
@@ -30,6 +31,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       canonical: articleUrl(article.slug),
     },
     openGraph: {
+      images: [defaultOgImage],
       title: article.title,
       description: article.description,
       url: articleUrl(article.slug),

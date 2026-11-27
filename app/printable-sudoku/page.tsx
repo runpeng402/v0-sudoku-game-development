@@ -3,7 +3,7 @@ import Link from "next/link"
 import { Printer } from "lucide-react"
 import { PrintableSudokuDownloads } from "@/components/printable-sudoku-downloads"
 import { Button } from "@/components/ui/button"
-import { localizedAlternates } from "@/lib/seo-locales"
+import { localizedAlternates, defaultOgImage } from "@/lib/seo-locales"
 
 const url = "https://www.sudokustudio.app/printable-sudoku"
 
@@ -13,6 +13,7 @@ export const metadata: Metadata = {
     "Get free printable Sudoku puzzles for easy, medium, and hard levels. Download practice sheets with answers and large-print options.",
   alternates: localizedAlternates("en", "/printable-sudoku"),
   openGraph: {
+    images: [defaultOgImage],
     title: "Printable Sudoku Puzzles PDF: Free Easy to Hard Puzzles",
     description:
       "Free printable Sudoku collections for home, classroom, and offline practice.",

@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import { defaultOgImage } from "@/lib/seo-locales"
 import { UserCenterPageContent } from "@/components/user-center-page"
 
 export const metadata: Metadata = {
@@ -18,10 +19,10 @@ export const metadata: Metadata = {
     "account management",
   ],
   openGraph: {
+    images: [defaultOgImage],
     title: "User Center - Profile & Statistics",
     description: "Manage your Sudoku profile and track your puzzle-solving progress.",
     url: "https://www.sudokustudio.app/user-center",
-    images: ["/og-user-center.png"],
   },
   alternates: {
     canonical: "https://www.sudokustudio.app/user-center",

@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import { defaultOgImage } from "@/lib/seo-locales"
 import { LeaderboardPageContent } from "@/components/leaderboard-page"
 
 export const metadata: Metadata = {
@@ -18,10 +19,10 @@ export const metadata: Metadata = {
     "sudoku tournament",
   ],
   openGraph: {
+    images: [defaultOgImage],
     title: "Sudoku Leaderboard - Top Players & Rankings",
     description: "View the global Sudoku leaderboard and compete with players worldwide.",
     url: "https://www.sudokustudio.app/leaderboard",
-    images: ["/og-leaderboard.png"],
   },
   alternates: {
     canonical: "https://www.sudokustudio.app/leaderboard",

@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import { defaultOgImage } from "@/lib/seo-locales"
 import Link from "next/link"
 import { ArrowRight, BookOpen, Clock, Home, Play, Printer, Target } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
@@ -14,6 +15,7 @@ export const metadata: Metadata = {
     canonical: "https://www.sudokustudio.app/articles",
   },
   openGraph: {
+    images: [defaultOgImage],
     title: "Sudoku Articles: Beginner Guides, Printable Puzzles, and Strategies",
     description: "A focused Sudoku learning hub with practical articles and links to playable puzzles.",
     url: "https://www.sudokustudio.app/articles",

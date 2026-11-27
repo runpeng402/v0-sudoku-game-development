@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import { CheckCircle, Grid3X3, Play } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { localizedAlternates } from "@/lib/seo-locales"
+import { localizedAlternates, defaultOgImage } from "@/lib/seo-locales"
 
 const url = "https://www.sudokustudio.app/sudoku-rules"
 
@@ -11,6 +11,7 @@ export const metadata: Metadata = {
   description: "Learn the three rules of 9×9 Sudoku, see why repeated digits are invalid, and check common questions about grids and clues.",
   alternates: localizedAlternates("en", "/sudoku-rules"),
   openGraph: {
+    images: [defaultOgImage],
     title: "Sudoku Rules Explained: Simple Rules for Beginners",
     description: "A simple guide to Sudoku row, column, and 3x3 box rules.",
     url,
