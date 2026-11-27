@@ -53,6 +53,19 @@ export default function PrintableSudokuPage() {
         <div className="mx-auto max-w-5xl">
           <PrintableSudokuDownloads locale="en" />
 
+          <nav aria-label="Printable collections" className="mt-10 grid gap-4 sm:grid-cols-3">
+            {[
+              ["/printable-sudoku/easy", "Easy printable Sudoku", "Beginner puzzles with many givens"],
+              ["/printable-sudoku/with-answers", "Sudoku with answers", "Every pack includes full solutions"],
+              ["/printable-sudoku/large-print", "Large print Sudoku", "Big digits for seniors and low vision"],
+            ].map(([href, title, note]) => (
+              <Link key={href} href={href} className="rounded-lg border p-4 hover:border-blue-300">
+                <span className="block font-semibold text-gray-950">{title}</span>
+                <span className="mt-1 block text-sm text-slate-500">{note}</span>
+              </Link>
+            ))}
+          </nav>
+
           <article className="prose prose-slate mt-12 max-w-none">
             <h2>Why printable Sudoku pages work well</h2>
             <p>
