@@ -70,4 +70,25 @@ for (const guide of techniqueGuides) {
   assert.ok(guide.metaDescription.length <= 160, `${guide.slug} description length`)
 }
 
+// Teaching examples on the classic puzzle (how-to-play and rules pages)
+const classicCells = [...classic].map(Number)
+const unitsOf = (cell) => {
+  const r = Math.floor(cell / 9), c = cell % 9, b = Math.floor(r / 3) * 3 + Math.floor(c / 3)
+  return {
+    row: classicCells.filter((v, i) => v && Math.floor(i / 9) === r),
+    column: classicCells.filter((v, i) => v && i % 9 === c),
+    box: classicCells.filter((v, i) => v && Math.floor(Math.floor(i / 9) / 3) * 3 + Math.floor((i % 9) / 3) === b),
+  }
+}
+for (const [cell, digit, broken] of [[2, 7, "row"], [37, 6, "column"], [2, 9, "box"]]) {
+  assert.equal(classicCells[cell], 0)
+  const units = unitsOf(cell)
+  assert.deepEqual(Object.keys(units).filter((name) => units[name].includes(digit)), [broken], `${digit} at ${cell}`)
+}
+const marks = reasoningCandidates(classicCells)
+const box2 = [3, 4, 5, 12, 13, 14, 21, 22, 23]
+assert.deepEqual(box2.filter((cell) => marks[cell].includes(8)), [5], "8 has one place in box 2")
+assert.ok(marks[5].length > 1, "the cross-hatching target is a hidden single, not a naked single")
+assert.deepEqual(box2.filter((cell) => !classicCells[cell]), [3, 5, 21, 22, 23])
+
 console.log(`solver, ${seen.size} daily puzzles and ${techniqueGuides.length} technique guides verified`)
