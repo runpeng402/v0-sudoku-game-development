@@ -1,286 +1,215 @@
 import type { Metadata } from "next"
 import Link from "next/link"
-import { CheckCircle, Grid3X3, Play } from "lucide-react"
+import { CheckCircle, Play } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { TeachingBoard, classicPuzzle, type TeachingMarks } from "@/components/teaching-board"
 import { localizedAlternates, defaultOgImage } from "@/lib/seo-locales"
 
 const url = "https://www.sudokustudio.app/sudoku-rules"
+const title = "Sudoku Rules: The 3 Rules of Sudoku Explained with Examples"
+const description =
+  "The rules of Sudoku in plain English: rows, columns and 3x3 boxes, with legal and illegal move examples, what the rules do not say, and rules for 4x4 and variants."
 
 export const metadata: Metadata = {
-  title: "Sudoku Rules: Rows, Columns and 3×3 Boxes",
-  description: "Learn the three rules of 9×9 Sudoku, see why repeated digits are invalid, and check common questions about grids and clues.",
+  title,
+  description,
   alternates: localizedAlternates("en", "/sudoku-rules"),
-  openGraph: {
-    images: [defaultOgImage],
-    title: "Sudoku Rules Explained: Simple Rules for Beginners",
-    description: "A simple guide to Sudoku row, column, and 3x3 box rules.",
-    url,
-    type: "article",
-  },
+  openGraph: { images: [defaultOgImage], title, description, url, type: "article" },
 }
 
-const articleSchema = {
-  "@context": "https://schema.org",
-  "@type": "Article",
-  headline: "Sudoku Rules Explained Simply",
-  description:
-    "A beginner-friendly explanation of Sudoku rules, valid puzzles, repeated numbers, and 4x4 vs 9x9 Sudoku.",
-  mainEntityOfPage: url,
-  author: {
-    "@type": "Organization",
-    name: "SudokuStudio",
+const faqs = [
+  {
+    question: "What are the rules of Sudoku?",
+    answer:
+      "Fill the 9x9 grid so that every row, every column and every 3x3 box contains the digits 1 to 9 exactly once. The numbers printed at the start cannot be changed.",
   },
-  publisher: {
-    "@type": "Organization",
-    name: "SudokuStudio",
+  {
+    question: "Can numbers repeat in Sudoku?",
+    answer:
+      "Each digit appears nine times in a finished grid, once in every row, column and box. It can never appear twice in the same row, column or box.",
   },
-}
-
-const faqSchema = {
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  mainEntity: [
-    {
-      "@type": "Question",
-      name: "What are the rules of Sudoku?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "The rules of Sudoku are that each row, each column, and each 3x3 box must contain the numbers 1 to 9 once, with no repeats inside the same unit.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "What are the Sudoku game rules for beginners?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "Beginners should remember three Sudoku game rules: do not repeat a number in a row, do not repeat a number in a column, and do not repeat a number in a 3x3 box.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "Can numbers repeat in Sudoku?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "Numbers can repeat across the whole puzzle, but the same number cannot repeat within one row, one column, or one 3x3 box.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "Can Sudoku have more than one answer?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "A good standard Sudoku puzzle should have exactly one solution. If it has more than one answer, it is usually considered a flawed puzzle.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "What happens if a number repeats?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "If a number repeats in the same row, column, or 3x3 box, the move breaks the Sudoku rules and the puzzle cannot be solved correctly with that placement.",
-      },
-    },
-  ],
-}
-
-const ruleGrid = [
-  5, 3, 0, 0, 7, 0, 0, 0, 0,
-  6, 0, 0, 1, 9, 5, 0, 0, 0,
-  0, 9, 8, 0, 0, 0, 0, 6, 0,
-  8, 0, 0, 0, 6, 0, 0, 0, 3,
-  4, 0, 0, 8, 0, 3, 0, 0, 1,
-  7, 0, 0, 0, 2, 0, 0, 0, 6,
-  0, 6, 0, 0, 0, 0, 2, 8, 0,
-  0, 0, 0, 4, 1, 9, 0, 0, 5,
-  0, 0, 0, 0, 8, 0, 0, 7, 9,
+  {
+    question: "Do the diagonals matter in Sudoku?",
+    answer:
+      "Not in standard Sudoku. Only rows, columns and boxes count. Diagonal Sudoku (also called Sudoku X) is a variant that adds the two main diagonals as extra units.",
+  },
+  {
+    question: "Can a Sudoku have more than one solution?",
+    answer:
+      "A proper Sudoku has exactly one solution. Puzzles with several solutions are considered broken, because you would have to guess.",
+  },
+  {
+    question: "What is the minimum number of clues in a Sudoku?",
+    answer:
+      "17. A 2012 computer search proved that no 9x9 Sudoku with 16 or fewer givens has a unique solution. Most newspaper puzzles give 22 to 36 numbers.",
+  },
+  {
+    question: "Is there a time limit in Sudoku?",
+    answer: "No. Time limits and scores are added by apps and competitions; they are not part of the puzzle rules.",
+  },
 ]
+
+const structuredData = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: title,
+    description,
+    url,
+    mainEntityOfPage: url,
+    author: { "@type": "Organization", name: "SudokuStudio" },
+    publisher: { "@type": "Organization", name: "SudokuStudio" },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map((faq) => ({
+      "@type": "Question",
+      name: faq.question,
+      acceptedAnswer: { "@type": "Answer", text: faq.answer },
+    })),
+  },
+]
+
+const unitMarks: TeachingMarks = {}
+classicPuzzle.forEach((_, index) => {
+  const row = Math.floor(index / 9)
+  const col = index % 9
+  if (row === 0) unitMarks[index] = { tone: "area" }
+  else if (col === 4) unitMarks[index] = { tone: "blocker" }
+  else if (row < 3 && col < 3) unitMarks[index] = { tone: "target" }
+})
+
+// Each example breaks exactly one rule on the classic puzzle: verified so that the other two units stay clear.
+const illegalMoves: Array<{ rule: string; marks: TeachingMarks; text: string }> = [
+  {
+    rule: "Row rule broken",
+    marks: { 2: { tone: "wrong", text: "7" }, 4: { tone: "blocker" } },
+    text: "A 7 in row 1, column 3 is illegal: row 1 already has a 7 in column 5. The column and box would be fine, but one broken rule is enough.",
+  },
+  {
+    rule: "Column rule broken",
+    marks: { 37: { tone: "wrong", text: "6" }, 55: { tone: "blocker" } },
+    text: "A 6 in row 5, column 2 is illegal: column 2 already has a 6 in row 7.",
+  },
+  {
+    rule: "Box rule broken",
+    marks: { 2: { tone: "wrong", text: "9" }, 19: { tone: "blocker" } },
+    text: "A 9 in row 1, column 3 is illegal: the top left box already has a 9 in row 3, column 2, even though row 1 and column 3 have no 9.",
+  },
+]
+
+const link = "font-medium text-blue-700 underline underline-offset-4"
 
 export default function SudokuRulesPage() {
   return (
     <main className="min-h-screen bg-white">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
-      />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
 
       <section className="border-b bg-slate-50 px-4 py-16">
         <div className="mx-auto max-w-4xl">
-          <Link href="/" className="mb-8 inline-flex text-sm font-medium text-blue-700 hover:text-blue-900">
-            Back to SudokuStudio
-          </Link>
-          <h1 className="text-4xl font-bold tracking-tight text-gray-950 md:text-5xl">
-            Sudoku Rules Explained Simply
-          </h1>
+          <h1 className="text-4xl font-bold tracking-tight text-gray-950 md:text-5xl">Sudoku Rules</h1>
           <p className="mt-6 text-lg leading-8 text-gray-700">
-            The rules of Sudoku are simple: place numbers 1 to 9 so they appear once in
-            each row, once in each column, and once in each 3x3 box. These are the same
-            core Sudoku game rules beginners use when learning their first puzzle.
+            Sudoku has only three rules, and they all say the same thing in different directions: no digit may repeat.
+            Here they are with pictures, examples of legal and illegal moves, and answers to the questions beginners
+            ask most.
           </p>
         </div>
       </section>
 
       <section className="px-4 py-12">
-        <article className="prose prose-slate mx-auto max-w-4xl">
-          <h2>The goal of Sudoku</h2>
-          <p>
-            A Sudoku puzzle starts with some numbers already placed. Your job is to fill
-            every empty cell using logic. A completed puzzle must satisfy all three rules
-            at the same time.
-          </p>
-
-          <div className="not-prose my-8 grid gap-4 md:grid-cols-3">
+        <article className="mx-auto max-w-4xl space-y-4 leading-7 text-slate-700 [&_h2]:mt-10 [&_h2]:text-2xl [&_h2]:font-semibold [&_h2]:text-slate-950 [&_h3]:font-semibold [&_h3]:text-slate-950 [&_ul]:list-disc [&_ul]:pl-6">
+          <h2 className="!mt-0">The 3 rules of Sudoku</h2>
+          <p>A standard Sudoku is a 9x9 grid divided into nine 3x3 boxes. Some squares start with numbers. To solve it:</p>
+          <div className="grid gap-4 md:grid-cols-3">
             {[
-              ["Rule 1", "Each row must contain the numbers 1-9 exactly once."],
-              ["Rule 2", "Each column must contain the numbers 1-9 exactly once."],
-              ["Rule 3", "Each 3x3 box must contain the numbers 1-9 exactly once."],
-            ].map(([title, text]) => (
-              <div key={title} className="rounded-lg border bg-white p-5 shadow-sm">
+              ["Rule 1: rows", "Each of the 9 rows contains the digits 1 to 9 exactly once."],
+              ["Rule 2: columns", "Each of the 9 columns contains the digits 1 to 9 exactly once."],
+              ["Rule 3: boxes", "Each of the 9 boxes contains the digits 1 to 9 exactly once."],
+            ].map(([heading, text]) => (
+              <div key={heading} className="rounded-lg border bg-white p-5 shadow-sm">
                 <CheckCircle className="mb-3 h-6 w-6 text-green-600" />
-                <p className="font-semibold text-gray-950">{title}</p>
+                <p className="font-semibold text-gray-950">{heading}</p>
                 <p className="mt-2 text-sm text-gray-700">{text}</p>
               </div>
             ))}
           </div>
+          <p>The numbers given at the start (the givens) are fixed. You win when every square is filled and no rule is broken.</p>
 
-          <h2>Row, column, and box rule diagram</h2>
-          <p>
-            The diagram below shows the three rule areas you must check before placing a
-            number: one row, one column, and one 3x3 box. A number is legal only when it
-            does not repeat in any of those areas.
-          </p>
-          <div className="not-prose my-8 grid gap-6 rounded-lg border bg-white p-5 md:grid-cols-[minmax(0,320px)_1fr] md:items-center">
-            <div className="grid grid-cols-9 border-2 border-gray-900 bg-gray-900">
-              {ruleGrid.map((value, index) => {
-                const row = Math.floor(index / 9)
-                const col = index % 9
-                const inRow = row === 0
-                const inColumn = col === 4
-                const inBox = row < 3 && col < 3
-                const backgroundClass = inRow ? "bg-blue-100" : inColumn ? "bg-amber-100" : inBox ? "bg-emerald-100" : "bg-white"
-                return (
-                  <div
-                    key={index}
-                    className={`flex aspect-square items-center justify-center ${backgroundClass} text-sm font-semibold text-gray-900 ${
-                      col === 2 || col === 5 ? "border-r-2 border-r-gray-900" : "border-r border-r-gray-200"
-                    } ${row === 2 || row === 5 ? "border-b-2 border-b-gray-900" : "border-b border-b-gray-200"}`}
-                  >
-                    {value || ""}
-                  </div>
-                )
-              })}
-            </div>
-            <div className="space-y-3 text-sm leading-6 text-gray-700">
-              <p><span className="inline-block h-3 w-3 rounded-sm bg-blue-100 align-middle" /> Row rule: every row contains 1-9 once.</p>
-              <p><span className="inline-block h-3 w-3 rounded-sm bg-amber-100 align-middle" /> Column rule: every column contains 1-9 once.</p>
-              <p><span className="inline-block h-3 w-3 rounded-sm bg-emerald-100 align-middle" /> Box rule: every 3x3 box contains 1-9 once.</p>
-            </div>
-          </div>
-
-          <h2>Rules of Sudoku game</h2>
-          <p>
-            The <strong>rules of Sudoku</strong> do not require arithmetic. The numbers
-            are symbols used to track logic. A legal move must pass three checks: row,
-            column, and 3x3 box. If one of those checks fails, the move breaks the Sudoku
-            puzzle rules.
-          </p>
-
-          <h2>Can numbers repeat in Sudoku?</h2>
-          <p>
-            Yes, the same number appears many times across the whole puzzle. The important
-            limit is local: a number cannot repeat inside the same row, same column, or
-            same 3x3 box.
-          </p>
-
-          <h2>What makes a Sudoku puzzle valid?</h2>
-          <p>
-            A valid standard Sudoku puzzle should have one logical solution. If a puzzle
-            has no solution or several solutions, it is not a good standard Sudoku puzzle.
-          </p>
-
-          <h2>Are 4x4 and 9x9 Sudoku rules different?</h2>
-          <p>
-            The idea is the same, but the grid size changes. A 4x4 Sudoku uses numbers 1
-            to 4 and smaller boxes, which makes it useful for learning. Standard Sudoku is
-            usually 9x9 and uses numbers 1 to 9.
-          </p>
-
-          <div className="not-prose my-8 rounded-lg border bg-blue-50 p-6">
-            <div className="flex items-center gap-3">
-              <Grid3X3 className="h-6 w-6 text-blue-700" />
-              <p className="font-semibold text-blue-950">Rule check example</p>
-            </div>
-            <p className="mt-3 text-blue-950">
-              If a row already contains 8, no other cell in that row can be 8. You must
-              check the column and box before placing the final number.
+          <div className="grid gap-6 rounded-lg border p-5 md:grid-cols-[minmax(0,340px)_1fr] md:items-center">
+            <TeachingBoard
+              cells={classicPuzzle}
+              marks={unitMarks}
+              caption="Blue: row 1. Yellow: column 5. Green: the top left box."
+            />
+            <p className="text-sm">
+              Every square sits in exactly one row, one column and one box. Before you write a digit, check all three.
+              The square at row 1, column 5 belongs to the blue row, the yellow column and the top middle box at the
+              same time.
             </p>
           </div>
 
-          <h2>Sudoku rules for beginners</h2>
+          <h2>Legal and illegal moves</h2>
+          <p>Breaking any one of the three rules makes a move illegal. These examples use the puzzle above:</p>
+          <div className="grid gap-6 md:grid-cols-3">
+            {illegalMoves.map((move) => (
+              <div key={move.rule}>
+                <h3>{move.rule}</h3>
+                <div className="mt-3">
+                  <TeachingBoard cells={classicPuzzle} marks={move.marks} caption={move.text} />
+                </div>
+              </div>
+            ))}
+          </div>
           <p>
-            For beginners, the easiest way to remember the basic rules of Sudoku is to
-            ask three questions before every move: is this number already in the row, is
-            it already in the column, and is it already in the box? If the answer is no to
-            all three, the move may be legal.
+            A legal move is not always a correct move: a digit can pass all three checks and still be wrong. That is why
+            you place a digit only when logic leaves one option. The{" "}
+            <Link href="/how-to-play-sudoku" className={link}>beginner guide</Link> shows two simple ways to find those moves.
+          </p>
+
+          <h2>What the rules do not say</h2>
+          <ul>
+            <li>No math is needed. The digits are just symbols; nothing has to add up.</li>
+            <li>The diagonals do not count in standard Sudoku.</li>
+            <li>You can fill squares in any order.</li>
+            <li>There is no time limit. Timers and scores come from apps, not from the rules.</li>
+            <li>You never need to guess. A proper puzzle has one solution that logic can reach.</li>
+          </ul>
+
+          <h2>Rules for smaller and different grids</h2>
+          <p>
+            Mini Sudoku for kids works the same way with smaller numbers: a 4x4 grid uses 1 to 4 with 2x2 boxes, and a
+            6x6 grid uses 1 to 6 with 2x3 boxes. Variants add one extra rule on top of the three: Diagonal Sudoku adds
+            the diagonals, Killer Sudoku adds cages whose digits must add up to a total, and Jigsaw Sudoku replaces the
+            boxes with irregular shapes. See all <Link href="/variants" className={link}>Sudoku variants and their rules</Link>.
           </p>
 
           <h2>FAQ about Sudoku rules</h2>
-          <h3>What are the rules of Sudoku?</h3>
-          <p>
-            Each row, column, and 3x3 box must contain 1 to 9 exactly once.
-          </p>
-          <h3>What are the Sudoku game rules?</h3>
-          <p>
-            The Sudoku game rules are the same as the standard puzzle rules: no repeated
-            number in any row, column, or 3x3 box.
-          </p>
-          <h3>What are the basic rules of Sudoku for beginners?</h3>
-          <p>
-            Beginners only need to remember the row rule, column rule, and box rule. All
-            solving techniques build on those three constraints.
-          </p>
-          <h3>Can Sudoku have more than one answer?</h3>
-          <p>
-            A well-made standard Sudoku puzzle should have exactly one solution. If a
-            puzzle has more than one answer, it is usually considered invalid or poorly
-            designed.
-          </p>
-          <h3>What happens if a number repeats?</h3>
-          <p>
-            If a number repeats in the same row, column, or 3x3 box, that placement breaks
-            the rules. You should remove it and check the affected row, column, and box
-            again.
-          </p>
+          {faqs.map((faq) => (
+            <div key={faq.question}>
+              <h3>{faq.question}</h3>
+              <p>{faq.answer}</p>
+            </div>
+          ))}
 
-          <h2>Practice the rules with an easy puzzle</h2>
-          <p>
-            The fastest way to remember the rules is to apply them. Start with easy
-            puzzles and focus on checking rows, columns, and boxes before every move.
-          </p>
-          <p>
-            <Button asChild>
-              <Link href="/play">
-                <Play className="mr-2 h-4 w-4" />
-                Practice the Rules
-              </Link>
-            </Button>
-          </p>
-
-          <h2>Related beginner guides</h2>
-          <ul>
-            <li>
-              <Link href="/how-to-play-sudoku">Learn how to play Sudoku step by step</Link>
-            </li>
-            <li>
-              <Link href="/printable-sudoku">Printable Sudoku Puzzles PDF</Link>
-            </li>
-            <li>
-              <Link href="/strategies">Sudoku Strategies</Link>
-            </li>
-          </ul>
+          <div className="mt-10 rounded-lg border bg-slate-50 p-6">
+            <p className="font-semibold text-gray-950">Put the rules to work</p>
+            <p className="mt-2">Start with an easy puzzle and check row, column and box before every move.</p>
+            <div className="mt-4 flex flex-wrap gap-3">
+              <Button asChild>
+                <Link href="/play">
+                  <Play className="mr-2 h-4 w-4" />
+                  Play an easy Sudoku
+                </Link>
+              </Button>
+              <Button asChild variant="outline">
+                <Link href="/how-to-play-sudoku">How to play, step by step</Link>
+              </Button>
+              <Button asChild variant="outline">
+                <Link href="/printable-sudoku">Printable puzzles</Link>
+              </Button>
+            </div>
+          </div>
         </article>
       </section>
     </main>

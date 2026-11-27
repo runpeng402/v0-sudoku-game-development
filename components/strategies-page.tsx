@@ -9,6 +9,7 @@ import { Brain, Target, Lightbulb, Zap, ArrowRight, BookOpen, Play, Home, Users,
 import { useState } from "react"
 import { StrategyDetailModal } from "./strategy-detail-modal"
 import { I18nProvider } from "@/components/i18n-provider"
+import { techniqueGuides } from "@/lib/technique-guides"
 
 function StrategiesContent() {
   const { t } = useTranslation()
@@ -195,6 +196,21 @@ function StrategiesContent() {
             </Button>
           </Link>
         </div>
+
+        <section aria-labelledby="technique-guides" className="mb-12 rounded-lg border bg-white p-6 shadow-sm">
+          <h2 id="technique-guides" className="text-2xl font-bold text-gray-900">Step-by-step technique guides</h2>
+          <p className="mt-2 text-gray-600">Each guide explains one technique with a real puzzle example and practice exercises.</p>
+          <ul className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {techniqueGuides.map((guide) => (
+              <li key={guide.slug}>
+                <Link href={`/strategies/${guide.slug}`} className="block rounded border p-3 hover:border-blue-300">
+                  <span className="block font-semibold text-gray-900">{guide.name}</span>
+                  <span className="text-sm text-gray-500">{guide.level}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
 
         {/* Strategy Overview */}
         <Card className="mb-12 border-0 shadow-lg">

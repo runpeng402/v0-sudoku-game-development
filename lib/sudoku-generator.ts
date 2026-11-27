@@ -52,7 +52,26 @@ export function isValidCompletedGrid(grid: number[][]): boolean {
 }
 
 export function countSudokuSolutions(input: SudokuGrid, limit = 2): number {
-  if (input.length !== gridSize || input.some((row) => row.length !== gridSize) || limit < 1) return 0
+  return searchSolutions(input, limit).count
+}
+
+export type SudokuSolveResult =
+  | { status: "solved" | "multiple"; solution: number[][] }
+  | { status: "invalid" | "unsolvable" }
+
+export function solveSudoku(input: SudokuGrid): SudokuSolveResult {
+  if (input.length !== gridSize || input.some((row) => row.length !== gridSize)) return { status: "invalid" }
+  const { count, first, valid } = searchSolutions(input, 2)
+  if (!valid) return { status: "invalid" }
+  if (count === 0 || !first) return { status: "unsolvable" }
+  if (count > 1) return { status: "multiple", solution: first }
+  return { status: "solved", solution: first }
+}
+
+function searchSolutions(input: SudokuGrid, limit: number): { count: number; first: number[][] | null; valid: boolean } {
+  if (input.length !== gridSize || input.some((row) => row.length !== gridSize) || limit < 1) {
+    return { count: 0, first: null, valid: false }
+  }
 
   const grid = cloneGrid(input)
   for (let row = 0; row < gridSize; row++) {
@@ -62,10 +81,11 @@ export function countSudokuSolutions(input: SudokuGrid, limit = 2): number {
       grid[row][column] = null
       const valid = digits.includes(value) && isValidPlacement(grid, row, column, value)
       grid[row][column] = value
-      if (!valid) return 0
+      if (!valid) return { count: 0, first: null, valid: false }
     }
   }
   let count = 0
+  let first: number[][] | null = null
 
   const solve = (): void => {
     if (count >= limit) return
@@ -73,6 +93,7 @@ export function countSudokuSolutions(input: SudokuGrid, limit = 2): number {
     const next = findCellWithFewestCandidates(grid)
     if (!next) {
       count += 1
+      if (!first) first = cloneGrid(grid) as number[][]
       return
     }
 
@@ -86,17 +107,34 @@ export function countSudokuSolutions(input: SudokuGrid, limit = 2): number {
   }
 
   solve()
-  return count
+  return { count, first, valid: true }
 }
 
-export function generateSudokuPuzzle(difficulty: SudokuDifficulty = "medium"): {
+/** Deterministic PRNG (mulberry32) so a seed such as a date always yields the same puzzle. */
+export function createSeededRandom(seed: string): () => number {
+  let state = 2166136261
+  for (let index = 0; index < seed.length; index++) {
+    state = Math.imul(state ^ seed.charCodeAt(index), 16777619)
+  }
+  return () => {
+    state = (state + 0x6d2b79f5) | 0
+    let value = Math.imul(state ^ (state >>> 15), 1 | state)
+    value = (value + Math.imul(value ^ (value >>> 7), 61 | value)) ^ value
+    return ((value ^ (value >>> 14)) >>> 0) / 4294967296
+  }
+}
+
+export function generateSudokuPuzzle(
+  difficulty: SudokuDifficulty = "medium",
+  random: () => number = Math.random,
+): {
   puzzle: SudokuGrid
   solution: number[][]
 } {
-  const solution = generateCompleteSolution()
+  const solution = generateCompleteSolution(random)
   const puzzle: SudokuGrid = cloneGrid(solution)
   const targetRemovedCells = cellsToRemoveByDifficulty[difficulty]
-  const positions = shuffleArray(Array.from({ length: 81 }, (_, index) => index))
+  const positions = shuffleArray(Array.from({ length: 81 }, (_, index) => index), random)
   let removedCells = 0
 
   for (const position of positions) {
@@ -122,24 +160,24 @@ export function hasSingleSolution(grid: SudokuGrid): boolean {
   return countSudokuSolutions(grid, 2) === 1
 }
 
-function generateCompleteSolution(): number[][] {
+function generateCompleteSolution(random: () => number): number[][] {
   const grid: SudokuGrid = Array.from({ length: gridSize }, () => Array(gridSize).fill(null))
 
-  if (!fillGrid(grid)) {
+  if (!fillGrid(grid, random)) {
     throw new Error("Failed to generate a complete Sudoku solution")
   }
 
   return grid as number[][]
 }
 
-function fillGrid(grid: SudokuGrid): boolean {
-  const next = findCellWithFewestCandidates(grid, true)
+function fillGrid(grid: SudokuGrid, random: () => number): boolean {
+  const next = findCellWithFewestCandidates(grid, random)
   if (!next) return true
 
   const [row, column, candidates] = next
-  for (const value of shuffleArray(candidates)) {
+  for (const value of shuffleArray(candidates, random)) {
     grid[row][column] = value
-    if (fillGrid(grid)) {
+    if (fillGrid(grid, random)) {
       return true
     }
     grid[row][column] = null
@@ -150,7 +188,7 @@ function fillGrid(grid: SudokuGrid): boolean {
 
 function findCellWithFewestCandidates(
   grid: SudokuGrid,
-  allowRandomTie = false,
+  randomTie?: () => number,
 ): [number, number, number[]] | null {
   let best: [number, number, number[]] | null = null
 
@@ -166,7 +204,7 @@ function findCellWithFewestCandidates(
       if (
         !best ||
         candidates.length < best[2].length ||
-        (allowRandomTie && candidates.length === best[2].length && Math.random() < 0.5)
+        (randomTie && candidates.length === best[2].length && randomTie() < 0.5)
       ) {
         best = [row, column, candidates]
       }
@@ -204,10 +242,10 @@ function hasAllDigits(values: Set<number>): boolean {
   return values.size === gridSize && digits.every((digit) => values.has(digit))
 }
 
-function shuffleArray<T>(array: T[]): T[] {
+function shuffleArray<T>(array: T[], random: () => number): T[] {
   const shuffled = [...array]
   for (let index = shuffled.length - 1; index > 0; index--) {
-    const swapIndex = Math.floor(Math.random() * (index + 1))
+    const swapIndex = Math.floor(random() * (index + 1))
     ;[shuffled[index], shuffled[swapIndex]] = [shuffled[swapIndex], shuffled[index]]
   }
   return shuffled

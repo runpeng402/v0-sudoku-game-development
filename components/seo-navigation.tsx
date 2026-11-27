@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Brain, BookOpen, Grid, HelpCircle, Home, Printer, Target, UserCircle } from "lucide-react"
+import { Brain, BookOpen, CalendarDays, Grid, HelpCircle, Home, Printer, Target, UserCircle } from "lucide-react"
 import { homeCopy, localizedPath, pageCopy, type SeoLocale } from "@/lib/seo-locales"
 import { SeoLanguageLinks } from "@/components/seo-language-links"
 
@@ -21,6 +21,7 @@ export function SeoNavigation() {
     { href: localizedPath(locale, pageCopy.rules.path), label: copy.rules, icon: HelpCircle },
     { href: localizedPath(locale, pageCopy.printable.path), label: copy.printable, icon: Printer },
     { href: localizedPath(locale, "/play"), label: locale === "zh" ? "游戏" : locale === "es" ? "Jugar" : "Play", icon: Grid },
+    ...(locale === "en" ? [{ href: "/daily-sudoku", label: "Daily", icon: CalendarDays }] : []),
     locale === "en"
       ? { href: "/sudoku-practice", label: "Practice", icon: Brain }
       : { href: localizedPath(locale, "/strategies"), label: locale === "zh" ? "数独策略" : "Estrategias", icon: Target },
@@ -28,7 +29,7 @@ export function SeoNavigation() {
   const accountLabel = locale === "zh" ? "账号" : locale === "es" ? "Cuenta" : "Account"
 
   return (
-    <nav aria-label={locale === "zh" ? "主导航" : locale === "es" ? "Navegación principal" : "Main navigation"} className="border-b bg-white/95">
+    <nav aria-label={locale === "zh" ? "主导航" : locale === "es" ? "Navegación principal" : "Main navigation"} className="border-b bg-white/95 print:hidden">
       <div className="mx-auto grid max-w-[1800px] gap-4 px-4 py-4 md:grid-cols-[auto_minmax(0,1fr)_auto] md:items-center md:gap-8 md:px-8 lg:gap-12 xl:px-12">
         <Link href={localizedPath(locale, "/")} className="flex items-center gap-3">
           <span className="flex h-8 w-8 items-center justify-center rounded bg-blue-600 font-bold text-white">S</span>
