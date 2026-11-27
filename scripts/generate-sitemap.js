@@ -22,7 +22,7 @@ const localized = (locale, p) => (locale === "en" ? p : `/${locale}${p === "/" ?
 // Pages listed here must be indexable (no noindex). Translated pages list their locales for hreflang.
 const pages = [
   { path: "/", locales: ["en", "zh", "es"], files: ["app/page.tsx", "components/seo-home-page.tsx", "lib/seo-locales.ts"], priority: "1.0" },
-  { path: "/play", locales: ["en"], files: ["app/play/page.tsx", "components/sudoku-game-page.tsx"], priority: "0.9" },
+  { path: "/play", locales: ["en", "es"], files: ["app/play/page.tsx", "components/sudoku-game-page.tsx"], priority: "0.9" },
   { path: "/how-to-play-sudoku", locales: ["en", "zh", "es"], files: ["app/how-to-play-sudoku/page.tsx", "components/sudoku-beginner-lesson.tsx"], priority: "0.9" },
   { path: "/sudoku-rules", locales: ["en", "zh", "es"], files: ["app/sudoku-rules/page.tsx"], priority: "0.9" },
   { path: "/printable-sudoku", locales: ["en", "zh", "es"], files: ["app/printable-sudoku/page.tsx", "lib/printable-sudoku-pdf.ts"], priority: "0.8" },
@@ -38,6 +38,10 @@ const pages = [
 const guideSource = fs.readFileSync(path.join(root, "lib/technique-guides.ts"), "utf8")
 for (const match of guideSource.matchAll(/slug: "([^"]+)"/g)) {
   pages.push({ path: `/strategies/${match[1]}`, locales: ["en"], files: ["lib/technique-guides.ts", "app/strategies/[slug]/page.tsx"], priority: "0.7" })
+}
+
+for (const slug of ["easy", "with-answers", "large-print"]) {
+  pages.push({ path: `/printable-sudoku/${slug}`, locales: ["en"], files: ["app/printable-sudoku/[topic]/page.tsx"], priority: "0.7" })
 }
 
 const articleSource = fs.readFileSync(path.join(root, "lib/articles.ts"), "utf8")

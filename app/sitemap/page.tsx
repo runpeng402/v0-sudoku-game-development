@@ -45,6 +45,9 @@ const groups = [
       ["/printable-sudoku", "Printable Sudoku PDF"],
       ["/zh/printable-sudoku", "可打印数独 PDF"],
       ["/es/printable-sudoku", "Sudoku imprimible PDF"],
+      ["/printable-sudoku/easy", "Easy Printable Sudoku"],
+      ["/printable-sudoku/with-answers", "Printable Sudoku with Answers"],
+      ["/printable-sudoku/large-print", "Large Print Sudoku"],
     ],
   },
   {
