@@ -3,7 +3,7 @@ import Link from "next/link"
 import { BookOpen, CheckCircle, HelpCircle, Play } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { SudokuBeginnerLesson } from "@/components/sudoku-beginner-lesson"
-import { localizedAlternates } from "@/lib/seo-locales"
+import { localizedAlternates, defaultOgImage } from "@/lib/seo-locales"
 
 const url = "https://www.sudokustudio.app/how-to-play-sudoku"
 
@@ -12,6 +12,7 @@ export const metadata: Metadata = {
   description: "Learn how to play Sudoku with two interactive moves, step-by-step hints, and simple examples of the rules for rows, columns and boxes.",
   alternates: localizedAlternates("en", "/how-to-play-sudoku"),
   openGraph: {
+    images: [defaultOgImage],
     title: "How to Play Sudoku for Beginners: Step-by-Step Guide",
     description: "Learn how to play Sudoku with two interactive moves, step-by-step hints, and simple examples of the rules for rows, columns and boxes.",
     url,

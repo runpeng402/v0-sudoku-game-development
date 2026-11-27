@@ -9,7 +9,8 @@ export function generateMetadata(): Metadata {
   return {
     title: "SudokuStudio Training Pricing",
     alternates: { canonical: "/pricing" },
-    robots: process.env.DODO_TRAINING_MODE === "test_mode" ? { index: false, follow: false } : undefined,
+    // Only a live checkout makes this page useful to searchers.
+    robots: process.env.DODO_TRAINING_MODE === "live_mode" ? undefined : { index: false, follow: true },
   }
 }
 

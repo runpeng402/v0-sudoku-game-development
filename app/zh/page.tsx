@@ -1,12 +1,13 @@
 import type { Metadata } from "next"
 import { SeoHomePage } from "@/components/seo-home-page"
-import { homeCopy, localizedAlternates } from "@/lib/seo-locales"
+import { homeCopy, localizedAlternates, defaultOgImage } from "@/lib/seo-locales"
 
 export const metadata: Metadata = {
   title: homeCopy.zh.title,
   description: homeCopy.zh.description,
   alternates: localizedAlternates("zh", "/"),
   openGraph: {
+    images: [defaultOgImage],
     title: homeCopy.zh.title,
     description: homeCopy.zh.description,
     url: "https://www.sudokustudio.app/zh",

@@ -9,9 +9,14 @@ const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.sudokustudio.app"),
-  title: "Sudoku Game",
-  description: "Play Sudoku online with multiple difficulty levels and helpful features",
-  generator: "v0.app",
+  title: "SudokuStudio: Free Online Sudoku with Hints",
+  description: "Play free online Sudoku with hints, learn solving techniques, and print Sudoku puzzles with answers.",
+  applicationName: "SudokuStudio",
+  openGraph: {
+    siteName: "SudokuStudio",
+    type: "website",
+    locale: "en_US",
+  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

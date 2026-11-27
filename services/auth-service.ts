@@ -184,9 +184,8 @@ class AuthService {
     return this.currentUser !== null && !this.currentUser.isGuest
   }
 
-  canPlayDifficulty(difficulty: "easy" | "medium" | "hard"): boolean {
-    if (difficulty === "easy") return true
-    return this.isAuthenticated()
+  canPlayDifficulty(_difficulty: "easy" | "medium" | "hard"): boolean {
+    return true
   }
 
   canDownloadPuzzles(): boolean {

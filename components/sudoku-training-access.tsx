@@ -204,7 +204,7 @@ export function SudokuTrainingAccess({ entry = "practice" }: { entry?: "practice
           {training.access === "unlocked" && <>All {training.exercises.length} exercises are unlocked. Signed in for training as <strong className="break-all">{sessionEmail}</strong>.</>}
           {training.access === "signed-out" && <>Not signed in for training. Verify the email you used for checkout to restore your purchase. <a href="#training-purchase" className="underline">Go to sign-in</a></>}
           {training.access === "locked" && <>Signed in for training as <strong className="break-all">{sessionEmail}</strong>. No training purchase confirmed for this account yet. <a href="#training-purchase" className="underline">Check access</a></>}
-          {training.access === "free" && `All ${freeExerciseCount} free samples are available. Paid checkout is not open yet.`}
+          {training.access === "free" && `All ${freeExerciseCount} exercises are free to practice.`}
         </p>
       )}
       {visible && !pricing && <SudokuTraining key={training.access === "unlocked" || training.access === "free" ? "full" : "sample"} lessons={training.exercises} resumeTopic={resumeTopic} onTopicChange={(value) => {

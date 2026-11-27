@@ -28,7 +28,7 @@ export function ThemeSelector({ currentTheme, onThemeChange }: ThemeSelectorProp
 
   return (
     <Select value={currentTheme} onValueChange={onThemeChange}>
-      <SelectTrigger className="w-[140px]">
+      <SelectTrigger className="w-[190px]">
         <div className="flex items-center gap-2">
           <Palette className="w-4 h-4" />
           <span className="hidden sm:inline">{t("ui.theme")}</span>

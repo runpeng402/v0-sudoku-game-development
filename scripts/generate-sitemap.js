@@ -1,99 +1,76 @@
+// Regenerates public/sitemap.xml. Run with `node scripts/generate-sitemap.js` after adding or editing indexable pages.
 const fs = require("fs")
 const path = require("path")
+const { execFileSync } = require("child_process")
 
-const baseUrl = "https://sudokustudio.app"
-const currentDate = new Date().toISOString().split("T")[0]
+const root = path.join(__dirname, "..")
+const baseUrl = "https://www.sudokustudio.app"
+const today = new Date().toISOString().split("T")[0]
 
-// 定义所有页面
-const pages = [
-  // 主页面
-  { url: "/", priority: "1.0", changefreq: "daily" },
-  { url: "/zh", priority: "0.9", changefreq: "daily" },
-  { url: "/es", priority: "0.9", changefreq: "daily" },
-
-  // 游戏页面
-  { url: "/play", priority: "0.9", changefreq: "daily" },
-  { url: "/zh/play", priority: "0.8", changefreq: "daily" },
-  { url: "/es/play", priority: "0.8", changefreq: "daily" },
-
-  // 难度级别
-  { url: "/play/easy", priority: "0.8", changefreq: "daily" },
-  { url: "/play/medium", priority: "0.8", changefreq: "daily" },
-  { url: "/play/hard", priority: "0.8", changefreq: "daily" },
-  { url: "/play/expert", priority: "0.8", changefreq: "daily" },
-  { url: "/play/evil", priority: "0.8", changefreq: "daily" },
-
-  // 教程页面
-  { url: "/how-to-play", priority: "0.8", changefreq: "weekly" },
-  { url: "/zh/how-to-play", priority: "0.7", changefreq: "weekly" },
-  { url: "/es/how-to-play", priority: "0.7", changefreq: "weekly" },
-
-  // 策略页面
-  { url: "/sudoku-practice", priority: "0.7", changefreq: "monthly" },
-  { url: "/strategies", priority: "0.8", changefreq: "weekly" },
-  { url: "/zh/strategies", priority: "0.7", changefreq: "weekly" },
-  { url: "/es/strategies", priority: "0.7", changefreq: "weekly" },
-
-  // 文章页面
-  { url: "/articles", priority: "0.8", changefreq: "weekly" },
-  { url: "/zh/articles", priority: "0.7", changefreq: "weekly" },
-  { url: "/es/articles", priority: "0.7", changefreq: "weekly" },
-
-  // 变体页面
-  { url: "/variants", priority: "0.7", changefreq: "weekly" },
-  { url: "/zh/variants", priority: "0.6", changefreq: "weekly" },
-  { url: "/es/variants", priority: "0.6", changefreq: "weekly" },
-
-  // 排行榜
-  { url: "/leaderboard", priority: "0.6", changefreq: "daily" },
-  { url: "/zh/leaderboard", priority: "0.5", changefreq: "daily" },
-  { url: "/es/leaderboard", priority: "0.5", changefreq: "daily" },
-
-  // 用户中心
-  { url: "/user-center", priority: "0.5", changefreq: "weekly" },
-  { url: "/zh/user-center", priority: "0.4", changefreq: "weekly" },
-  { url: "/es/user-center", priority: "0.4", changefreq: "weekly" },
-
-  // 登录页面
-  { url: "/login", priority: "0.3", changefreq: "monthly" },
-]
-
-// 生成XML内容
-const generateSitemap = () => {
-  let xml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">`
-
-  pages.forEach((page) => {
-    xml += `
-  <url>
-    <loc>${baseUrl}${page.url}</loc>
-    <lastmod>${currentDate}</lastmod>
-    <changefreq>${page.changefreq}</changefreq>
-    <priority>${page.priority}</priority>`
-
-    // 为主要页面添加多语言链接
-    if (page.url === "/" || page.url === "/zh" || page.url === "/es") {
-      xml += `
-    <xhtml:link rel="alternate" hreflang="en" href="${baseUrl}/" />
-    <xhtml:link rel="alternate" hreflang="zh" href="${baseUrl}/zh" />
-    <xhtml:link rel="alternate" hreflang="es" href="${baseUrl}/es" />`
-    }
-
-    xml += `
-  </url>`
+function lastModified(files) {
+  const dates = files.map((file) => {
+    const dirty = execFileSync("git", ["status", "--porcelain", "--", file], { cwd: root }).toString().trim()
+    if (dirty) return today
+    return execFileSync("git", ["log", "-1", "--format=%cs", "--", file], { cwd: root }).toString().trim() || today
   })
-
-  xml += `
-</urlset>`
-
-  return xml
+  return dates.sort().at(-1)
 }
 
-// 写入文件
-const sitemapContent = generateSitemap()
-fs.writeFileSync(path.join(__dirname, "../public/sitemap.xml"), sitemapContent)
+const url = (p) => `${baseUrl}${p === "/" ? "/" : p}`
+const localized = (locale, p) => (locale === "en" ? p : `/${locale}${p === "/" ? "" : p}`)
 
-console.log("✅ Sitemap generated successfully!")
-console.log(`📍 Location: public/sitemap.xml`)
-console.log(`🔗 URL: ${baseUrl}/sitemap.xml`)
-console.log(`📊 Total URLs: ${pages.length}`)
+// Pages listed here must be indexable (no noindex). Translated pages list their locales for hreflang.
+const pages = [
+  { path: "/", locales: ["en", "zh", "es"], files: ["app/page.tsx", "components/seo-home-page.tsx", "lib/seo-locales.ts"], priority: "1.0" },
+  { path: "/play", locales: ["en"], files: ["app/play/page.tsx", "components/sudoku-game-page.tsx"], priority: "0.9" },
+  { path: "/how-to-play-sudoku", locales: ["en", "zh", "es"], files: ["app/how-to-play-sudoku/page.tsx", "components/sudoku-beginner-lesson.tsx"], priority: "0.9" },
+  { path: "/sudoku-rules", locales: ["en", "zh", "es"], files: ["app/sudoku-rules/page.tsx"], priority: "0.9" },
+  { path: "/printable-sudoku", locales: ["en", "zh", "es"], files: ["app/printable-sudoku/page.tsx", "lib/printable-sudoku-pdf.ts"], priority: "0.8" },
+  { path: "/strategies", locales: ["en", "zh", "es"], files: ["app/strategies/page.tsx", "components/strategies-page.tsx", "components/i18n-provider.tsx"], priority: "0.8" },
+  { path: "/sudoku-practice", locales: ["en"], files: ["app/sudoku-practice/page.tsx", "components/sudoku-training.tsx", "lib/sudoku-training-exercises.json"], priority: "0.8" },
+  { path: "/variants", locales: ["en"], files: ["app/variants/page.tsx", "components/variants-page.tsx"], priority: "0.6" },
+  { path: "/articles", locales: ["en"], files: ["app/articles/page.tsx", "lib/articles.ts"], priority: "0.6" },
+  { path: "/sitemap", locales: ["en"], files: ["app/sitemap/page.tsx"], priority: "0.3" },
+]
+
+const articleSource = fs.readFileSync(path.join(root, "lib/articles.ts"), "utf8")
+for (const match of articleSource.matchAll(/slug: "([^"]+)"[\s\S]*?dateModified: "([^"]+)"/g)) {
+  pages.push({ path: `/articles/${match[1]}`, locales: ["en"], lastmod: match[2], priority: "0.6" })
+}
+
+function localeFile(locale, file) {
+  return locale === "en" || !file.startsWith("app/") ? file : file.replace(/^app\//, `app/${locale}/`)
+}
+
+const entries = pages.flatMap((page) =>
+  page.locales.map((locale) => {
+    const files = page.files
+      ? page.files.map((file) => localeFile(locale, file)).filter((file) => fs.existsSync(path.join(root, file)))
+      : []
+    const lastmod = page.lastmod || lastModified(files)
+    const alternates =
+      page.locales.length > 1
+        ? [
+            ...page.locales.map((alt) => `    <xhtml:link rel="alternate" hreflang="${alt}" href="${url(localized(alt, page.path))}" />`),
+            `    <xhtml:link rel="alternate" hreflang="x-default" href="${url(page.path)}" />`,
+          ]
+        : []
+    return [
+      "  <url>",
+      `    <loc>${url(localized(locale, page.path))}</loc>`,
+      ...alternates,
+      `    <lastmod>${lastmod}</lastmod>`,
+      `    <priority>${locale === "en" ? page.priority : (Number(page.priority) - 0.1).toFixed(1)}</priority>`,
+      "  </url>",
+    ].join("\n")
+  }),
+)
+
+const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+${entries.join("\n")}
+</urlset>
+`
+
+fs.writeFileSync(path.join(root, "public/sitemap.xml"), xml)
+console.log(`Wrote public/sitemap.xml with ${entries.length} URLs`)

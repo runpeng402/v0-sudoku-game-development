@@ -91,17 +91,6 @@ function SudokuGameContent() {
     }
   }, [])
 
-  const checkAuthForDifficulty = (difficulty: SudokuDifficulty) => {
-    if (difficulty === "easy") return true
-
-    if (!authService.canPlayDifficulty(difficulty)) {
-      setAuthRequiredFor(difficulty)
-      setShowAuthModal(true)
-      return false
-    }
-    return true
-  }
-
   // Timer effect
   useEffect(() => {
     let interval: NodeJS.Timeout
@@ -175,8 +164,6 @@ function SudokuGameContent() {
 
   // Generate new puzzle
   function generateNewPuzzle(nextDifficulty = difficulty, player = currentUser) {
-    if (!checkAuthForDifficulty(nextDifficulty)) return
-
     const { puzzle, solution } = generateSudokuPuzzle(nextDifficulty)
     roundId.current = `puzzle_${Date.now()}_${Math.random().toString(36).slice(2)}`
     clearHintTimers()
@@ -381,7 +368,7 @@ function SudokuGameContent() {
         <Card className={`mb-6 ${themeStyles.card}`}>
           <CardHeader className="text-center">
             <CardTitle className="text-3xl font-bold text-gray-800 flex items-center justify-center gap-2">
-              Sudoku Game
+              <h1>{t("game.heading")}</h1>
               {"decoration" in themeStyles && themeStyles.decoration && (
                 <span className="text-2xl">{themeStyles.decoration.split("").join(" ")}</span>
               )}
@@ -422,7 +409,6 @@ function SudokuGameContent() {
                 className={difficulty === "medium" ? themeStyles.primary : ""}
               >
                 {t("game.difficulty.medium")}
-                {!authService.canPlayDifficulty("medium") && " 🔒"}
               </Button>
               <Button
                 variant={difficulty === "hard" ? "default" : "outline"}
@@ -433,7 +419,6 @@ function SudokuGameContent() {
                 className={difficulty === "hard" ? themeStyles.primary : ""}
               >
                 {t("game.difficulty.hard")}
-                {!authService.canPlayDifficulty("hard") && " 🔒"}
               </Button>
             </div>
 
@@ -575,7 +560,7 @@ function SudokuGameContent() {
                 disabled={!gameState.selectedCell || gameState.isComplete}
                 className="col-span-1 min-w-0 flex-1"
               >
-                Clear
+                {t("game.clear")}
               </Button>
             </div>
 

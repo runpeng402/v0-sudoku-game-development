@@ -319,14 +319,14 @@ export function HintSystem({
       case "possible":
         const possible = getPossibleNumbers(row, col)
         hintData = { cell: [row, col], possible }
-        hintMessage = `${t("hints.hintTypes.possible")}: ${possible.join(", ") || "无"}`
+        hintMessage = `${t("hints.hintTypes.possible")}: ${possible.join(", ") || t("hints.none")}`
         break
 
       case "error":
         const hasError = errors[row][col]
         hintData = { cell: [row, col], hasError }
         hintMessage = hasError
-          ? `${t("hints.hintTypes.error")}: 此位置有错误`
+          ? `${t("hints.hintTypes.error")}: ${t("hints.hasError")}`
           : userGrid[row][col] === null
             ? t("hints.emptySquare")
             : t("hints.correctSquare")
@@ -338,13 +338,15 @@ export function HintSystem({
           hintData = technique
           hintMessage = `${t("hints.hintTypes.technique")}: ${technique.explanation}`
         } else {
-          hintMessage = "未找到明显的解题技巧"
+          hintMessage = t("hints.noTechnique")
         }
         break
     }
 
     if (hintData) {
       onHintUsed(selectedHintType, hintData)
+      setLastHint(hintMessage)
+    } else if (hintMessage) {
       setLastHint(hintMessage)
     }
   }
@@ -367,7 +369,7 @@ export function HintSystem({
               ...technique,
               autoFill: true,
             })
-            setLastHint(`自动填入: ${technique.value} (${technique.explanation})`)
+            setLastHint(t("hints.autoFilled", { value: technique.value, explanation: technique.explanation }))
             return
           }
         }
@@ -384,14 +386,14 @@ export function HintSystem({
               ...technique,
               autoFill: true,
             })
-            setLastHint(`自动填入: ${technique.value} (${technique.explanation})`)
+            setLastHint(t("hints.autoFilled", { value: technique.value, explanation: technique.explanation }))
             return
           }
         }
       }
     }
 
-    setLastHint("未找到明显的下一步")
+    setLastHint(t("hints.noNextStep"))
   }
 
   return (
@@ -417,7 +419,7 @@ export function HintSystem({
       <CardContent className="space-y-4">
         {/* 提示类型选择 */}
         <div className="space-y-2">
-          <label className="text-sm font-medium">{t("hints.hintTypes.answer")}</label>
+          <label className="text-sm font-medium">{t("hints.hintType")}</label>
           <Select value={selectedHintType} onValueChange={(value: HintType) => setSelectedHintType(value)}>
             <SelectTrigger>
               <SelectValue />

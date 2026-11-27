@@ -2,7 +2,7 @@ import Link from "next/link"
 import { BookOpen, Brain, CheckCircle, Clock, FileText, Play, Printer, Target } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { homeCopy, htmlLangByLocale, localizedPath, pageCopy, type SeoLocale } from "@/lib/seo-locales"
+import { homeCopy, htmlLangByLocale, localizedPath, localizedUrl, pageCopy, siteUrl, type SeoLocale } from "@/lib/seo-locales"
 
 interface SeoHomePageProps {
   locale: SeoLocale
@@ -26,17 +26,41 @@ export function SeoHomePage({ locale }: SeoHomePageProps) {
     { href: localizedPath(locale, pageCopy.rules.path), title: copy.rules, icon: FileText },
     { href: localizedPath(locale, pageCopy.printable.path), title: copy.printable, icon: Printer },
     { href: localizedPath(locale, "/strategies"), title: locale === "zh" ? "数独策略" : locale === "es" ? "Estrategias" : "Sudoku Strategies", icon: Target },
+    ...(locale === "en"
+      ? [
+          { href: "/sudoku-practice", title: "Technique Practice", icon: Brain },
+          { href: "/articles", title: "Sudoku Articles", icon: BookOpen },
+        ]
+      : []),
   ]
   const playHref = localizedPath(locale, "/play")
   const stats = [
-    ["Free", locale === "zh" ? "无需下载" : locale === "es" ? "Sin descargas" : "No download"],
-    ["4", locale === "zh" ? "难度等级" : locale === "es" ? "Niveles" : "Difficulty levels"],
-    ["Hints", locale === "zh" ? "智能提示" : locale === "es" ? "Pistas útiles" : "Beginner friendly"],
+    ["Free", locale === "zh" ? "无需注册" : locale === "es" ? "Sin registro" : "No sign-up"],
+    ["3", locale === "zh" ? "难度等级" : locale === "es" ? "Niveles" : "Difficulty levels"],
+    ["Hints", locale === "zh" ? "智能提示" : locale === "es" ? "Pistas útiles" : "With explanations"],
     ["PDF", locale === "zh" ? "可打印题目" : locale === "es" ? "Imprimibles" : "Printable puzzles"],
+  ]
+  const structuredData = [
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      name: "SudokuStudio",
+      url: localizedUrl(locale, "/"),
+      inLanguage: htmlLangByLocale[locale],
+      description: copy.description,
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      name: "SudokuStudio",
+      url: siteUrl,
+      logo: `${siteUrl}/apple-icon.png`,
+    },
   ]
 
   return (
     <div className="min-h-screen bg-white" lang={htmlLangByLocale[locale]}>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
       <main>
         <section className="bg-gradient-to-br from-blue-50 via-white to-indigo-50 px-4 py-16 md:py-20">
           <div className="mx-auto max-w-5xl text-center">
@@ -153,7 +177,20 @@ export function SeoHomePage({ locale }: SeoHomePageProps) {
         </section>
       </main>
       <footer className="border-t px-4 py-8 text-center text-sm text-gray-500">
-        © 2024 SudokuStudio
+        {locale === "en" && (
+          <nav aria-label="Footer" className="mb-4 flex flex-wrap justify-center gap-x-6 gap-y-2">
+            <Link href="/play" className="hover:text-blue-700">Play Sudoku</Link>
+            <Link href="/how-to-play-sudoku" className="hover:text-blue-700">How to Play</Link>
+            <Link href="/sudoku-rules" className="hover:text-blue-700">Rules</Link>
+            <Link href="/strategies" className="hover:text-blue-700">Strategies</Link>
+            <Link href="/sudoku-practice" className="hover:text-blue-700">Practice</Link>
+            <Link href="/printable-sudoku" className="hover:text-blue-700">Printable</Link>
+            <Link href="/variants" className="hover:text-blue-700">Variants</Link>
+            <Link href="/articles" className="hover:text-blue-700">Articles</Link>
+            <Link href="/sitemap" className="hover:text-blue-700">Sitemap</Link>
+          </nav>
+        )}
+        © {new Date().getFullYear()} SudokuStudio
       </footer>
     </div>
   )

@@ -1,9 +1,9 @@
 import type { Metadata } from "next"
 import { StrategiesPageContent } from "@/components/strategies-page"
-import { localizedAlternates } from "@/lib/seo-locales"
+import { localizedAlternates, defaultOgImage } from "@/lib/seo-locales"
 
 export const metadata: Metadata = {
-  title: "Sudoku Strategies & Techniques - From Beginner to Expert | Sudoku Studio",
+  title: "Sudoku Strategies & Techniques - From Beginner to Expert | SudokuStudio",
   description:
     "Master advanced Sudoku solving techniques including X-Wing, Swordfish, naked pairs, and more. Comprehensive strategy guide with examples and practice puzzles.",
   keywords: [
@@ -19,11 +19,11 @@ export const metadata: Metadata = {
     "sudoku tutorial",
   ],
   openGraph: {
+    images: [defaultOgImage],
     title: "Advanced Sudoku Strategies & Expert Techniques",
     description:
       "Learn X-Wing, Swordfish, and other advanced Sudoku solving techniques. Master expert-level strategies with examples.",
     url: "https://www.sudokustudio.app/strategies",
-    images: ["/og-strategies.png"],
   },
   alternates: localizedAlternates("en", "/strategies"),
 }
