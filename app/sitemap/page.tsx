@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import Link from "next/link"
+import { techniqueGuides } from "@/lib/technique-guides"
 
 export const metadata: Metadata = {
   title: "Sitemap | SudokuStudio",
@@ -17,6 +18,8 @@ const groups = [
       ["/zh", "免费在线数独"],
       ["/es", "Sudoku gratis en línea"],
       ["/play", "Play Sudoku Online"],
+      ["/daily-sudoku", "Daily Sudoku"],
+      ["/sudoku-solver", "Sudoku Solver"],
     ],
   },
   {
@@ -29,6 +32,7 @@ const groups = [
       ["/zh/sudoku-rules", "数独规则"],
       ["/es/sudoku-rules", "Reglas de Sudoku"],
       ["/strategies", "Sudoku Strategies"],
+      ...techniqueGuides.map((guide) => [`/strategies/${guide.slug}`, guide.name]),
       ["/sudoku-practice", "Sudoku Practice Exercises"],
       ["/zh/strategies", "数独策略"],
       ["/es/strategies", "Estrategias de Sudoku"],

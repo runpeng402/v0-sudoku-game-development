@@ -141,6 +141,16 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://www.sudokustudio.app/daily-sudoku</loc>
+    <lastmod>2026-11-27</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.sudokustudio.app/sudoku-solver</loc>
+    <lastmod>2026-11-27</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://www.sudokustudio.app/sudoku-practice</loc>
     <lastmod>2026-11-27</lastmod>
     <priority>0.8</priority>
@@ -157,8 +167,43 @@
   </url>
   <url>
     <loc>https://www.sudokustudio.app/sitemap</loc>
-    <lastmod>2026-11-20</lastmod>
+    <lastmod>2026-11-27</lastmod>
     <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://www.sudokustudio.app/strategies/naked-single</loc>
+    <lastmod>2026-11-27</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.sudokustudio.app/strategies/hidden-single</loc>
+    <lastmod>2026-11-27</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.sudokustudio.app/strategies/locked-candidates</loc>
+    <lastmod>2026-11-27</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.sudokustudio.app/strategies/naked-pairs</loc>
+    <lastmod>2026-11-27</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.sudokustudio.app/strategies/hidden-pairs</loc>
+    <lastmod>2026-11-27</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.sudokustudio.app/strategies/x-wing</loc>
+    <lastmod>2026-11-27</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.sudokustudio.app/strategies/xy-wing</loc>
+    <lastmod>2026-11-27</lastmod>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.sudokustudio.app/articles/beginner-sudoku-guide</loc>

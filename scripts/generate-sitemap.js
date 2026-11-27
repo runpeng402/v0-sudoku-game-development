@@ -27,11 +27,18 @@ const pages = [
   { path: "/sudoku-rules", locales: ["en", "zh", "es"], files: ["app/sudoku-rules/page.tsx"], priority: "0.9" },
   { path: "/printable-sudoku", locales: ["en", "zh", "es"], files: ["app/printable-sudoku/page.tsx", "lib/printable-sudoku-pdf.ts"], priority: "0.8" },
   { path: "/strategies", locales: ["en", "zh", "es"], files: ["app/strategies/page.tsx", "components/strategies-page.tsx", "components/i18n-provider.tsx"], priority: "0.8" },
+  { path: "/daily-sudoku", locales: ["en"], lastmod: today, priority: "0.8" },
+  { path: "/sudoku-solver", locales: ["en"], files: ["app/sudoku-solver/page.tsx", "components/sudoku-solver.tsx"], priority: "0.8" },
   { path: "/sudoku-practice", locales: ["en"], files: ["app/sudoku-practice/page.tsx", "components/sudoku-training.tsx", "lib/sudoku-training-exercises.json"], priority: "0.8" },
   { path: "/variants", locales: ["en"], files: ["app/variants/page.tsx", "components/variants-page.tsx"], priority: "0.6" },
   { path: "/articles", locales: ["en"], files: ["app/articles/page.tsx", "lib/articles.ts"], priority: "0.6" },
   { path: "/sitemap", locales: ["en"], files: ["app/sitemap/page.tsx"], priority: "0.3" },
 ]
+
+const guideSource = fs.readFileSync(path.join(root, "lib/technique-guides.ts"), "utf8")
+for (const match of guideSource.matchAll(/slug: "([^"]+)"/g)) {
+  pages.push({ path: `/strategies/${match[1]}`, locales: ["en"], files: ["lib/technique-guides.ts", "app/strategies/[slug]/page.tsx"], priority: "0.7" })
+}
 
 const articleSource = fs.readFileSync(path.join(root, "lib/articles.ts"), "utf8")
 for (const match of articleSource.matchAll(/slug: "([^"]+)"[\s\S]*?dateModified: "([^"]+)"/g)) {

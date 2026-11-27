@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { BookOpen, Brain, CheckCircle, Clock, FileText, Play, Printer, Target } from "lucide-react"
+import { BookOpen, Brain, CalendarDays, CheckCircle, Clock, FileText, Play, Printer, Target, Wand2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { homeCopy, htmlLangByLocale, localizedPath, localizedUrl, pageCopy, siteUrl, type SeoLocale } from "@/lib/seo-locales"
@@ -29,6 +29,8 @@ export function SeoHomePage({ locale }: SeoHomePageProps) {
     ...(locale === "en"
       ? [
           { href: "/sudoku-practice", title: "Technique Practice", icon: Brain },
+          { href: "/daily-sudoku", title: "Daily Sudoku", icon: CalendarDays },
+          { href: "/sudoku-solver", title: "Sudoku Solver", icon: Wand2 },
           { href: "/articles", title: "Sudoku Articles", icon: BookOpen },
         ]
       : []),
@@ -180,6 +182,8 @@ export function SeoHomePage({ locale }: SeoHomePageProps) {
         {locale === "en" && (
           <nav aria-label="Footer" className="mb-4 flex flex-wrap justify-center gap-x-6 gap-y-2">
             <Link href="/play" className="hover:text-blue-700">Play Sudoku</Link>
+            <Link href="/daily-sudoku" className="hover:text-blue-700">Daily Sudoku</Link>
+            <Link href="/sudoku-solver" className="hover:text-blue-700">Solver</Link>
             <Link href="/how-to-play-sudoku" className="hover:text-blue-700">How to Play</Link>
             <Link href="/sudoku-rules" className="hover:text-blue-700">Rules</Link>
             <Link href="/strategies" className="hover:text-blue-700">Strategies</Link>
