@@ -106,9 +106,9 @@ export const homeCopy = {
     description:
       "Juega Sudoku gratis en línea con niveles fácil, medio y difícil. Sin descargas, con pistas, reglas y puzzles imprimibles.",
     h1: "Sudoku gratis en línea",
-    subtitle: "Juega puzzles de Sudoku fáciles, medios y difíciles con pistas y guías para principiantes.",
+    subtitle: "Juega Sudoku gratis: niveles fácil, medio y difícil con pistas y guías para principiantes. Sin registro y sin descargas.",
     intro:
-      "SudokuStudio ofrece una forma rápida y limpia de jugar Sudoku, aprender las reglas y practicar con puzzles imprimibles.",
+      "SudokuStudio es el lugar más limpio para jugar Sudoku gratis en línea: empieza con puzzles fáciles, aprende las reglas, practica técnicas y descarga hojas imprimibles con respuestas.",
     play: "Jugar Sudoku",
     learn: "Cómo jugar",
     rules: "Reglas de Sudoku",

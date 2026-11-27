@@ -26,6 +26,11 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: "https://www.sudokustudio.app/play",
+    languages: {
+      en: "https://www.sudokustudio.app/play",
+      es: "https://www.sudokustudio.app/es/play",
+      "x-default": "https://www.sudokustudio.app/play",
+    },
   },
 }
 
